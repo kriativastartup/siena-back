@@ -1,25 +1,254 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+model academic_year {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome           String?   @db.VarChar
+  data_de_inicio DateTime? @db.Date
+  data_de_fim    DateTime? @db.Date
+  status         Boolean?  @default(true)
+  escola_id      String?   @db.Uuid
+  escola         escola?   @relation(fields: [escola_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_academic_year_escola")
 }
 
+model aluno {
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuario_id        String              @unique @db.Uuid
+  numero_aluno      String              @unique @db.VarChar(20)
+  data_nascimento   DateTime            @db.Date
+  genero            genero_enum?
+  telefone          String?             @db.VarChar(20)
+  endereco          String?             @db.VarChar(300)
+  foto              String?             @db.VarChar(255)
+  status            status_aluno?       @default(activo)
+  usuario           usuario             @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_usuario")
+  aluno_encarregado aluno_encarregado[]
+  matricula         matricula[]
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  posts     Post[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@index([numero_aluno], map: "idx_aluno_numero")
+  @@index([usuario_id], map: "idx_aluno_usuario")
+}
+
+model aluno_encarregado {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id       String      @db.Uuid
+  encarregado_id String      @db.Uuid
+  principal      Boolean?    @default(false)
+  aluno          aluno       @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_encarregado_aluno")
+  encarregado    encarregado @relation(fields: [encarregado_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_encarregado_encarregado")
+
+  @@unique([aluno_id, encarregado_id], map: "uk_aluno_encarregado")
+  @@index([aluno_id], map: "idx_aluno_encarregado_aluno")
+  @@index([encarregado_id], map: "idx_aluno_encarregado_encarregado")
+}
+
+model disciplina {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id        String             @db.Uuid
+  nome             String             @db.VarChar(100)
+  codigo           String             @db.VarChar(20)
+  carga_horaria    Int?
+  descricao        String?
+  escola           escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_disciplina_escola")
+  turma_disciplina turma_disciplina[]
+
+  @@unique([escola_id, codigo], map: "uk_disciplina_codigo")
+  @@index([escola_id, codigo], map: "idx_disciplina_codigo")
+  @@index([escola_id], map: "idx_disciplina_escola")
+}
+
+model encarregado {
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuario_id        String              @unique @db.Uuid
+  telefone          String?             @db.VarChar(20)
+  grau_parentesco   String?             @db.VarChar(50)
+  profissao         String?             @db.VarChar(100)
+  aluno_encarregado aluno_encarregado[]
+  usuario           usuario             @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_encarregado_usuario")
+
+  @@index([usuario_id], map: "idx_encarregado_usuario")
+}
+
+model escola {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome          String          @db.VarChar(200)
+  endereco      String?         @db.VarChar(300)
+  telefone      String?         @db.VarChar(20)
+  email         String?         @unique(map: "email_escola_unique") @db.VarChar(100)
+  data_criacao  DateTime?       @default(now()) @db.Timestamp(6)
+  usuario_id    String          @unique @db.Uuid
+  logo_url      String?         @db.VarChar(255)
+  natureza      natureza?       @default(publica)
+  nif           String?
+  codigo_mec    String?
+  status        Boolean?        @default(true)
+  academic_year academic_year[]
+  disciplina    disciplina[]
+  usuario       usuario         @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario")
+  professor     professor[]
+  turma         turma[]
+}
+
+model matricula {
+  id             String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id       String                 @db.Uuid
+  turma_id       String                 @db.Uuid
+  data_matricula DateTime?              @default(dbgenerated("CURRENT_DATE")) @db.Date
+  status         status_matricula_enum? @default(ATIVA)
+  ano_letivo     String                 @db.VarChar(9)
+  aluno          aluno                  @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_matricula_aluno")
+  turma          turma                  @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_matricula_turma")
+  nota           nota[]
+
+  @@unique([aluno_id, turma_id, ano_letivo], map: "uk_matricula_aluno_turma")
+  @@index([aluno_id], map: "idx_matricula_aluno")
+  @@index([status], map: "idx_matricula_status")
+  @@index([turma_id], map: "idx_matricula_turma")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model nota {
+  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  matricula_id        String              @db.Uuid
+  turma_disciplina_id String              @db.Uuid
+  nota                Decimal             @db.Decimal(5, 2)
+  trimestre           Int
+  tipo_avaliacao      tipo_avaliacao_enum
+  data_lancamento     DateTime?           @default(now()) @db.Timestamp(6)
+  lancado_por         String              @db.Uuid
+  observacao          String?
+  usuario             usuario             @relation(fields: [lancado_por], references: [id], onUpdate: NoAction, map: "fk_nota_lancado_por")
+  matricula           matricula           @relation(fields: [matricula_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_matricula")
+  turma_disciplina    turma_disciplina    @relation(fields: [turma_disciplina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_turma_disciplina")
+
+  @@index([lancado_por], map: "idx_nota_lancado_por")
+  @@index([matricula_id], map: "idx_nota_matricula")
+  @@index([trimestre], map: "idx_nota_trimestre")
+  @@index([turma_disciplina_id], map: "idx_nota_turma_disciplina")
+}
+
+model professor {
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuario_id       String             @unique @db.Uuid
+  escola_id        String             @db.Uuid
+  numero_professor String             @unique @db.VarChar(20)
+  especialidade    String?            @db.VarChar(100)
+  data_contratacao DateTime?          @db.Date
+  escola           escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_escola")
+  usuario          usuario            @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_usuario")
+  turma_disciplina turma_disciplina[]
+
+  @@index([escola_id], map: "idx_professor_escola")
+  @@index([numero_professor], map: "idx_professor_numero")
+  @@index([usuario_id], map: "idx_professor_usuario")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model turma {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id         String             @db.Uuid
+  nome              String             @db.VarChar(100)
+  ano_letivo        String             @db.VarChar(9)
+  ano_escolaridade  Int
+  capacidade_maxima Int?               @default(30)
+  matricula         matricula[]
+  escola            escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_escola")
+  turma_disciplina  turma_disciplina[]
+
+  @@index([ano_letivo], map: "idx_turma_ano_letivo")
+  @@index([escola_id], map: "idx_turma_escola")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model turma_disciplina {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  turma_id      String     @db.Uuid
+  disciplina_id String     @db.Uuid
+  professor_id  String     @db.Uuid
+  ano_letivo    String     @db.VarChar(9)
+  trimestre     Int?
+  nota          nota[]
+  disciplina    disciplina @relation(fields: [disciplina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_disciplina_disciplina")
+  professor     professor  @relation(fields: [professor_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_disciplina_professor")
+  turma         turma      @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_disciplina_turma")
+
+  @@unique([turma_id, disciplina_id, trimestre], map: "uk_turma_disciplina")
+  @@index([ano_letivo], map: "idx_turma_disciplina_ano")
+  @@index([professor_id], map: "idx_turma_disciplina_professor")
+  @@index([turma_id], map: "idx_turma_disciplina_turma")
+}
+
+model usuario {
+  id            String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome_completo String            @db.VarChar(200)
+  email         String            @unique @db.VarChar(100)
+  senha_hash    String
+  tipo_usuario  tipo_usuario_enum
+  ativo         Boolean?          @default(true)
+  data_cadastro DateTime?         @default(now()) @db.Timestamp(6)
+  aluno         aluno?
+  encarregado   encarregado?
+  escola        escola?
+  nota          nota[]
+  professor     professor?
+
+  @@index([email], map: "idx_usuario_email")
+  @@index([tipo_usuario], map: "idx_usuario_tipo")
+}
+
+enum genero_enum {
+  M
+  F
+  OUTRO
+}
+
+enum natureza {
+  publica
+  privada
+  hibrida
+}
+
+/// This enum is commented in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+enum role {
+  ADMIN
+  TEACHER
+  GUARDIAN
+  STUDANT
+}
+
+enum status_aluno {
+  activo
+  transferido
+  desistente
+  concluinte
+  suspendido
+}
+
+enum status_matricula_enum {
+  ATIVA
+  CONCLUIDA
+  CANCELADA
+  SUSPENSA
+}
+
+enum tipo_avaliacao_enum {
+  PROVA
+  TRABALHO
+  EXAME
+  TESTE
+  PARTICIPACAO
+}
+
+enum tipo_usuario_enum {
+  ALUNO
+  PROFESSOR
+  ENCARREGADO
+  ADMIN
 }
