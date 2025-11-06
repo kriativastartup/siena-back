@@ -65,13 +65,67 @@ export const createTurma = async (req: Request | any, res: Response) => {
 }
 
 export const getTurmaById = async (req : Request | any, res : Response) => {
+    const { turmaId } = req.params;
 
+    if (!turmaId || !validate(turmaId)) {
+        return res.status(400).json({ message: "ID de turma inválido" });
+    }
+
+    try {
+        const turma = await prisma.turma.findUnique({
+            where: { id: turmaId },
+        });
+
+        if (!turma) {
+            return res.status(404).json({ message: "Turma não encontrada" });
+        }
+
+        return res.status(200).json(turma);
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao buscar turma", error: error.message });
+    }
 }
 
 export const updateTurmaId = async (req : Request | any, res : Response) => {
+    const { turmaId } = req.params;
+    const { nome, ano_escolaridade } = req.body;
 
+    if (!turmaId || !validate(turmaId)) {
+        return res.status(400).json({ message: "ID de turma inválido" });
+    }
+
+    try {
+        const updatedTurma = await prisma.turma.update({
+            where: { id: turmaId },
+            data: {
+                nome,
+                ano_escolaridade
+            },
+        });
+
+        return res.status(200).json(updatedTurma);
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao atualizar turma", error: error.message });
+    }
 }
 
 export const deleteTurmaId = async (req : Request | any, res : Response) => {
+    const { turmaId } = req.params;
+
+    if (!turmaId || !validate(turmaId)) {
+        return res.status(400).json({ message: "ID de turma inválido" });
+    }
+
+    try {
+        await prisma.turma.delete({
+            where: { id: turmaId },
+        });
+
+        return res.status(204).json({
+            message: "Turma deletada com sucesso"
+        });
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao deletar turma", error: error.message });
+    }
 
 }
