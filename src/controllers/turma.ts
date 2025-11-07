@@ -102,7 +102,6 @@ export const updateTurmaId = async (req : Request | any, res : Response) => {
                 ano_escolaridade
             },
         });
-
         return res.status(200).json(updatedTurma);
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao atualizar turma", error: error.message });
