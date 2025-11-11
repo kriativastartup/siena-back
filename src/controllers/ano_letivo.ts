@@ -91,16 +91,16 @@ export const getAnosLetivos = async (req: Request, res: Response) => {
 };
 
 export const updateAnoLetivo = async (req: Request, res: Response) => {
-    const { anoLetivoId } = req.params;
+    const { anoId } = req.params;
     const { nome, data_de_inicio, data_de_fim } = req.body;
 
-    if (!anoLetivoId || !validate(anoLetivoId)) {
+    if (!anoId || !validate(anoId)) {
         return res.status(400).json({ message: "ID inválido" });
     }
 
     try {
         const existAnoLetivo = await prisma.academic_year.findUnique({
-            where: { id: anoLetivoId },
+            where: { id: anoId },
         });
 
         if (!existAnoLetivo) {
@@ -108,7 +108,7 @@ export const updateAnoLetivo = async (req: Request, res: Response) => {
         }
 
         const updatedAnoLetivo = await prisma.academic_year.update({
-            where: { id: anoLetivoId },
+            where: { id: anoId },
             data: {
                 nome: nome ? nome : existAnoLetivo.nome,
                 data_de_inicio: data_de_inicio ? data_de_inicio : existAnoLetivo.data_de_inicio,
@@ -123,15 +123,15 @@ export const updateAnoLetivo = async (req: Request, res: Response) => {
 };
 
 export const deleteAnoLetivo = async (req: Request, res: Response) => {
-    const { anoLetivoId } = req.params;
+    const { anoId } = req.params;
 
-    if (!anoLetivoId || !validate(anoLetivoId)) {
+    if (!anoId || !validate(anoId)) {
         return res.status(400).json({ message: "ID inválido" });
     }
 
     try {
         const existAnoLetivo = await prisma.academic_year.findUnique({
-            where: { id: anoLetivoId },
+            where: { id: anoId },
         });
 
         if (!existAnoLetivo) {
@@ -139,7 +139,7 @@ export const deleteAnoLetivo = async (req: Request, res: Response) => {
         }
 
         await prisma.academic_year.delete({
-            where: { id: anoLetivoId },
+            where: { id: anoId },
         });
 
         return res.status(200).json({ message: "Ano Letivo deletado com sucesso" });
