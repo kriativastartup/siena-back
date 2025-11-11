@@ -7,7 +7,7 @@ import { generateRandomNumber } from "../helper/random";
 const prisma = new PrismaClient();
 
 export const createAluno = async (req: Request | any, res: Response) => {
-    const { nome_completo, email, senha_hash, data_nascimento, genero, telefone, endereco, foto } = req.body;
+    const { nome_completo, email, senha, data_nascimento, genero, telefone, endereco, foto, escola_id } = req.body;
     try {
         const existUsuario = await prisma.usuario.findFirst({
             where: {
@@ -19,15 +19,26 @@ export const createAluno = async (req: Request | any, res: Response) => {
             return res.status(400).json({ message: "Usuário com esse email já existe" });
         }
 
-        if (!nome_completo || !email || !senha_hash || !data_nascimento) {
+        if (!escola_id || !validate(escola_id)) {
+            return res.status(400).json({ message: "ID de escola inválido" });
+        }
+
+        if (!nome_completo || !email || !senha || !data_nascimento) {
             return res.status(400).json({ error: "Todos os campos são obrigatórios" });
+        }
+
+        if (genero) {
+            const validGeneros = ["M", "F", "OUTRO"];
+            if (!validGeneros.includes(genero)) {
+                return res.status(400).json({ message: "Gênero inválido" });
+            }
         }
 
         const newUsuario = await prisma.usuario.create({
             data: {
                 nome_completo,
                 email,
-                senha_hash: await hash_password(senha_hash),
+                senha_hash: await hash_password(senha),
                 tipo_usuario: "ALUNO"
             },
         });
@@ -40,7 +51,8 @@ export const createAluno = async (req: Request | any, res: Response) => {
                 genero,
                 telefone,
                 endereco,
-                foto
+                foto,
+                escola_id: escola_id
             },
         });
         return res.status(201).json({
@@ -54,8 +66,13 @@ export const createAluno = async (req: Request | any, res: Response) => {
     }
 };
 
-export const getAlunos = async (req: Request, res: Response) => {
+export const getAlunosTurma = async (req: Request, res: Response) => {
     try {
+        const turmaId = req.params.turmaId as string | undefined;
+
+        if (!turmaId && !validate(turmaId)) {
+            return res.status(400).json({ message: "ID de turma inválido" });
+        }
         const alunos = await prisma.aluno.findMany();
 
         const alunosWithUserData = await Promise.all(alunos.map(async (aluno) => {
@@ -66,6 +83,7 @@ export const getAlunos = async (req: Request, res: Response) => {
                 ...aluno,
                 nome_completo: user?.nome_completo,
                 email: user?.email,
+                tipo_usuario: user?.tipo_usuario
             };
         }));
 
@@ -99,6 +117,7 @@ export const getAlunoById = async (req: Request, res: Response) => {
             ...aluno,
             nome_completo: user?.nome_completo,
             email: user?.email,
+            tipo_usuario: user?.tipo_usuario
         });
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao buscar aluno", error: error.message });
@@ -130,28 +149,46 @@ export const updateAluno = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Usuário do aluno não encontrado" });
         }
 
-        if (nome_completo || email) {
-            await prisma.usuario.update({
-                where: { id: existUsuario.id },
-                data: {
-                    nome_completo: nome_completo ? nome_completo : existUsuario.nome_completo,
-                    email: email ? email : existUsuario.email
+        if (email) {
+            const existUsuarioEmail = await prisma.usuario.findFirst({
+                where: {
+                    email: email,
+                    NOT: { id: existUsuario.id }
                 },
             });
+
+            if (existUsuarioEmail) {
+                return res.status(400).json({ message: "Outro usuário com esse email já existe" });
+            }
         }
+
+
+        await prisma.usuario.update({
+            where: { id: existUsuario.id },
+            data: {
+                nome_completo: nome_completo ? nome_completo : existUsuario.nome_completo,
+                email: email ? email : existUsuario.email
+            },
+        });
+
 
         const updatedAluno = await prisma.aluno.update({
             where: { id: alunoId },
             data: {
                 data_nascimento: data_nascimento ? new Date(data_nascimento) : exitAluno.data_nascimento || undefined,
                 genero: genero ? genero : exitAluno.genero,
-                telefone: telefone ? telefone : exitAluno.telefone,
-                endereco: endereco ? endereco : exitAluno.endereco,
-                foto: foto ? foto : exitAluno.foto
+                telefone: telefone ? telefone : exitAluno.telefone || undefined,
+                endereco: endereco ? endereco : exitAluno.endereco || undefined,
+                foto: foto ? foto : exitAluno.foto || undefined,
             },
         });
 
-        return res.status(200).json(updatedAluno);
+        return res.status(200).json({
+            ...updatedAluno,
+            nome_completo: existUsuario.nome_completo,
+            email: existUsuario.email,
+            tipo_usuario: existUsuario.tipo_usuario
+        });
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao atualizar aluno", error: error.message });
     }
@@ -177,16 +214,35 @@ export const deleteAluno = async (req: Request, res: Response) => {
             where: { id: aluno.usuario_id },
         });
 
-        await prisma.aluno.delete({
-            where: { id: alunoId },
-        });
+        try {
+            await prisma.aluno_turma.deleteMany({
+                where: { aluno_id: aluno.id },
+            });
+            await prisma.matricula.deleteMany({
+                where: { aluno_id: aluno.id },
+            });
+            await prisma.nota.deleteMany({
+                where: { aluno_id: aluno.id },
+            });
+            await prisma.aluno_encarregado.deleteMany({
+                where: { aluno_id: aluno.id },
+            });
 
-        if (existUsuario) {
-            await prisma.usuario.delete({
-                where: { id: existUsuario.id },
+            await prisma.aluno.delete({
+                where: { id: alunoId },
+            });
+
+            if (existUsuario) {
+                await prisma.usuario.delete({
+                    where: { id: existUsuario.id },
+                });
+            }
+        } catch (error: any) {
+            return res.status(500).json({ 
+                message: "Erro ao deletar dados relacionados ao aluno",
+                error: error.message
             });
         }
-
         return res.status(200).json({ message: "Aluno deletado com sucesso" });
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao deletar aluno", error: error.message });

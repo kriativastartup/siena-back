@@ -22,6 +22,7 @@ model academic_year {
 model aluno {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   usuario_id        String              @unique @db.Uuid
+  escola_id         String              @db.Uuid
   numero_aluno      String              @unique @db.VarChar(20)
   data_nascimento   DateTime            @db.Date
   genero            genero_enum?
@@ -32,6 +33,10 @@ model aluno {
   usuario           usuario             @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_usuario")
   aluno_encarregado aluno_encarregado[]
   matricula         matricula[]
+  nota              nota[]
+  aluno_turma       aluno_turma[]
+  escola            escola?             @relation(fields: [escola_id], references: [id])
+
 
   @@index([numero_aluno], map: "idx_aluno_numero")
   @@index([usuario_id], map: "idx_aluno_usuario")
@@ -59,6 +64,8 @@ model disciplina {
   descricao        String?
   escola           escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_disciplina_escola")
   turma_disciplina turma_disciplina[]
+  professor_turma  professor_turma[]
+  nota             nota[]
 
   @@unique([escola_id, codigo], map: "uk_disciplina_codigo")
   @@index([escola_id, codigo], map: "idx_disciplina_codigo")
@@ -68,12 +75,12 @@ model disciplina {
 model encarregado {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   usuario_id        String              @unique @db.Uuid
-  escola_id        String?             @db.Uuid
+  escola_id         String?             @db.Uuid
   telefone          String?             @db.VarChar(20)
   grau_parentesco   String?             @db.VarChar(50)
   profissao         String?             @db.VarChar(100)
   aluno_encarregado aluno_encarregado[]
-  escola           escola?            @relation(fields: [escola_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_encarregado_escola")
+  escola            escola?             @relation(fields: [escola_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_encarregado_escola")
   usuario           usuario             @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_encarregado_usuario")
 
   @@index([usuario_id], map: "idx_encarregado_usuario")
@@ -92,24 +99,27 @@ model escola {
   nif           String?
   codigo_mec    String?
   status        Boolean?        @default(true)
+  usuario       usuario         @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario")
   academic_year academic_year[]
   disciplina    disciplina[]
-  usuario       usuario         @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario")
   professor     professor[]
   turma         turma[]
   encarregado   encarregado[]
+  matricula     matricula[]
+  aluno         aluno[]
 }
 
 model matricula {
   id             String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   aluno_id       String                 @db.Uuid
   turma_id       String                 @db.Uuid
+  escola_id      String                 @db.Uuid
   data_matricula DateTime?              @default(dbgenerated("CURRENT_DATE")) @db.Date
   status         status_matricula_enum? @default(ATIVA)
   ano_letivo     String                 @db.VarChar(9)
+  escola         escola                 @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_matricula_escola")
   aluno          aluno                  @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_matricula_aluno")
   turma          turma                  @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_matricula_turma")
-  nota           nota[]
 
   @@unique([aluno_id, turma_id, ano_letivo], map: "uk_matricula_aluno_turma")
   @@index([aluno_id], map: "idx_matricula_aluno")
@@ -119,23 +129,27 @@ model matricula {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model nota {
-  id                  String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  matricula_id        String              @db.Uuid
-  turma_disciplina_id String              @db.Uuid
-  nota                Decimal             @db.Decimal(5, 2)
-  trimestre           Int
-  tipo_avaliacao      tipo_avaliacao_enum
-  data_lancamento     DateTime?           @default(now()) @db.Timestamp(6)
-  lancado_por         String              @db.Uuid
-  observacao          String?
-  usuario             usuario             @relation(fields: [lancado_por], references: [id], onUpdate: NoAction, map: "fk_nota_lancado_por")
-  matricula           matricula           @relation(fields: [matricula_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_matricula")
-  turma_disciplina    turma_disciplina    @relation(fields: [turma_disciplina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_turma_disciplina")
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  avaliacao_id  String     @db.Uuid
+  disciplina_id String     @db.Uuid
+  aluno_id      String     @db.Uuid
+  nota_obtida   Float
+  data_registro DateTime?  @default(dbgenerated("CURRENT_DATE")) @db.Date
+  data_update   DateTime?  @updatedAt @db.Timestamp(6)
+  disciplina    disciplina @relation(fields: [disciplina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_disciplina")
+  avaliacao     avaliacao  @relation(fields: [avaliacao_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_avaliacao")
+  aluno         aluno      @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_aluno")
+}
 
-  @@index([lancado_por], map: "idx_nota_lancado_por")
-  @@index([matricula_id], map: "idx_nota_matricula")
-  @@index([trimestre], map: "idx_nota_trimestre")
-  @@index([turma_disciplina_id], map: "idx_nota_turma_disciplina")
+model avaliacao {
+  id             String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  turma_id       String              @db.Uuid
+  disciplina_id  String              @db.Uuid
+  trimestre      Int
+  tipo_avaliacao tipo_avaliacao_enum
+  descricao      String?             @db.VarChar(255)
+  data_avaliacao DateTime            @db.Date
+  nota           nota[]
 }
 
 model professor {
@@ -148,6 +162,7 @@ model professor {
   escola           escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_escola")
   usuario          usuario            @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_usuario")
   turma_disciplina turma_disciplina[]
+  professor_turma  professor_turma[]
 
   @@index([escola_id], map: "idx_professor_escola")
   @@index([numero_professor], map: "idx_professor_numero")
@@ -160,16 +175,29 @@ model turma {
   escola_id         String             @db.Uuid
   nome              String             @db.VarChar(100)
   ano_letivo        String             @db.VarChar(9)
-  academic_year_id  String              @db.VarChar(100)
+  academic_year_id  String             @db.Uuid
   ano_escolaridade  Int
   capacidade_maxima Int?               @default(30)
   matricula         matricula[]
   escola            escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_escola")
-  academic_year     academic_year?     @relation(fields: [ano_letivo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_turma_academic_year")
+  academic_year     academic_year?     @relation(fields: [academic_year_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_turma_academic_year")
   turma_disciplina  turma_disciplina[]
+  professor_turma   professor_turma[]
+  aluno_turma       aluno_turma[]
 
   @@index([ano_letivo], map: "idx_turma_ano_letivo")
   @@index([escola_id], map: "idx_turma_escola")
+}
+
+model aluno_turma {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id String @db.Uuid
+  turma_id String @db.Uuid
+
+  aluno aluno @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_turma_aluno")
+  turma turma @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_turma_turma")
+
+  @@unique([aluno_id, turma_id], map: "uk_aluno_turma")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -180,7 +208,6 @@ model turma_disciplina {
   professor_id  String     @db.Uuid
   ano_letivo    String     @db.VarChar(9)
   trimestre     Int?
-  nota          nota[]
   disciplina    disciplina @relation(fields: [disciplina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_disciplina_disciplina")
   professor     professor  @relation(fields: [professor_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_disciplina_professor")
   turma         turma      @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_disciplina_turma")
@@ -189,6 +216,20 @@ model turma_disciplina {
   @@index([ano_letivo], map: "idx_turma_disciplina_ano")
   @@index([professor_id], map: "idx_turma_disciplina_professor")
   @@index([turma_id], map: "idx_turma_disciplina_turma")
+}
+
+model professor_turma {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  professor_id  String     @db.Uuid
+  turma_id      String     @db.Uuid
+  disciplina_id String     @db.Uuid
+  professor     professor  @relation(fields: [professor_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_turma_professor")
+  turma         turma      @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_turma_turma")
+  disciplina    disciplina @relation(fields: [disciplina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_turma_disciplina")
+
+  @@unique([professor_id, turma_id], map: "uk_professor_turma")
+  @@index([professor_id], map: "idx_professor_turma_professor")
+  @@index([turma_id], map: "idx_professor_turma_turma")
 }
 
 model usuario {
@@ -202,7 +243,6 @@ model usuario {
   aluno         aluno?
   encarregado   encarregado?
   escola        escola?
-  nota          nota[]
   professor     professor?
 
   @@index([email], map: "idx_usuario_email")
@@ -250,6 +290,7 @@ enum tipo_avaliacao_enum {
   EXAME
   TESTE
   PARTICIPACAO
+  TAREFA
 }
 
 enum tipo_usuario_enum {

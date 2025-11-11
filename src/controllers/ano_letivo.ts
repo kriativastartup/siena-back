@@ -6,15 +6,15 @@ import { validate } from "uuid";
 const prisma = new PrismaClient();
 
 export const getAlunoLetivoById = async (req: Request, res: Response) => {
-    const { anoLetivoId } = req.params;
+    const { anoId } = req.params;
 
-    if (!anoLetivoId || !validate(anoLetivoId)) {
+    if (!anoId || !validate(anoId)) {
         return res.status(400).json({ message: "ID inválido" });
     }
 
     try {
         const alunoLetivo = await prisma.academic_year.findUnique({
-            where: { id: anoLetivoId },
+            where: { id: anoId },
         });
 
         if (!alunoLetivo) {
@@ -38,6 +38,14 @@ export const createAnoLetivo = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "ID de escola inválido" });
     }
 
+    const existEscola = await prisma.escola.findFirst({
+        where: { id: escola_id },
+    });
+
+    if (!existEscola) {
+        return res.status(404).json({ message: "Escola não encontrada" });
+    }
+
     try {
         const existAnoLetivo = await prisma.academic_year.findFirst({
             where: { nome },
@@ -50,8 +58,8 @@ export const createAnoLetivo = async (req: Request, res: Response) => {
         const newAnoLetivo = await prisma.academic_year.create({
             data: {
                 nome,
-                data_de_inicio,
-                data_de_fim,
+                data_de_inicio : new Date(data_de_inicio),
+                data_de_fim : new Date(data_de_fim),
                 escola_id
             },
         });
@@ -64,6 +72,17 @@ export const createAnoLetivo = async (req: Request, res: Response) => {
 
 export const getAnosLetivos = async (req: Request, res: Response) => {
     try {
+        const escola_id = req.params.escola_id as string;
+        if (!escola_id || validate(escola_id) === false) {
+            return res.status(400).json({ message: "ID de escola inválido" });
+        }
+        const existEscola = await prisma.escola.findFirst({
+            where: { id: escola_id },
+        });
+
+        if (!existEscola) {
+            return res.status(404).json({ message: "Escola não encontrada" });
+        }
         const anosLetivos = await prisma.academic_year.findMany();
         return res.status(200).json(anosLetivos);
     } catch (error: any) {
