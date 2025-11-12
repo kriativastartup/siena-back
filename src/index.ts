@@ -9,6 +9,7 @@ import studentRouter from './routes/alunos';
 import matriculaRouter from './routes/matricula';
 import turmaRouter from './routes/turma';
 import anoLetivoRouter from './routes/ano_letivo';
+import encarregadoRouter from './routes/encarregado';
 dotenv.config();
 
 
@@ -32,6 +33,7 @@ app.use('/api/v1/student', studentRouter);
 app.use('/api/v1/registration', matriculaRouter);
 app.use('/api/v1/class', turmaRouter);
 app.use('/api/v1/year', anoLetivoRouter);
+app.use('/api/v1/guardian', encarregadoRouter);
 
 // Start server
 app.listen(PORT, () => {

@@ -7,8 +7,8 @@ const prisma = new PrismaClient();
 
 export const getEncarregados = async (req: Request, res: Response) => {
     try {
-        const escola_id = req.params.escolaId as string;
-        if (!escola_id || validate(escola_id)) {
+        const escola_id = req.params.escola_id as string;
+        if (!escola_id || !validate(escola_id)) {
             return res.status(400).json({
                 message: "O ID da escola é inválido"
             });
@@ -38,16 +38,32 @@ export const getEncarregados = async (req: Request, res: Response) => {
 }
 
 export const createEncarregado = async (req: Request | any, res: Response) => {
-    const { nome_completo, email, senha, telefone, grau_parentesco, profissao, escola_id } = req.body;
+    const { nome_completo, email, senha, telefone, profissao, escola_id } = req.body;
     try {
         if (!nome_completo || !email || !senha) {
             return res.status(400).json({ message: "Nome completo, email e senha são obrigatórios" });
         }
 
-        if (!escola_id || validate(escola_id)) {
+        if (!escola_id || !validate(escola_id)) {
             return res.status(400).json({
                 message: "O ID da escola é inválido"
             });
+        }
+
+        const usuarioExistente = await prisma.usuario.findFirst({
+            where: { email }
+        });
+
+        if (usuarioExistente) {
+            return res.status(409).json({ message: "Usuário com este email já existe" });
+        }
+
+        const escolaExistente = await prisma.escola.findUnique({
+            where: { id: escola_id }
+        });
+
+        if (!escolaExistente) {
+            return res.status(404).json({ message: "Escola não encontrada" });
         }
 
         const hashedPassword = await hash_password(senha);
@@ -65,7 +81,6 @@ export const createEncarregado = async (req: Request | any, res: Response) => {
             data: {
                 usuario_id: newUsuario.id,
                 telefone,
-                grau_parentesco,
                 profissao,
                 escola_id
             },
@@ -164,7 +179,6 @@ export const updateEncarregadoById = async (req : Request | any, res : Response)
             },
             data: {
                 telefone: telefone || encarregado.telefone || undefined,
-                grau_parentesco: grau_parentesco || encarregado.grau_parentesco || undefined,
                 profissao: profissao || encarregado.profissao || undefined
             }
         });

@@ -37,18 +37,18 @@ model aluno {
   aluno_turma       aluno_turma[]
   escola            escola?             @relation(fields: [escola_id], references: [id])
 
-
   @@index([numero_aluno], map: "idx_aluno_numero")
   @@index([usuario_id], map: "idx_aluno_usuario")
 }
 
 model aluno_encarregado {
-  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  aluno_id       String      @db.Uuid
-  encarregado_id String      @db.Uuid
-  principal      Boolean?    @default(false)
-  aluno          aluno       @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_encarregado_aluno")
-  encarregado    encarregado @relation(fields: [encarregado_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_encarregado_encarregado")
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id        String      @db.Uuid
+  grau_parentesco String?     @db.VarChar(50)
+  encarregado_id  String      @db.Uuid
+  principal       Boolean?    @default(false)
+  aluno           aluno       @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_encarregado_aluno")
+  encarregado     encarregado @relation(fields: [encarregado_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_encarregado_encarregado")
 
   @@unique([aluno_id, encarregado_id], map: "uk_aluno_encarregado")
   @@index([aluno_id], map: "idx_aluno_encarregado_aluno")
@@ -77,7 +77,6 @@ model encarregado {
   usuario_id        String              @unique @db.Uuid
   escola_id         String?             @db.Uuid
   telefone          String?             @db.VarChar(20)
-  grau_parentesco   String?             @db.VarChar(50)
   profissao         String?             @db.VarChar(100)
   aluno_encarregado aluno_encarregado[]
   escola            escola?             @relation(fields: [escola_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_encarregado_escola")
@@ -177,7 +176,7 @@ model turma {
   ano_letivo        String             @db.VarChar(9)
   academic_year_id  String             @db.Uuid
   ano_escolaridade  Int
-  capacidade_maxima Int?               @default(30)
+  capacidade_maxima Int                @default(30)
   matricula         matricula[]
   escola            escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_escola")
   academic_year     academic_year?     @relation(fields: [academic_year_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_turma_academic_year")
