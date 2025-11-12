@@ -100,7 +100,7 @@ export const createEncarregado = async (req: Request | any, res: Response) => {
 export const getEncarregadoById = async (req : Request | any, res : Response) => {
     const encarregado_id = req.params.encarregadoId as string;
     try {
-        if (!encarregado_id || validate(encarregado_id)) {
+        if (!encarregado_id || !validate(encarregado_id)) {
             return res.status(400).json({
                 message: "O ID do encarregado é inválido"
             });
