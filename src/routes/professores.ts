@@ -2,9 +2,13 @@ import express from 'express';
 
 const router = express.Router();
 
-import { getProfessores, createProfessor } from '../controllers/professores';
+import { getProfessores, createProfessor, getProfessorById, updateProfessor, deleteProfessor, InserirProfessorNaTurma } from '../controllers/professores';
 
-router.get('/all', getProfessores);
+router.get('/all/:escola_id', getProfessores);
+router.get('/each/:professor_id', getProfessorById);
 router.post('/create', createProfessor);
+router.put('/update/:professor_id', updateProfessor);
+router.delete('/delete/:professor_id', deleteProfessor);
+router.post('/class/insert', InserirProfessorNaTurma);
 
 export default router;

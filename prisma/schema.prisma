@@ -59,7 +59,7 @@ model disciplina {
   id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   escola_id        String             @db.Uuid
   nome             String             @db.VarChar(100)
-  codigo           String             @db.VarChar(20)
+  codigo           String?             @db.VarChar(20)
   carga_horaria    Int?
   descricao        String?
   escola           escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_disciplina_escola")

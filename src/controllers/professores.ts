@@ -8,15 +8,35 @@ const prisma = new PrismaClient();
 
 export const getProfessores = async (req: Request, res: Response) => {
     try {
-        const professores = await prisma.professor.findMany();
-        return res.status(200).json(professores);
+        const escola_id = req.params.escola_id as string;
+        if (!escola_id || !validate(escola_id)) {
+            return res.status(400).json({ message: "ID de escola inválido" });
+        }
+        const professores = await prisma.professor.findMany({
+            where: {
+                escola_id: escola_id
+            }
+        });
+
+        const professoresComUsuarios = await Promise.all(professores.map(async (professor) => {
+            const user = await prisma.usuario.findUnique({
+                where: { id: professor.usuario_id },
+            });
+            return {
+                ...professor,
+                nome_completo: user?.nome_completo,
+                email: user?.email,
+                tipo_usuario: user?.tipo_usuario
+            };
+        }));
+        return res.status(200).json(professoresComUsuarios);
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao buscar professores", error: error.message });
     }
 };
 
 export const createProfessor = async (req: Request | any, res: Response) => {
-    const { nome_completo, email, senha_hash, especialidade, telefone, escola_id } = req.body;
+    const { nome_completo, email, senha, especialidade, telefone, escola_id } = req.body;
     try {
         const existUsuario = await prisma.usuario.findFirst({
             where: {
@@ -28,7 +48,7 @@ export const createProfessor = async (req: Request | any, res: Response) => {
             return res.status(400).json({ message: "Usuário com esse email já existe" });
         }
 
-        if (!nome_completo || !email || !senha_hash || !especialidade) {
+        if (!nome_completo || !email || !senha || !especialidade) {
             return res.status(400).json({ error: "Todos os campos são obrigatórios" });
         }
 
@@ -36,7 +56,7 @@ export const createProfessor = async (req: Request | any, res: Response) => {
             data: {
                 nome_completo,
                 email,
-                senha_hash: await hash_password(senha_hash),
+                senha_hash: await hash_password(senha),
                 tipo_usuario: "PROFESSOR"
             },
         });
@@ -50,22 +70,27 @@ export const createProfessor = async (req: Request | any, res: Response) => {
                 numero_professor: telefone
             },
         });
-        return res.status(201).json(newProfessor);
+        return res.status(201).json({
+            ...newProfessor, 
+            nome_completo: newUsuario.nome_completo, 
+            email: newUsuario.email,
+            tipo_usuario: newUsuario.tipo_usuario
+        });
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao criar professor", error: error.message });
     }
 };
 
 export const getProfessorById = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { professor_id } = req.params;
 
-    if (!validate(id)) {
+    if (!validate(professor_id)) {
         return res.status(400).json({ message: "ID de professor inválido" });
     }
 
     try {
         const professor = await prisma.professor.findUnique({
-            where: { id },
+            where: { id: professor_id },
         });
 
         const user = await prisma.usuario.findUnique({
@@ -80,6 +105,7 @@ export const getProfessorById = async (req: Request, res: Response) => {
             ...professor,
             nome_completo: user?.nome_completo,
             email: user?.email,
+            tipo_usuario: user?.tipo_usuario
         });
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao buscar professor", error: error.message });
@@ -87,19 +113,38 @@ export const getProfessorById = async (req: Request, res: Response) => {
 };
 
 export const updateProfessor = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { especialidade, telefone } = req.body;
+    const { professor_id } = req.params;
+    const { nome_completo, email,  especialidade, telefone } = req.body;
 
-    if (!validate(id)) {
+    if (!validate(professor_id)) {
         return res.status(400).json({ message: "ID de professor inválido" });
     }
 
     try {
+        const existProfessor = await prisma.professor.findUnique({
+            where: { id: professor_id },
+        });
+
+        if (!existProfessor) {
+            return res.status(404).json({ message: "Professor não encontrado" });
+        }
+        const user = await prisma.usuario.findUnique({
+            where: { id: existProfessor.usuario_id },
+        });
+        if (user) {
+            await prisma.usuario.update({
+                where: { id: user.id },
+                data: {
+                    nome_completo: nome_completo || user.nome_completo,
+                    email: email || user.email,
+                },
+            });
+        }
         const updatedProfessor = await prisma.professor.update({
-            where: { id },
+            where: { id: professor_id },
             data: {
-                especialidade,
-                numero_professor: telefone
+                especialidade : especialidade || existProfessor.especialidade,
+                numero_professor: telefone || existProfessor.numero_professor
             },
         });
 
@@ -143,18 +188,44 @@ export const deleteProfessor = async (req: Request, res: Response) => {
 }
 
 export const InserirProfessorNaTurma = async (req: Request, res: Response) => {
-    const { professorId, turmaId, disciplinaId } = req.body;
-
-    if (!validate(professorId) || !validate(turmaId) || !validate(disciplinaId)) {
+    const { professor_id, turma, disciplina } = req.body;
+    if (!validate(professor_id) || !turma || !disciplina) {
         return res.status(400).json({ message: "ID de professor, turma ou disciplina inválido" });
+    }
+
+    const existTurma = await prisma.turma.findFirst({
+        where: {
+            OR: [
+                { id: validate(turma) ? turma : undefined },
+                { nome: turma }
+            ] 
+        },
+    });
+
+    if (!existTurma) {
+        return res.status(404).json({ message: "Turma não encontrada" });
+    }
+
+    const existDisciplina = await prisma.disciplina.findFirst({
+        where: {
+            OR: [
+                { id: validate(disciplina) ? disciplina : undefined },
+                { nome: disciplina }
+            ] 
+        },
+    });
+
+    if (!existDisciplina) {
+        return res.status(404).json({ message: "Disciplina não encontrada" });
     }
 
     try {
         const existProfessorTurmaDisciplina = await prisma.professor_turma.findFirst({
             where: {
-                professor_id: professorId,
-                turma_id: turmaId,
-                disciplina_id: disciplinaId
+
+                professor_id: professor_id,
+                turma_id: existTurma.id,
+                disciplina_id: existDisciplina.id
             }
         });
         if (existProfessorTurmaDisciplina) {
@@ -163,9 +234,9 @@ export const InserirProfessorNaTurma = async (req: Request, res: Response) => {
 
         const professorTurma = await prisma.professor_turma.create({
             data: {
-                professor_id: professorId,
-                turma_id: turmaId,
-                disciplina_id: disciplinaId
+                professor_id: professor_id,
+                turma_id: existTurma.id,
+                disciplina_id: existDisciplina.id
             }
         });
 
