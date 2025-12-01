@@ -20,7 +20,12 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+        origin: ['http://localhost:3000', 'https://siena-xi.vercel.app'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization']
+    }
+));
 
 // Sample route
 app.get('/', (req, res) => {
