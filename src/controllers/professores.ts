@@ -83,8 +83,8 @@ export const createProfessor = async (req: Request | any, res: Response) => {
             },
         });
         return res.status(201).json({
-            ...newProfessor, 
-            nome_completo: newUsuario.nome_completo, 
+            ...newProfessor,
+            nome_completo: newUsuario.nome_completo,
             email: newUsuario.email,
             tipo_usuario: newUsuario.tipo_usuario
         });
@@ -94,19 +94,28 @@ export const createProfessor = async (req: Request | any, res: Response) => {
 };
 
 export const getProfessorById = async (req: Request, res: Response) => {
-    const { professor_id } = req.params;
+    const { usuarioId } = req.params;
 
-    if (!validate(professor_id)) {
+    if (!validate(usuarioId)) {
         return res.status(400).json({ message: "ID de professor inválido" });
     }
 
     try {
-        const professor = await prisma.professor.findFirst({
-            where: { id: professor_id },
-        });
 
         const user = await prisma.usuario.findFirst({
-            where: { id: professor?.usuario_id },
+            where: { id: usuarioId },
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "Usuário não encontrado" });
+        }
+
+        if (user.tipo_usuario !== "PROFESSOR") {
+            return res.status(400).json({ message: "O usuário não é um professor" });
+        }
+
+        const professor = await prisma.professor.findFirst({
+            where: { usuario_id: usuarioId },
         });
 
         if (!professor) {
@@ -126,7 +135,7 @@ export const getProfessorById = async (req: Request, res: Response) => {
 
 export const updateProfessor = async (req: Request, res: Response) => {
     const { professor_id } = req.params;
-    const { nome_completo, email,  especialidade, telefone } = req.body;
+    const { nome_completo, email, especialidade, telefone } = req.body;
 
     if (!validate(professor_id)) {
         return res.status(400).json({ message: "ID de professor inválido" });
@@ -155,7 +164,7 @@ export const updateProfessor = async (req: Request, res: Response) => {
         const updatedProfessor = await prisma.professor.update({
             where: { id: professor_id },
             data: {
-                especialidade : especialidade || existProfessor.especialidade,
+                especialidade: especialidade || existProfessor.especialidade,
                 numero_professor: telefone || existProfessor.numero_professor
             },
         });
@@ -210,7 +219,7 @@ export const InserirProfessorNaTurma = async (req: Request, res: Response) => {
             OR: [
                 { id: validate(turma) ? turma : undefined },
                 { nome: turma }
-            ] 
+            ]
         },
     });
 
@@ -223,7 +232,7 @@ export const InserirProfessorNaTurma = async (req: Request, res: Response) => {
             OR: [
                 { id: validate(disciplina) ? disciplina : undefined },
                 { nome: disciplina }
-            ] 
+            ]
         },
     });
 
