@@ -2,7 +2,7 @@ import express from 'express';
 import { verifyAuthentication } from '../middleware/authorized';
 const router = express.Router();
 
-import { getAlunosTurma, createAluno, getAlunoById, updateAluno, deleteAluno, getAlunoByMe, getAlunoByMe } from '../controllers/alunos';
+import { getAlunosTurma, createAluno, getAlunoById, updateAluno, deleteAluno, getAlunoByMe } from '../controllers/alunos';
 
 router.get('/all/:turmaId', getAlunosTurma);
 router.post('/create', createAluno);

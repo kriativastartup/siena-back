@@ -123,8 +123,8 @@ export const getAlunoById = async (req: Request, res: Response) => {
     }
 }
 
-export const getAlunoByMe = async (req: Request, res: Response) => {
-    const { usuarioId } = req.userId;
+export const getAlunoByMe = async (req: Request | any, res: Response) => {
+    const usuarioId = req.userId as string;
 
     if (!usuarioId || !validate(usuarioId)) {
         return res.status(400).json({ message: "ID de aluno inválido" });
