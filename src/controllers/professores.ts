@@ -19,7 +19,7 @@ export const getProfessores = async (req: Request, res: Response) => {
         });
 
         const professoresComUsuarios = await Promise.all(professores.map(async (professor) => {
-            const user = await prisma.usuario.findUnique({
+            const user = await prisma.usuario.findFirst({
                 where: { id: professor.usuario_id },
             });
             return {
@@ -37,6 +37,11 @@ export const getProfessores = async (req: Request, res: Response) => {
 
 export const createProfessor = async (req: Request | any, res: Response) => {
     const { nome_completo, email, senha, especialidade, telefone, escola_id } = req.body;
+
+    if (!escola_id || !validate(escola_id)) {
+        return res.status(400).json({ message: "ID de escola inválido" });
+    }
+
     try {
         const existUsuario = await prisma.usuario.findFirst({
             where: {
@@ -46,6 +51,14 @@ export const createProfessor = async (req: Request | any, res: Response) => {
 
         if (existUsuario) {
             return res.status(400).json({ message: "Usuário com esse email já existe" });
+        }
+
+        const exitEscola = await prisma.escola.findFirst({
+            where: { id: escola_id },
+        });
+
+        if (!exitEscola) {
+            return res.status(404).json({ message: "Escola não encontrada" });
         }
 
         if (!nome_completo || !email || !senha || !especialidade) {
@@ -60,7 +73,6 @@ export const createProfessor = async (req: Request | any, res: Response) => {
                 tipo_usuario: "PROFESSOR"
             },
         });
-
         const newProfessor = await prisma.professor.create({
             data: {
                 especialidade,
@@ -89,11 +101,11 @@ export const getProfessorById = async (req: Request, res: Response) => {
     }
 
     try {
-        const professor = await prisma.professor.findUnique({
+        const professor = await prisma.professor.findFirst({
             where: { id: professor_id },
         });
 
-        const user = await prisma.usuario.findUnique({
+        const user = await prisma.usuario.findFirst({
             where: { id: professor?.usuario_id },
         });
 
@@ -121,14 +133,14 @@ export const updateProfessor = async (req: Request, res: Response) => {
     }
 
     try {
-        const existProfessor = await prisma.professor.findUnique({
+        const existProfessor = await prisma.professor.findFirst({
             where: { id: professor_id },
         });
 
         if (!existProfessor) {
             return res.status(404).json({ message: "Professor não encontrado" });
         }
-        const user = await prisma.usuario.findUnique({
+        const user = await prisma.usuario.findFirst({
             where: { id: existProfessor.usuario_id },
         });
         if (user) {
@@ -162,7 +174,7 @@ export const deleteProfessor = async (req: Request, res: Response) => {
     }
 
     try {
-        const professor = await prisma.professor.findUnique({
+        const professor = await prisma.professor.findFirst({
             where: { id: professorId },
         });
 
@@ -340,7 +352,6 @@ export const editNota = async (req: Request, res: Response) => {
             where: { id: notaId },
             data: {
                 nota_obtida: parseFloat(nota_obtida),
-                data_update: new Date()
             }
         });
 
@@ -381,12 +392,12 @@ export const PegarNotaDeUmaAvaliacao = async (req: Request, res: Response) => {
         });
 
         const notasComDetalhes = await Promise.all(notas.map(async (nota) => {
-            const aluno = await prisma.aluno.findUnique({
+            const aluno = await prisma.aluno.findFirst({
                 where: { id: nota.aluno_id }
             });
             return {
                 ...nota,
-                aluno_nome: aluno?.usuario_id ? (await prisma.usuario.findUnique({ where: { id: aluno.usuario_id } }))?.nome_completo : null
+                aluno_nome: aluno?.usuario_id ? (await prisma.usuario.findFirst({ where: { id: aluno.usuario_id } }))?.nome_completo : null
             };
         }));
 

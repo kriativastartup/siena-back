@@ -70,10 +70,26 @@ export const getAlunosTurma = async (req: Request, res: Response) => {
     try {
         const turmaId = req.params.turmaId as string | undefined;
 
-        if (!turmaId && !validate(turmaId)) {
+        if (!turmaId || !validate(turmaId)) {
             return res.status(400).json({ message: "ID de turma inválido" });
         }
-        const alunos = await prisma.aluno.findMany();
+
+        const existTurma = await prisma.turma.findFirst({
+            where: { id: turmaId },
+        });
+
+        if (!existTurma) {
+            return res.status(404).json({ message: "Turma não encontrada" });
+        }
+        const alunos = await prisma.aluno.findMany({
+            where: {
+                aluno_turma: {
+                    some: {
+                        turma_id: turmaId
+                    }
+                }
+            },
+        });
 
         const alunosWithUserData = await Promise.all(alunos.map(async (aluno) => {
             const user = await prisma.usuario.findFirst({
@@ -83,7 +99,8 @@ export const getAlunosTurma = async (req: Request, res: Response) => {
                 ...aluno,
                 nome_completo: user?.nome_completo,
                 email: user?.email,
-                tipo_usuario: user?.tipo_usuario
+                tipo_usuario: user?.tipo_usuario,
+                turma: existTurma
             };
         }));
 
@@ -112,11 +129,18 @@ export const getAlunoById = async (req: Request, res: Response) => {
             where: { id: usuarioId },
         });
 
+        const turmas = await prisma.aluno_turma.findFirst({
+            where: { aluno_id: aluno.id },
+            include: { turma: true },
+            orderBy: { data_criacao: 'desc' }
+        });
+
         return res.status(200).json({
             ...aluno,
             nome_completo: user?.nome_completo,
             email: user?.email,
-            tipo_usuario: user?.tipo_usuario
+            tipo_usuario: user?.tipo_usuario,
+            turma: turmas?.turma
         });
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao buscar aluno", error: error.message });
@@ -124,29 +148,43 @@ export const getAlunoById = async (req: Request, res: Response) => {
 }
 
 export const getAlunoByMe = async (req: Request | any, res: Response) => {
-    const usuarioId = req.userId as string;
+    const userId = req.userId;
 
-    if (!usuarioId || !validate(usuarioId)) {
+    if (!userId || !validate(userId)) {
         return res.status(400).json({ message: "ID de aluno inválido" });
     }
 
     try {
+        const user = await prisma.usuario.findFirst({
+            where: { id: userId },
+        });
+        
+        if (!user) {
+            return res.status(404).json({ message: "Usuário não encontrado" });
+        }
+
+        if (user.tipo_usuario != "ALUNO") {
+            return res.status(403).json({ message: "Acesso negado. Usuário não é um aluno." });
+        }
+
         const aluno = await prisma.aluno.findFirst({
-            where: { usuario_id: usuarioId },
+            where: { usuario_id: userId },
         });
         if (!aluno) {
             return res.status(404).json({ message: "Aluno não encontrado" });
         }
-
-        const user = await prisma.usuario.findFirst({
-            where: { id: usuarioId },
+        const turmas = await prisma.aluno_turma.findFirst({
+            where: { aluno_id: aluno.id },
+            include: { turma: true },
+            orderBy: { data_criacao: 'desc' }
         });
 
         return res.status(200).json({
             ...aluno,
             nome_completo: user?.nome_completo,
             email: user?.email,
-            tipo_usuario: user?.tipo_usuario
+            tipo_usuario: user?.tipo_usuario,
+            turma: turmas?.turma
         });
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao buscar aluno", error: error.message });

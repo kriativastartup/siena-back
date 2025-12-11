@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { PrismaClient } from "../generated/prisma/client";
 import { validate } from "uuid";
 
-
 const prisma = new PrismaClient();
 
 export const MatricularALuno = async (req: Request, res: Response) => {

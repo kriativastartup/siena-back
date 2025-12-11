@@ -16,6 +16,8 @@ model academic_year {
   status         Boolean?  @default(true)
   escola_id      String?   @db.Uuid
   turma          turma[]
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   escola         escola?   @relation(fields: [escola_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_academic_year_escola")
 }
 
@@ -30,6 +32,8 @@ model aluno {
   endereco          String?             @db.VarChar(300)
   foto              String?             @db.VarChar(255)
   status            status_aluno?       @default(activo)
+  data_criacao     DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   usuario           usuario             @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_usuario")
   aluno_encarregado aluno_encarregado[]
   matricula         matricula[]
@@ -47,6 +51,8 @@ model aluno_encarregado {
   grau_parentesco String?     @db.VarChar(50)
   encarregado_id  String      @db.Uuid
   principal       Boolean?    @default(false)
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   aluno           aluno       @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_encarregado_aluno")
   encarregado     encarregado @relation(fields: [encarregado_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_encarregado_encarregado")
 
@@ -62,6 +68,8 @@ model disciplina {
   codigo           String?             @db.VarChar(20)
   carga_horaria    Int?
   descricao        String?
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   escola           escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_disciplina_escola")
   turma_disciplina turma_disciplina[]
   professor_turma  professor_turma[]
@@ -79,6 +87,8 @@ model encarregado {
   telefone          String?             @db.VarChar(20)
   profissao         String?             @db.VarChar(100)
   aluno_encarregado aluno_encarregado[]
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   escola            escola?             @relation(fields: [escola_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_encarregado_escola")
   usuario           usuario             @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_encarregado_usuario")
 
@@ -91,12 +101,13 @@ model escola {
   endereco      String?         @db.VarChar(300)
   telefone      String?         @db.VarChar(20)
   email         String?         @unique(map: "email_escola_unique") @db.VarChar(100)
-  data_criacao  DateTime?       @default(now()) @db.Timestamp(6)
   usuario_id    String          @unique @db.Uuid
   logo_url      String?         @db.VarChar(255)
   natureza      natureza?       @default(publica)
   nif           String?
   codigo_mec    String?
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   status        Boolean?        @default(true)
   usuario       usuario         @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario")
   academic_year academic_year[]
@@ -120,6 +131,8 @@ model matricula {
   aluno          aluno                  @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_matricula_aluno")
   turma          turma                  @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_matricula_turma")
 
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   @@unique([aluno_id, turma_id, ano_letivo], map: "uk_matricula_aluno_turma")
   @@index([aluno_id], map: "idx_matricula_aluno")
   @@index([status], map: "idx_matricula_status")
@@ -133,8 +146,8 @@ model nota {
   disciplina_id String     @db.Uuid
   aluno_id      String     @db.Uuid
   nota_obtida   Float
-  data_registro DateTime?  @default(dbgenerated("CURRENT_DATE")) @db.Date
-  data_update   DateTime?  @updatedAt @db.Timestamp(6)
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   disciplina    disciplina @relation(fields: [disciplina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_disciplina")
   avaliacao     avaliacao  @relation(fields: [avaliacao_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_avaliacao")
   aluno         aluno      @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nota_aluno")
@@ -148,6 +161,8 @@ model avaliacao {
   tipo_avaliacao tipo_avaliacao_enum
   descricao      String?             @db.VarChar(255)
   data_avaliacao DateTime            @db.Date
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   nota           nota[]
 }
 
@@ -162,6 +177,8 @@ model professor {
   usuario          usuario            @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_usuario")
   turma_disciplina turma_disciplina[]
   professor_turma  professor_turma[]
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
   @@index([escola_id], map: "idx_professor_escola")
   @@index([numero_professor], map: "idx_professor_numero")
@@ -183,6 +200,8 @@ model turma {
   turma_disciplina  turma_disciplina[]
   professor_turma   professor_turma[]
   aluno_turma       aluno_turma[]
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
   @@index([ano_letivo], map: "idx_turma_ano_letivo")
   @@index([escola_id], map: "idx_turma_escola")
@@ -192,9 +211,11 @@ model aluno_turma {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   aluno_id String @db.Uuid
   turma_id String @db.Uuid
-
   aluno aluno @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_turma_aluno")
   turma turma @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_turma_turma")
+
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
 
   @@unique([aluno_id, turma_id], map: "uk_aluno_turma")
 }
@@ -211,6 +232,8 @@ model turma_disciplina {
   professor     professor  @relation(fields: [professor_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_disciplina_professor")
   turma         turma      @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_disciplina_turma")
 
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   @@unique([turma_id, disciplina_id, trimestre], map: "uk_turma_disciplina")
   @@index([ano_letivo], map: "idx_turma_disciplina_ano")
   @@index([professor_id], map: "idx_turma_disciplina_professor")
@@ -226,6 +249,8 @@ model professor_turma {
   turma         turma      @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_turma_turma")
   disciplina    disciplina @relation(fields: [disciplina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_turma_disciplina")
 
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   @@unique([professor_id, turma_id], map: "uk_professor_turma")
   @@index([professor_id], map: "idx_professor_turma_professor")
   @@index([turma_id], map: "idx_professor_turma_turma")
@@ -244,6 +269,8 @@ model usuario {
   escola        escola?
   professor     professor?
 
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   @@index([email], map: "idx_usuario_email")
   @@index([tipo_usuario], map: "idx_usuario_tipo")
 }
