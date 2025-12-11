@@ -107,6 +107,7 @@ export const getAlunoById = async (req: Request, res: Response) => {
         if (!aluno) {
             return res.status(404).json({ message: "Aluno não encontrado" });
         }
+
         const user = await prisma.usuario.findFirst({
             where: { id: usuarioId },
         });
@@ -122,15 +123,46 @@ export const getAlunoById = async (req: Request, res: Response) => {
     }
 }
 
+export const getAlunoByMe = async (req: Request, res: Response) => {
+    const { usuarioId } = req.userId;
+
+    if (!usuarioId || !validate(usuarioId)) {
+        return res.status(400).json({ message: "ID de aluno inválido" });
+    }
+
+    try {
+        const aluno = await prisma.aluno.findFirst({
+            where: { usuario_id: usuarioId },
+        });
+        if (!aluno) {
+            return res.status(404).json({ message: "Aluno não encontrado" });
+        }
+
+        const user = await prisma.usuario.findFirst({
+            where: { id: usuarioId },
+        });
+
+        return res.status(200).json({
+            ...aluno,
+            nome_completo: user?.nome_completo,
+            email: user?.email,
+            tipo_usuario: user?.tipo_usuario
+        });
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao buscar aluno", error: error.message });
+    }
+}
+
+
 export const updateAluno = async (req: Request, res: Response) => {
-    const { alunoId } = req.params;
+    const { usuarioId } = req.params;
     const { nome_completo, email, data_nascimento, genero, telefone, endereco, foto } = req.body;
 
-    if (!alunoId || !validate(alunoId)) {
+    if (!usuarioId || !validate(usuarioId)) {
         return res.status(400).json({ message: "ID de aluno inválido" });
     }
     const exitAluno = await prisma.aluno.findFirst({
-        where: { id: alunoId },
+        where: { usuario_id: usuarioId },
     });
 
     if (!exitAluno) {
@@ -138,7 +170,6 @@ export const updateAluno = async (req: Request, res: Response) => {
     }
 
     try {
-
         const existUsuario = await prisma.usuario.findFirst({
             where: { id: exitAluno.usuario_id },
         });
@@ -171,7 +202,7 @@ export const updateAluno = async (req: Request, res: Response) => {
 
 
         const updatedAluno = await prisma.aluno.update({
-            where: { id: alunoId },
+            where: { usuario_id: usuarioId },
             data: {
                 data_nascimento: data_nascimento ? new Date(data_nascimento) : exitAluno.data_nascimento || undefined,
                 genero: genero ? genero : exitAluno.genero,
@@ -193,15 +224,15 @@ export const updateAluno = async (req: Request, res: Response) => {
 }
 
 export const deleteAluno = async (req: Request, res: Response) => {
-    const { alunoId } = req.params;
+    const { usuarioId } = req.params;
 
-    if (!alunoId || !validate(alunoId)) {
+    if (!usuarioId || !validate(usuarioId)) {
         return res.status(400).json({ message: "ID de aluno inválido" });
     }
 
     try {
         const aluno = await prisma.aluno.findFirst({
-            where: { id: alunoId },
+            where: { usuario_id: usuarioId },
         });
 
         if (!aluno) {
@@ -227,7 +258,7 @@ export const deleteAluno = async (req: Request, res: Response) => {
             });
 
             await prisma.aluno.delete({
-                where: { id: alunoId },
+                where: { id: aluno.id },
             });
 
             if (existUsuario) {

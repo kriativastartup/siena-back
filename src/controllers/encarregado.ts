@@ -98,9 +98,15 @@ export const createEncarregado = async (req: Request | any, res: Response) => {
 };
 
 export const getEncarregadoById = async (req : Request | any, res : Response) => {
-    const encarregado_id = req.params.encarregadoId as string;
+    const usuarioId = req.params.usuarioId as string;
+
+    if (!usuarioId || !validate(usuarioId)) {
+        return res.status(400).json({
+            message: "O ID do encarregado é inválido"
+        });
+    }
     try {
-        if (!encarregado_id || !validate(encarregado_id)) {
+        if (!usuarioId || !validate(usuarioId)) {
             return res.status(400).json({
                 message: "O ID do encarregado é inválido"
             });
@@ -108,7 +114,57 @@ export const getEncarregadoById = async (req : Request | any, res : Response) =>
 
         const encarregado = await prisma.encarregado.findUnique({
             where: {
-                id: encarregado_id
+                usuario_id: usuarioId
+            }
+        });
+
+        if (!encarregado) {
+            return res.status(404).json({
+                message: "Encarregado não encontrado"
+            });
+        }
+        const MeusAluno = await prisma.aluno_encarregado.findMany({
+            where: {
+                encarregado_id: encarregado.id
+            }
+        });
+
+        const alunos = await Promise.all(MeusAluno.map(async (aluno_encarregado) => {
+            const aluno = await prisma.aluno.findUnique({
+                where: {
+                    id: aluno_encarregado.aluno_id
+                }
+            });
+            return aluno;
+        }));
+
+        return res.status(200).json({
+            ...encarregado,
+            alunos
+        });
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao buscar encarregado", error: error.message });
+    }
+}
+
+export const getEncarregadoByME = async (req : Request | any, res : Response) => {
+    const usuarioId = req.params.userId as string;
+
+    if (!usuarioId || !validate(usuarioId)) {
+        return res.status(400).json({
+            message: "O ID do encarregado é inválido"
+        });
+    }
+    try {
+        if (!usuarioId || !validate(usuarioId)) {
+            return res.status(400).json({
+                message: "O ID do encarregado é inválido"
+            });
+        }
+
+        const encarregado = await prisma.encarregado.findUnique({
+            where: {
+                usuario_id: usuarioId
             }
         });
 
@@ -142,10 +198,10 @@ export const getEncarregadoById = async (req : Request | any, res : Response) =>
 }
 
 export const updateEncarregadoById = async (req : Request | any, res : Response) => {
-    const encarregado_id = req.params.encarregadoId as string;
-    const { nome_completo, email, telefone, grau_parentesco, profissao } = req.body;
+    const usuarioId = req.params.usuarioId as string;
+    const { nome_completo, email, telefone, profissao } = req.body;
     try {
-        if (!encarregado_id || validate(encarregado_id)) {
+        if (!usuarioId || validate(usuarioId)) {
             return res.status(400).json({
                 message: "O ID do encarregado é inválido"
             });
@@ -153,7 +209,7 @@ export const updateEncarregadoById = async (req : Request | any, res : Response)
 
         const encarregado = await prisma.encarregado.findUnique({
             where: {
-                id: encarregado_id
+                usuario_id: usuarioId
             }
         });
 
@@ -175,7 +231,7 @@ export const updateEncarregadoById = async (req : Request | any, res : Response)
 
         const updatedEncarregado = await prisma.encarregado.update({
             where: {
-                id: encarregado_id
+                usuario_id: usuarioId
             },
             data: {
                 telefone: telefone || encarregado.telefone || undefined,

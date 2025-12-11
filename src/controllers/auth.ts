@@ -5,6 +5,7 @@ import { validate } from "uuid";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
+
 export const login = async (req: Request, res: Response) => {
     const { email, senha } = req.body;
 
