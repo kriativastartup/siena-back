@@ -94,24 +94,22 @@ export const getAlunosTurma = async (req: Request, res: Response) => {
 };
 
 export const getAlunoById = async (req: Request, res: Response) => {
-    const { alunoId } = req.params;
+    const { usuarioId } = req.params;
 
-    if (!alunoId || !validate(alunoId)) {
+    if (!usuarioId || !validate(usuarioId)) {
         return res.status(400).json({ message: "ID de aluno inválido" });
     }
 
     try {
         const aluno = await prisma.aluno.findFirst({
-            where: { id: alunoId },
+            where: { usuario_id: usuarioId },
         });
-
-        const user = await prisma.usuario.findFirst({
-            where: { id: aluno?.usuario_id },
-        });
-
         if (!aluno) {
             return res.status(404).json({ message: "Aluno não encontrado" });
         }
+        const user = await prisma.usuario.findFirst({
+            where: { id: usuarioId },
+        });
 
         return res.status(200).json({
             ...aluno,
@@ -238,7 +236,7 @@ export const deleteAluno = async (req: Request, res: Response) => {
                 });
             }
         } catch (error: any) {
-            return res.status(500).json({ 
+            return res.status(500).json({
                 message: "Erro ao deletar dados relacionados ao aluno",
                 error: error.message
             });
