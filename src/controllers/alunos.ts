@@ -76,7 +76,7 @@ export const getAlunosTurma = async (req: Request, res: Response) => {
         const alunos = await prisma.aluno.findMany();
 
         const alunosWithUserData = await Promise.all(alunos.map(async (aluno) => {
-            const user = await prisma.usuario.findUnique({
+            const user = await prisma.usuario.findFirst({
                 where: { id: aluno.usuario_id },
             });
             return {
@@ -101,11 +101,11 @@ export const getAlunoById = async (req: Request, res: Response) => {
     }
 
     try {
-        const aluno = await prisma.aluno.findUnique({
+        const aluno = await prisma.aluno.findFirst({
             where: { id: alunoId },
         });
 
-        const user = await prisma.usuario.findUnique({
+        const user = await prisma.usuario.findFirst({
             where: { id: aluno?.usuario_id },
         });
 
@@ -131,7 +131,7 @@ export const updateAluno = async (req: Request, res: Response) => {
     if (!alunoId || !validate(alunoId)) {
         return res.status(400).json({ message: "ID de aluno inválido" });
     }
-    const exitAluno = await prisma.aluno.findUnique({
+    const exitAluno = await prisma.aluno.findFirst({
         where: { id: alunoId },
     });
 
@@ -141,7 +141,7 @@ export const updateAluno = async (req: Request, res: Response) => {
 
     try {
 
-        const existUsuario = await prisma.usuario.findUnique({
+        const existUsuario = await prisma.usuario.findFirst({
             where: { id: exitAluno.usuario_id },
         });
 
@@ -202,7 +202,7 @@ export const deleteAluno = async (req: Request, res: Response) => {
     }
 
     try {
-        const aluno = await prisma.aluno.findUnique({
+        const aluno = await prisma.aluno.findFirst({
             where: { id: alunoId },
         });
 
@@ -210,7 +210,7 @@ export const deleteAluno = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Aluno não encontrado" });
         }
 
-        const existUsuario = await prisma.usuario.findUnique({
+        const existUsuario = await prisma.usuario.findFirst({
             where: { id: aluno.usuario_id },
         });
 
