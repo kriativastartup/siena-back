@@ -7,8 +7,8 @@ import { getProfessores, createProfessor, getProfessorById, updateProfessor, del
 router.get('/all/:escola_id', getProfessores);
 router.get('/each/:usuarioId', getProfessorById);
 router.post('/create', createProfessor);
-router.put('/update/:professor_id', updateProfessor);
-router.delete('/delete/:professor_id', deleteProfessor);
+router.put('/update/:usuarioId', updateProfessor);
+router.delete('/delete/:usuarioId', deleteProfessor);
 router.post('/class/insert', InserirProfessorNaTurma);
 
 export default router;

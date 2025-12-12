@@ -134,24 +134,34 @@ export const getProfessorById = async (req: Request, res: Response) => {
 };
 
 export const updateProfessor = async (req: Request, res: Response) => {
-    const { professor_id } = req.params;
+    const { usuarioId } = req.params;
     const { nome_completo, email, especialidade, telefone } = req.body;
 
-    if (!validate(professor_id)) {
+    if (!validate(usuarioId)) {
         return res.status(400).json({ message: "ID de professor inválido" });
     }
 
     try {
+        const user = await prisma.usuario.findFirst({
+            where: { id: usuarioId },
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "Usuário não encontrado" });
+        }
+
+        if (user.tipo_usuario !== "PROFESSOR") {
+            return res.status(400).json({ message: "O usuário não é um professor" });
+        }
+
         const existProfessor = await prisma.professor.findFirst({
-            where: { id: professor_id },
+            where: { usuario_id: usuarioId },
         });
 
         if (!existProfessor) {
             return res.status(404).json({ message: "Professor não encontrado" });
         }
-        const user = await prisma.usuario.findFirst({
-            where: { id: existProfessor.usuario_id },
-        });
+        
         if (user) {
             await prisma.usuario.update({
                 where: { id: user.id },
@@ -162,7 +172,7 @@ export const updateProfessor = async (req: Request, res: Response) => {
             });
         }
         const updatedProfessor = await prisma.professor.update({
-            where: { id: professor_id },
+            where: { id: existProfessor.id },
             data: {
                 especialidade: especialidade || existProfessor.especialidade,
                 numero_professor: telefone || existProfessor.numero_professor
@@ -284,7 +294,6 @@ export const RemoverProfessorDaTurma = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Erro ao remover professor da turma", error: error.message });
     }
 };
-
 
 // Criar uma avaliação para a turma
 export const createAvaliacao = async (req: Request, res: Response) => {

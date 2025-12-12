@@ -5,6 +5,7 @@ import { validate } from "uuid";
 
 const prisma = new PrismaClient();
 
+// ESCOLAS
 export const getEscolas = async (req: Request, res: Response) => {
     try {
         const escolas = await prisma.escola.findMany();
@@ -278,3 +279,175 @@ export const deleteEscola = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Erro ao deletar escola", error: error.message });
     }
 }
+
+// CRIAR ADMINISTRATIVA PARA ESCOLA
+export const createAdminForEscola = async (req: Request, res: Response) => {
+    const { escola_id, nome_completo, email, senha, cargo } = req.body;
+
+    if (!escola_id || !nome_completo || !email || !senha) {
+        return res.status(400).json({ message: "Dados inválidos, preencha todos os campos" });
+    }
+
+    if (cargo !== "COORDENADOR" && cargo !== "SECRETARIA") {
+        return res.status(400).json({ message: "Cargo inválido" });
+    }
+    if (validate(escola_id) === false) {
+        return res.status(400).json({ message: "ID de escola inválido" });
+    }
+    try {
+        const existEscola = await prisma.escola.findFirst({
+            where: { id: escola_id },
+        });
+
+        if (!existEscola) {
+            return res.status(404).json({ message: "Escola não encontrada" });
+        }
+
+        const existUsuario = await prisma.usuario.findFirst({
+            where: { email },
+        });
+
+        if (existUsuario) {
+            return res.status(400).json({ message: "Usuário com esse email já existe" });
+        }
+
+        const newSecretaria = await prisma.usuario.create({
+            data: {
+                nome_completo,
+                email,
+                senha_hash: await hash_password(senha),
+                tipo_usuario: cargo,
+                escola_id: escola_id,
+            },
+        });
+
+        return res.status(201).json(newSecretaria);
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao criar secretaria", error: error.message });
+    }
+};
+
+export const getAdminByEscola = async (req: Request, res: Response) => {
+    const { escola_id } = req.params;
+    const cargo = req.query.cargo as string;
+
+    if (cargo !== "COORDENADOR" && cargo !== "SECRETARIA") {
+        return res.status(400).json({ message: "Cargo inválido" });
+    }
+
+    if (!escola_id || validate(escola_id) === false) {
+        return res.status(400).json({ message: "ID de escola inválido" });
+    }
+    try {
+        const existEscola = await prisma.escola.findFirst({
+            where: { id: escola_id },
+        });
+
+        if (!existEscola) {
+            return res.status(404).json({ message: "Escola não encontrada" });
+        }
+
+        const secretarias = await prisma.usuario.findMany({
+            where: {
+                escola_id: escola_id,
+                tipo_usuario: cargo,
+            },
+        });
+
+        return res.status(200).json(secretarias);
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao buscar", error: error.message });
+    }
+};
+
+export const getAdmiById = async (req: Request, res: Response) => {
+    const { admin_id } = req.params;
+
+    if (!admin_id || validate(admin_id) === false) {
+        return res.status(400).json({ message: "ID de administrativa inválido" });
+    }
+    try {
+        const admin = await prisma.usuario.findFirst({
+            where: {
+                id: admin_id
+            },
+        });
+
+        if (!admin) {
+            return res.status(404).json({ message: "Administrativa não encontrada" });
+        }
+
+        return res.status(200).json(admin);
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao buscar administrativa", error: error.message });
+    }
+};
+
+export const updateAdmin = async (req: Request, res: Response) => {
+    const { admin_id } = req.params;
+    const { nome_completo, email, senha } = req.body;
+
+    if (!admin_id || validate(admin_id) === false) {
+        return res.status(400).json({ message: "ID de administrativa inválido" });
+    }
+    try {
+        const existAdmin = await prisma.usuario.findFirst({
+            where: {
+                id: admin_id
+            },
+        });
+
+        if (!existAdmin) {
+            return res.status(404).json({ message: "Administrativa  não encontrada" });
+        }
+
+        if (existAdmin.tipo_usuario !== "COORDENADOR" && existAdmin.tipo_usuario !== "SECRETARIA") {
+            return res.status(400).json({ message: "Usuário não é uma administrativa" });
+        }
+
+        const updatedData: any = {
+            nome_completo: nome_completo || existAdmin.nome_completo,
+            email: email || existAdmin.email,
+        };
+
+        if (senha) {
+            updatedData.senha_hash = await hash_password(senha);
+        }
+
+        const updatedAdmin = await prisma.usuario.update({
+            where: { id: admin_id },
+            data: updatedData,
+        });
+
+        return res.status(200).json(updatedAdmin);
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao atualizar administrativa", error: error.message });
+    }
+};
+
+export const deleteAdmin = async (req: Request, res: Response) => {
+    const { admin_id } = req.params;
+
+    if (!admin_id || validate(admin_id) === false) {
+        return res.status(400).json({ message: "ID de administrativa inválido" });
+    }
+    try {
+        const existAdmin = await prisma.usuario.findFirst({
+            where: {
+                id: admin_id
+            },
+        });
+
+        if (!existAdmin) {
+            return res.status(404).json({ message: "Administrativa não encontrada" });
+        }
+
+        await prisma.usuario.delete({
+            where: { id: admin_id },
+        });
+
+        return res.status(200).json({ message: "Administrativa deletada com sucesso" });
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao deletar administrativa", error: error.message });
+    }
+};

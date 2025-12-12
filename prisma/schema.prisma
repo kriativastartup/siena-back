@@ -117,6 +117,7 @@ model escola {
   encarregado   encarregado[]
   matricula     matricula[]
   aluno         aluno[]
+  curso         curso[]
 }
 
 model matricula {
@@ -192,6 +193,8 @@ model turma {
   nome              String             @db.VarChar(100)
   ano_letivo        String             @db.VarChar(9)
   academic_year_id  String             @db.Uuid
+  turno             turno              @default(MANHA)
+  curso_id          String?            @db.Uuid
   ano_escolaridade  Int
   capacidade_maxima Int                @default(30)
   matricula         matricula[]
@@ -205,6 +208,19 @@ model turma {
 
   @@index([ano_letivo], map: "idx_turma_ano_letivo")
   @@index([escola_id], map: "idx_turma_escola")
+}
+
+model curso {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id     String    @db.Uuid
+  nome          String    @db.VarChar(100)
+  abreviacao   String?   @db.VarChar(20)
+  descricao     String?
+  data_criacao DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  escola        escola    @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_curso_escola")
+  
+  @@index([escola_id], map: "idx_curso_escola")
 }
 
 model aluno_turma {
@@ -261,7 +277,9 @@ model usuario {
   nome_completo String            @db.VarChar(200)
   email         String            @unique @db.VarChar(100)
   senha_hash    String
+  escola_id     String?           @db.Uuid
   tipo_usuario  tipo_usuario_enum
+
   ativo         Boolean?          @default(true)
   data_cadastro DateTime?         @default(now()) @db.Timestamp(6)
   aluno         aluno?
@@ -310,6 +328,13 @@ enum status_matricula_enum {
   SUSPENSA
 }
 
+enum turno {
+  MANHA
+  TARDE
+  NOITE
+  INTEGRAL
+}
+
 enum tipo_avaliacao_enum {
   PROVA
   TRABALHO
@@ -325,6 +350,7 @@ enum tipo_usuario_enum {
   ENCARREGADO
   ADMIN
   SUPER_ADMIN
+  ADMINISTRACAO
   SECRETARIA
   COORDENADOR
   DIRETOR

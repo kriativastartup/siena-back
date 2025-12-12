@@ -1,8 +1,16 @@
 import express from 'express';
-import { criarDisciplina, deleteDisciplina, getDisciplinaById, getDisciplinas, updateDisciplina } from '../controllers/admin';
+import { criarAdministracao, criarDisciplina, deleteAdministracao, deleteDisciplina, getAdministracoes, getDisciplinaById, getDisciplinas, updateAdministracao, updateDisciplina } from '../controllers/admin';
+import { getAdmiById } from '../controllers/escolas';
 
 
 const router = express.Router();
+
+
+router.post('/administration/create', criarAdministracao);
+router.get('/administration/all', getAdministracoes);
+router.get('/administration/each/:admin_id', getAdmiById);
+router.put('/administration/update/:admin_id', updateAdministracao);
+router.delete('/administration/delete/:admin_id', deleteAdministracao);
 
 router.post('/discipline/create', criarDisciplina);
 router.get('/discipline/all/:escola_id', getDisciplinas);

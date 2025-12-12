@@ -26,6 +26,8 @@ export const login = async (req: Request, res: Response) => {
             return res.status(401).json({ message: "Usuário ou senha inválida" });
         }
 
+        console.log("Usuário autenticado:", user.id);
+
         const token = jwt.sign(
             { userId: user.id, tipo_usuario: user.tipo_usuario },
             process.env.JWT_SECRET || "default_secret"

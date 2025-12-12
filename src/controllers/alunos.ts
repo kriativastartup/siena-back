@@ -113,7 +113,7 @@ export const getAlunosTurma = async (req: Request, res: Response) => {
 export const getAlunoById = async (req: Request, res: Response) => {
     const { usuarioId } = req.params;
 
-    if (!usuarioId || !validate(usuarioId)) {
+    if (!validate(usuarioId)) {
         return res.status(400).json({ message: "ID de aluno inválido" });
     }
 
@@ -158,7 +158,7 @@ export const getAlunoByMe = async (req: Request | any, res: Response) => {
         const user = await prisma.usuario.findFirst({
             where: { id: userId },
         });
-        
+
         if (!user) {
             return res.status(404).json({ message: "Usuário não encontrado" });
         }
@@ -184,13 +184,12 @@ export const getAlunoByMe = async (req: Request | any, res: Response) => {
             nome_completo: user?.nome_completo,
             email: user?.email,
             tipo_usuario: user?.tipo_usuario,
-            turma: turmas?.turma
+            turma: turmas?.turma ? turmas.turma : null
         });
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao buscar aluno", error: error.message });
     }
 }
-
 
 export const updateAluno = async (req: Request, res: Response) => {
     const { usuarioId } = req.params;
