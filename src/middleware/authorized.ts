@@ -15,7 +15,7 @@ export const verifyAuthentication = (req: Request | any, res: Response, next: Ne
         res.status(401).json({
             message: "Usuário não autenticado. Por favor, faça login."
         });
-        return ;
+        return;
     }
     const token = authHeader.split(" ")[1];
     try {
@@ -57,7 +57,7 @@ export const verifyAuthenticationAdmin = (req: Request | any, res: Response, nex
         res.status(401).json({
             message: "Usuário não autenticado. Por favor, faça login."
         });
-        return ;
+        return;
     }
     const token = authHeader.split(" ")[1];
     try {
@@ -76,6 +76,103 @@ export const verifyAuthenticationAdmin = (req: Request | any, res: Response, nex
             }
 
             if (user.tipo_usuario !== "ADMIN" && user.tipo_usuario !== "SUPER_ADMIN") {
+                res.status(403).json({
+                    message: "Acesso negado. Você não tem permissão para acessar este recurso."
+                });
+                return;
+            }
+            req.userId = user.id;
+            if (user.ativo === false) {
+                res.status(400).json({
+                    message: "Conta inativa. Por favor, ative sua conta."
+                });
+                return;
+            }
+            next();
+        })();
+    } catch (error: any) {
+        res.status(401).json({
+            message: "Usuário não autenticado. Por favor, faça login."
+        });
+        return;
+    }
+};
+
+export const verifyAuthenticationSuperAdmin = (req: Request | any, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        res.status(401).json({
+            message: "Usuário não autenticado. Por favor, faça login."
+        });
+        return;
+    }
+    const token = authHeader.split(" ")[1];
+    try {
+        const decoded = jwt.verify(token, jwtSecret) as { userId: string; tipo_usuario: string };
+        (async () => {
+            const user = await prisma.usuario.findFirst({
+                where: {
+                    id: decoded.userId,
+                },
+            });
+            if (!user) {
+                res.status(401).json({
+                    message: "Usuário não encontrado. Por favor, faça login novamente."
+                });
+                return;
+            }
+
+            if (user.tipo_usuario !== "SUPER_ADMIN") {
+                res.status(403).json({
+                    message: "Acesso negado. Você não tem permissão para acessar este recurso."
+                });
+                return;
+            }
+            req.userId = user.id;
+            if (user.ativo === false) {
+                res.status(400).json({
+                    message: "Conta inativa. Por favor, ative sua conta."
+                });
+                return;
+            }
+            next();
+        })();
+    } catch (error: any) {
+        res.status(401).json({
+            message: "Usuário não autenticado. Por favor, faça login."
+        });
+        return;
+    }
+};
+
+export const verifyAuthenticationAdminSchool = (req: Request | any, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        res.status(401).json({
+            message: "Usuário não autenticado. Por favor, faça login."
+        });
+        return;
+    }
+    const token = authHeader.split(" ")[1];
+    try {
+        const decoded = jwt.verify(token, jwtSecret) as { userId: string; tipo_usuario: string };
+        (async () => {
+            const user = await prisma.usuario.findFirst({
+                where: {
+                    id: decoded.userId,
+                },
+            });
+            if (!user) {
+                res.status(401).json({
+                    message: "Usuário não encontrado. Por favor, faça login novamente."
+                });
+                return;
+            }
+
+            if (user.tipo_usuario !== "ADMIN"
+                && user.tipo_usuario !== "SECRETARIA"
+                && user.tipo_usuario !== "COORDENADOR"
+                && user.tipo_usuario !== "DIRETOR") {
                 res.status(403).json({
                     message: "Acesso negado. Você não tem permissão para acessar este recurso."
                 });

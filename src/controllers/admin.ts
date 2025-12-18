@@ -63,7 +63,6 @@ export const getAdministracoes = async (req: Request, res: Response) => {
     }
 };
 
-
 export const getAdminById = async (req: Request, res: Response) => {
     const { admin_id } = req.params;
     if (!admin_id || !validate(admin_id)) {

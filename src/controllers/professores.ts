@@ -3,7 +3,6 @@ import { PrismaClient, tipo_avaliacao_enum } from "../generated/prisma/client";
 import { hash_password } from "../helper/encryption";
 import { validate } from "uuid";
 
-
 const prisma = new PrismaClient();
 
 export const getProfessores = async (req: Request, res: Response) => {
@@ -253,7 +252,6 @@ export const InserirProfessorNaTurma = async (req: Request, res: Response) => {
     try {
         const existProfessorTurmaDisciplina = await prisma.professor_turma.findFirst({
             where: {
-
                 professor_id: professor_id,
                 turma_id: existTurma.id,
                 disciplina_id: existDisciplina.id
@@ -325,6 +323,43 @@ export const createAvaliacao = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Erro ao criar avaliação", error: error.message });
     }
 }
+
+export const updateAvaliacao = async (req: Request, res: Response) => {
+    const { avaliacaoId } = req.params;
+    const { turma_id, disciplina_id, tipo_avaliacao, trimestre, descricao, data_avaliacao } = req.body;
+
+    if (!validate(avaliacaoId)) {
+        return res.status(400).json({ message: "ID de avaliação inválido" });
+    }
+
+    const existsAvaliacao = await prisma.avaliacao.findFirst({
+        where: { id: avaliacaoId },
+    });
+
+    if (!existsAvaliacao) {
+        return res.status(404).json({ message: "Avaliação não encontrada" });
+    }
+
+    try {
+        const updatedAvaliacao = await prisma.avaliacao.update({
+            where: { id: avaliacaoId },
+            data: {
+                turma_id: turma_id ? turma_id : existsAvaliacao.turma_id,
+                disciplina_id: disciplina_id ? disciplina_id : existsAvaliacao.disciplina_id,
+                tipo_avaliacao: tipo_avaliacao ? tipo_avaliacao as tipo_avaliacao_enum : existsAvaliacao.tipo_avaliacao,
+                trimestre: trimestre ? trimestre : existsAvaliacao.trimestre,
+                descricao: descricao ? descricao : existsAvaliacao.descricao,
+                data_avaliacao: data_avaliacao ? new Date(data_avaliacao) : existsAvaliacao.data_avaliacao
+            }
+        });
+
+        return res.status(200).json(updatedAvaliacao);
+    } catch (error: any) {
+        return res.status(500).json({ message: "Erro ao atualizar avaliação", error: error.message });
+    }
+}
+
+
 
 export const atribuirNota = async (req: Request, res: Response) => {
     const { avaliacao_id, disciplina_id, aluno_id, nota_obtida } = req.body;
