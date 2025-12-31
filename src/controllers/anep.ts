@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { PrismaClient } from "../generated/prisma/client";
+import * as bcrypt from "bcrypt";
 dotenv.config();
 
 const prisma = new PrismaClient();
@@ -19,12 +20,12 @@ export const create_anep_user = async () => {
     if (existingAnepUser) {
         return;
     }
-
+    const hashedPassword = await bcrypt.hash(ANEP_PASSWORD, 10);
     await prisma.usuario.create({
         data: {
             nome_completo: "ANEP",
             email: ANEP_USER,
-            senha_hash: ANEP_PASSWORD,
+            senha_hash: hashedPassword,
             tipo_usuario: "SUPER_ADMIN",
         },
     });
