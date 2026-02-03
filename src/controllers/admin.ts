@@ -2,10 +2,8 @@ import { Request, Response } from "express";
 import { PrismaClient } from "../generated/prisma/client";
 import { hash_password } from "../helper/encryption";
 import { validate } from "uuid";
-import { generateRandomNumber } from "../helper/random";
 
 const prisma = new PrismaClient();
-
 
 // ADMINISTRACAO
 export const criarAdministracao = async (req: Request | any, res: Response) => {
