@@ -381,9 +381,11 @@ enum tipo_usuario_enum {
   ADMIN // Administrador da Escola
   SUPER_ADMIN // Super Administrador do Sistema
   ADMINISTRACAO // administração local como direcção regional ou municipal
+  
   SECRETARIA // secretaria da escola
   COORDENADOR // coordenador pedagógico de uma turma ou de um curso
   DIRETOR // diretor da escola
+
   ANEP // Associação Nacional de Ensino Privado
   MED // Ministerio da Educação
   GEPE // Gabinete de Planeamento e Estudos
