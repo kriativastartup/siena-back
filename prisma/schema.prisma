@@ -118,6 +118,7 @@ model escola {
   matricula        matricula[]
   aluno            aluno[]
   curso            curso[]
+  escolaRegioes    escola_regiao[]
 }
 
 model matricula {
@@ -290,18 +291,17 @@ model usuario {
   professor     professor?
   data_criacao     DateTime         @default(now()) @db.Timestamp(6)
   data_atualizacao DateTime         @default(now()) @updatedAt @db.Timestamp(6)
-  usuarioRegiaos   usuario_regiao[]
 
   @@index([email], map: "idx_usuario_email")
   @@index([tipo_usuario], map: "idx_usuario_tipo")
 }
 
-model usuario_regiao {
+model escola_regiao {
   id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  usuario_id       String   @db.Uuid
+  escola_id        String   @db.Uuid
   regiao_id        String   @db.Uuid
-  usuario          usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario_regiao_usuario")
-  regiao           regiao   @relation(fields: [regiao_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario_regiao_regiao")
+  escola           escola   @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_escola_regiao_escola")
+  regiao           regiao   @relation(fields: [regiao_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_escola_regiao_regiao")
   data_criacao     DateTime @default(now()) @db.Timestamp(6)
   data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
 }
@@ -313,7 +313,7 @@ model regiao {
   nivel            regiao_nivel_enum 
   data_criacao     DateTime         @default(now()) @db.Timestamp(6)
   data_atualizacao DateTime         @default(now()) @updatedAt @db.Timestamp(6)
-  usuarioRegiaos   usuario_regiao[]
+  escolaRegiaos    escola_regiao[]
 }
 
 enum genero_enum {
@@ -384,6 +384,7 @@ enum tipo_usuario_enum {
   SECRETARIA // secretaria da escola
   COORDENADOR // coordenador pedagógico de uma turma ou de um curso
   DIRETOR // diretor da escola
+  ANEP // Associação Nacional de Ensino Privado
   MED // Ministerio da Educação
   GEPE // Gabinete de Planeamento e Estudos
   INADE // Instituto Nacional de Avaliação Educativa

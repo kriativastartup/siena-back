@@ -2,17 +2,17 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import escolaRouter from './routes/escola';
-import professoresRouter from './routes/professores';
-import authRouter from './routes/auth';
-import studentRouter from './routes/alunos';
-import matriculaRouter from './routes/matricula';
-import turmaRouter from './routes/turma';
-import anoLetivoRouter from './routes/ano_letivo';
-import encarregadoRouter from './routes/encarregado';
-import adminRouter from './routes/admin';
+import escolaRouter from './routers/escola';
+import professoresRouter from './routers/professores';
+import authRouter from './routers/auth';
+import studentRouter from './routers/alunos';
+import matriculaRouter from './routers/matricula';
+import turmaRouter from './routers/turma';
+import anoLetivoRouter from './routers/ano_letivo';
+import encarregadoRouter from './routers/encarregado';
+import adminRouter from './routers/admin';
+import regiaoRouter from './routers/regiao';
 dotenv.config();
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -39,6 +39,7 @@ app.use('/api/v1/class', turmaRouter);
 app.use('/api/v1/year', anoLetivoRouter);
 app.use('/api/v1/guardian', encarregadoRouter);
 app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/region', regiaoRouter);
 
 // Start server
 app.listen(PORT, () => {
