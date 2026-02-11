@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient, tipo_usuario_enum } from "../generated/prisma/client";
 import { hash_password } from "../helper/encryption";
 import { validate } from "uuid";
 
@@ -7,11 +7,16 @@ const prisma = new PrismaClient();
 
 // ADMINISTRACAO
 export const criarAdministracao = async (req: Request | any, res: Response) => {
-    const { nome_completo, email, senha } = req.body;
+    const { nome_completo, email, senha, tipo_usuario } = req.body;
     if (!email || !senha || !nome_completo) {
         return res.status(400).json({ message: "Dados inválidos, preencha todos os campos" });
     }
+
     try {
+ // Gabinete de Planeamento e Estudos
+       if (!["ADMINISTRACAO", "ANEP", "MED", "GEPE", "INABE", "INE", "PARCEIROS"].includes(tipo_usuario)) {
+            return res.status(400).json({ message: "Tipo de usuário inválido, deve ser um válido" });
+        }
 
         const existAdmin = await prisma.usuario.findFirst({
             where: {
@@ -20,7 +25,7 @@ export const criarAdministracao = async (req: Request | any, res: Response) => {
         });
 
         if (existAdmin) {
-            return res.status(400).json({ message: "Administrador com esse email já existe" });
+            return res.status(400).json({ message: "Administrador ou parceiro com esse email já existe" });
         }
 
         if (!nome_completo || !email || !senha) {
@@ -34,7 +39,7 @@ export const criarAdministracao = async (req: Request | any, res: Response) => {
                 nome_completo: nome_completo,
                 email: email,
                 senha_hash: senha_hash,
-                tipo_usuario: "ADMINISTRACAO",
+                tipo_usuario: tipo_usuario,
                 ativo: true,
             },
         });
@@ -48,10 +53,14 @@ export const getAdministracoes = async (req: Request, res: Response) => {
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
     const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
     const offset = (limit * (page - 1));
+    const tipo_usuario = req.query.tipo_usuario as tipo_usuario_enum | undefined;
 
     try {
+        if (tipo_usuario && !["ADMINISTRACAO", "ANEP", "MED", "GEPE", "INABE", "INE", "PARCEIROS"].includes(tipo_usuario)) {
+            return res.status(400).json({ message: "Tipo de usuário inválido, deve ser um válido" });
+        }
         const administracoes = await prisma.usuario.findMany({
-            where: { tipo_usuario: "ADMINISTRACAO" },
+            where: { tipo_usuario: tipo_usuario ? tipo_usuario : "ADMINISTRACAO" },
             skip: offset,
             take: limit,
         });
@@ -67,8 +76,11 @@ export const getAdminById = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "ID de administrador inválido" });
     }
     try {
+        if(!["ADMINISTRACAO", "ANEP", "MED", "GEPE", "INABE", "INE", "PARCEIROS"].includes(req.query.tipo_usuario as string)) {
+            return res.status(400).json({ message: "Tipo de usuário inválido, deve ser um válido" });
+        }
         const administracao = await prisma.usuario.findFirst({
-            where: { id: admin_id, tipo_usuario: "ADMINISTRACAO" },
+            where: { id: admin_id },
         });
         if (!administracao) {
             return res.status(404).json({ message: "Administrador não encontrado" });
@@ -87,10 +99,14 @@ export const updateAdministracao = async (req: Request, res: Response) => {
     }
     try {
         const existAdmin = await prisma.usuario.findFirst({
-            where: { id: admin_id, tipo_usuario: "ADMINISTRACAO" },
+            where: { id: admin_id },
         });
         if (!existAdmin) {
             return res.status(404).json({ message: "Administrador não encontrado" });
+        }
+
+        if (!["ADMINISTRACAO", "ANEP", "MED", "GEPE", "INABE", "INE", "PARCEIROS"].includes(existAdmin.tipo_usuario)) {
+            return res.status(400).json({ message: "Tipo de usuário inválido, deve ser um válido" });
         }
 
         const senha_hash = senha ? await hash_password(senha) : existAdmin.senha_hash;
@@ -119,11 +135,15 @@ export const deleteAdministracao = async (req: Request, res: Response) => {
 
     try {
         const existAdmin = await prisma.usuario.findFirst({
-            where: { id: admin_id, tipo_usuario: "ADMINISTRACAO" },
+            where: { id: admin_id },
         });
 
         if (!existAdmin) {
             return res.status(404).json({ message: "Administrador não encontrado" });
+        }
+
+        if (!["ADMINISTRACAO", "ANEP", "MED", "GEPE", "INABE", "INE", "PARCEIROS"].includes(existAdmin.tipo_usuario)) {
+            return res.status(400).json({ message: "Tipo de usuário inválido, deve ser um válido" });
         }
 
         await prisma.usuario.delete({

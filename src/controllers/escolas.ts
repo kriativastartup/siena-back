@@ -156,11 +156,13 @@ export const updateEscola = async (req: Request, res: Response) => {
     nif,
     codigo_mec,
   } = req.body;
+
   const { nome_completo } = req.body;
 
   if (!schoolId || validate(schoolId) === false) {
     return res.status(400).json({ message: "ID de escola inválido" });
   }
+  
   try {
     const existSchool = await prisma.escola.findUnique({
       where: { id: schoolId },
@@ -365,12 +367,10 @@ export const createAdminForEscola = async (
     cargo !== "DIRETOR" &&
     cargo !== "ADMIN"
   ) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Cargo inválido, deve ser COORDENADOR, SECRETARIA, DIRETOR ou ADMIN",
-      });
+    return res.status(400).json({
+      message:
+        "Cargo inválido, deve ser COORDENADOR, SECRETARIA, DIRETOR ou ADMIN",
+    });
   }
 
   if (validate(escola_id) === false) {
@@ -399,24 +399,20 @@ export const createAdminForEscola = async (
       existUserAuth.tipo_usuario !== "ADMIN" &&
       existUserAuth.tipo_usuario !== "DIRETOR"
     ) {
-      return res
-        .status(403)
-        .json({
-          message:
-            "Apenas usuários ADMIN, DIRETOR podem criar administrativas para a escola",
-        });
+      return res.status(403).json({
+        message:
+          "Apenas usuários ADMIN, DIRETOR podem criar administrativas para a escola",
+      });
     }
 
     if (
       existEscola.id !== existUserAuth.escola_id &&
       existUserAuth.tipo_usuario !== "ADMIN"
     ) {
-      return res
-        .status(403)
-        .json({
-          message:
-            "Você não tem permissão para adicionar administrativas a esta escola",
-        });
+      return res.status(403).json({
+        message:
+          "Você não tem permissão para adicionar administrativas a esta escola",
+      });
     }
 
     const existUsuario = await prisma.usuario.findFirst({

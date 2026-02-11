@@ -327,6 +327,7 @@ enum regiao_nivel_enum {
   PROVINCIAL
   MUNICIPAL
   LOCAL
+  GLOBAL
 }
 
 enum natureza {

@@ -160,7 +160,6 @@ export const deleteRegiao = async (req: Request, res: Response) => {
     }   
 };
 
-
 export const assignRegiaoToEscola = async (req: Request, res: Response) => {
     const { escola_id, regiao_id } = req.body;
 
