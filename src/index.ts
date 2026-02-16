@@ -21,7 +21,7 @@ app.use(express.json());
 // Middleware
 app.use(bodyParser.json());
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://siena-xi.vercel.app', 'http://localhost:5500'],
+    origin: ['http://localhost:3000', 'https://siena-xi.vercel.app', 'http://102.168.0.113:3000', '*'],
     methods: ["GET", "POST", "DELETE", "PUT"]
 }));
 
