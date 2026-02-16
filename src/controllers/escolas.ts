@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import { PrismaClient } from "../generated/prisma/client";
 import { hash_password } from "../helper/encryption";
 import { validate } from "uuid";
+import { generateRandomPassword } from "../helper/random";
+import { send } from "process";
+import { sendEmail } from "../services/mail.service";
+import { emailRandomPassTemplate } from "../template/email_random_pass";
 
 const prisma = new PrismaClient();
 
@@ -56,7 +60,7 @@ export const createEscola = async (req: Request | any, res: Response) => {
     nif,
     codigo_mec,
   } = req.body;
-  const { nome_completo, senha } = req.body;
+
   try {
     const existUsuario = await prisma.usuario.findFirst({
       where: {
@@ -81,15 +85,7 @@ export const createEscola = async (req: Request | any, res: Response) => {
         .json({ message: "Escola com esse código MEC já existe" });
     }
 
-    const UserAdmin = await prisma.usuario.create({
-      data: {
-        nome_completo: "ADMIN",
-        email,
-        senha_hash: await hash_password(senha),
-        tipo_usuario: "ADMIN",
-      },
-    });
-    if (!nome || !endereco || !telefone || !email || !natureza || !codigo_mec) {
+        if (!nome || !endereco || !telefone || !email || !natureza || !codigo_mec) {
       return res
         .status(400)
         .json({ error: "Todos os campos são obrigatórios" });
@@ -102,6 +98,30 @@ export const createEscola = async (req: Request | any, res: Response) => {
     ) {
       return res.status(400).json({ error: "Natureza inválida" });
     }
+
+    const senha = generateRandomPassword(6);
+
+    console.log(`Senha gerada para o usuário ${email}: ${senha}`);
+    try {
+
+    await sendEmail(
+      email,
+      "Bem-vindo à Siena - Sua nova senha de acesso",
+      emailRandomPassTemplate(email, senha)
+    );
+    } catch (error) {
+      console.error(`Erro ao enviar email para ${email}:`, error);
+      return res.status(400).json({ message: "Erro ao enviar email com a senha" }); 
+    }
+
+    const UserAdmin = await prisma.usuario.create({
+      data: {
+        nome_completo: "ADMIN",
+        email,
+        senha_hash: await hash_password(senha),
+        tipo_usuario: "ADMIN",
+      },
+    });
 
     const newEscola = await prisma.escola.create({
       data: {
