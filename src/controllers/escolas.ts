@@ -3,7 +3,6 @@ import { PrismaClient } from "../generated/prisma/client";
 import { hash_password } from "../helper/encryption";
 import { validate } from "uuid";
 import { generateRandomPassword } from "../helper/random";
-import { send } from "process";
 import { sendEmail } from "../services/mail.service";
 import { emailRandomPassTemplate } from "../template/email_random_pass";
 

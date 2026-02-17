@@ -316,6 +316,18 @@ model regiao {
   escolaRegiaos    escola_regiao[]
 }
 
+model feedback {
+  id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String     @db.VarChar(100)
+  email            String     @db.VarChar(100)
+  assunto          String     @db.VarChar(150)
+  mensagem         String     @db.VarChar(500)
+  estado           estado_feedback_enum @default(PENDENTE)
+  tipo             tipo_feedback_enum @default(SOLICITACAO)
+  data_criacao     DateTime   @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+}
+
 enum genero_enum {
   M
   F
@@ -334,6 +346,22 @@ enum natureza {
   publica
   privada
   hibrida
+}
+
+enum tipo_feedback_enum {
+  SOLICITACAO
+  SUGESTAO
+  RECLAMACAO
+  ELOGIO
+  OUTRO
+}
+
+enum estado_feedback_enum {
+  PENDENTE
+  EM_ANALISE
+  RESOLVIDO
+  REJEITADO
+  GUARDADO
 }
 
 /// This enum is commented in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
