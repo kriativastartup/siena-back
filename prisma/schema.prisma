@@ -277,20 +277,20 @@ model professor_turma {
 }
 
 model usuario {
-  id            String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome_completo String            @db.VarChar(200)
-  email         String            @unique @db.VarChar(100)
-  senha_hash    String
-  escola_id     String?           @db.Uuid
-  tipo_usuario  tipo_usuario_enum
-  ativo         Boolean?     @default(true)
-  data_cadastro DateTime?    @default(now()) @db.Timestamp(6)
-  aluno         aluno?
-  encarregado   encarregado?
-  escola        escola?
-  professor     professor?
-  data_criacao     DateTime         @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime         @default(now()) @updatedAt @db.Timestamp(6)
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome_completo    String            @db.VarChar(200)
+  email            String            @unique @db.VarChar(100)
+  senha_hash       String
+  escola_id        String?           @db.Uuid
+  tipo_usuario     tipo_usuario_enum
+  ativo            Boolean?          @default(true)
+  data_cadastro    DateTime?         @default(now()) @db.Timestamp(6)
+  aluno            aluno?
+  encarregado      encarregado?
+  escola           escola?
+  professor        professor?
+  data_criacao     DateTime          @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime          @default(now()) @updatedAt @db.Timestamp(6)
 
   @@index([email], map: "idx_usuario_email")
   @@index([tipo_usuario], map: "idx_usuario_tipo")
@@ -307,25 +307,25 @@ model escola_regiao {
 }
 
 model regiao {
-  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome             String           @db.VarChar(100)
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome             String            @db.VarChar(100)
   descricao        String?
-  nivel            regiao_nivel_enum 
-  data_criacao     DateTime         @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime         @default(now()) @updatedAt @db.Timestamp(6)
+  nivel            regiao_nivel_enum
+  data_criacao     DateTime          @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime          @default(now()) @updatedAt @db.Timestamp(6)
   escolaRegiaos    escola_regiao[]
 }
 
 model feedback {
-  id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name             String     @db.VarChar(100)
-  email            String     @db.VarChar(100)
-  assunto          String     @db.VarChar(150)
-  mensagem         String     @db.VarChar(500)
+  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String               @db.VarChar(100)
+  email            String               @db.VarChar(100)
+  assunto          String               @db.VarChar(150)
+  mensagem         String               @db.VarChar(500)
   estado           estado_feedback_enum @default(PENDENTE)
-  tipo             tipo_feedback_enum @default(SOLICITACAO)
-  data_criacao     DateTime   @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+  tipo             tipo_feedback_enum   @default(SOLICITACAO)
+  data_criacao     DateTime             @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime             @default(now()) @updatedAt @db.Timestamp(6)
 }
 
 enum genero_enum {
@@ -410,7 +410,7 @@ enum tipo_usuario_enum {
   ADMIN // Administrador da Escola
   SUPER_ADMIN // Super Administrador do Sistema
   ADMINISTRACAO // administração local como direcção regional ou municipal
-  
+
   SECRETARIA // secretaria da escola
   COORDENADOR // coordenador pedagógico de uma turma ou de um curso
   DIRETOR // diretor da escola
