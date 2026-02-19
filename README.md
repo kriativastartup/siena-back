@@ -1,6 +1,6 @@
 ### O quê que eu estou fazendo?
 
-
+- Estudar como vão ser os testes vocacionais
 
 ### Quais serão os meus próximos passos
 
