@@ -89,7 +89,6 @@ export const createEscola = async (req: Request | any, res: Response) => {
         .status(400)
         .json({ error: "Todos os campos são obrigatórios" });
     }
-
     if (
       natureza !== "publica" &&
       natureza !== "privada" &&

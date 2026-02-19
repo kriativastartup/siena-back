@@ -359,8 +359,6 @@ export const updateAvaliacao = async (req: Request, res: Response) => {
     }
 }
 
-
-
 export const atribuirNota = async (req: Request, res: Response) => {
     const { avaliacao_id, disciplina_id, aluno_id, nota_obtida } = req.body;
 
@@ -370,6 +368,10 @@ export const atribuirNota = async (req: Request, res: Response) => {
 
     if (isNaN(parseFloat(nota_obtida))) {
         return res.status(400).json({ message: "Nota obtida inválida, coloque um número" });
+    }
+
+    if (parseFloat(nota_obtida) < 0 || parseFloat(nota_obtida) > 20) {
+        return res.status(400).json({ message: "Nota obtida inválida, coloque um número entre 0 e 20" });
     }
 
     try {
