@@ -8,6 +8,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model pessoa {
+  id               String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome_completo    String       @db.VarChar(200)
+  bi               String?      @unique @db.VarChar(20)
+  dt_nascimento    DateTime?    @db.Date
+  sexo             sexo_enum?
+  telefone         String?      @db.VarChar(20)
+  nacionalidade    String?      @db.VarChar(50)
+  morada           String?      @db.VarChar(300)
+  email            String?      @unique @db.VarChar(100)
+  data_criacao     DateTime     @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime     @default(now()) @updatedAt @db.Timestamp(6)
+  encarregado      encarregado?
+  professor        professor?
+}
+
 model academic_year {
   id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nome             String?   @db.VarChar
@@ -22,34 +38,31 @@ model academic_year {
 }
 
 model aluno {
-  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  usuario_id        String              @unique @db.Uuid
-  escola_id         String              @db.Uuid
-  numero_aluno      String              @unique @db.VarChar(20)
-  data_nascimento   DateTime            @db.Date
-  genero            genero_enum?
-  telefone          String?             @db.VarChar(20)
-  endereco          String?             @db.VarChar(300)
-  foto              String?             @db.VarChar(255)
-  status            status_aluno?       @default(activo)
-  data_criacao      DateTime            @default(now()) @db.Timestamp(6)
-  data_atualizacao  DateTime            @default(now()) @updatedAt @db.Timestamp(6)
-  usuario           usuario             @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_usuario")
-  aluno_encarregado aluno_encarregado[]
-  matricula         matricula[]
-  nota              nota[]
-  aluno_turma       aluno_turma[]
-  escola            escola?             @relation(fields: [escola_id], references: [id])
+  id                     String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pessoa_id              String              @db.Uuid
+  escola_id              String              @db.Uuid
+  n_processo             String              @unique @db.VarChar(20)
+  necessidades_especiais Json?               @db.Json
+  status                 status_aluno?       @default(activo)
+  foto                   String?             @db.VarChar(255)
+  data_criacao           DateTime            @default(now()) @db.Timestamp(6)
+  data_atualizacao       DateTime            @default(now()) @updatedAt @db.Timestamp(6)
+  aluno_encarregado      aluno_encarregado[]
+  matricula              matricula[]
+  nota                   nota[]
+  aluno_turma            aluno_turma[]
+  escola                 escola?             @relation(fields: [escola_id], references: [id])
+  usuarios               usuario[]
 
-  @@index([numero_aluno], map: "idx_aluno_numero")
-  @@index([usuario_id], map: "idx_aluno_usuario")
+  @@index([n_processo], map: "idx_aluno_numero_processo")
+  @@index([pessoa_id], map: "idx_aluno_pessoa")
 }
 
 model aluno_encarregado {
   id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   aluno_id         String      @db.Uuid
-  grau_parentesco  String?     @db.VarChar(50)
   encarregado_id   String      @db.Uuid
+  parentesco       String?     @db.VarChar(50)
   principal        Boolean?    @default(false)
   data_criacao     DateTime    @default(now()) @db.Timestamp(6)
   data_atualizacao DateTime    @default(now()) @updatedAt @db.Timestamp(6)
@@ -82,34 +95,32 @@ model disciplina {
 
 model encarregado {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  usuario_id        String              @unique @db.Uuid
-  escola_id         String?             @db.Uuid
-  telefone          String?             @db.VarChar(20)
+  pessoa_id         String              @unique @db.Uuid
   profissao         String?             @db.VarChar(100)
+  escolaridade      String?             @db.VarChar(100)
   aluno_encarregado aluno_encarregado[]
   data_criacao      DateTime            @default(now()) @db.Timestamp(6)
   data_atualizacao  DateTime            @default(now()) @updatedAt @db.Timestamp(6)
-  escola            escola?             @relation(fields: [escola_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_encarregado_escola")
-  usuario           usuario             @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_encarregado_usuario")
+  pessoa            pessoa              @relation(fields: [pessoa_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_encarregado_pessoa")
+  escola            escola?             @relation(fields: [escolaId], references: [id])
+  escolaId          String?             @db.Uuid
+  usuarios          usuario[]
 
-  @@index([usuario_id], map: "idx_encarregado_usuario")
+  @@index([pessoa_id], map: "idx_encarregado_pessoa")
 }
 
 model escola {
-  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome             String          @db.VarChar(200)
-  endereco         String?         @db.VarChar(300)
-  telefone         String?         @db.VarChar(20)
-  email            String?         @unique(map: "email_escola_unique") @db.VarChar(100)
-  usuario_id       String          @unique @db.Uuid
-  logo_url         String?         @db.VarChar(255)
-  natureza         natureza?       @default(publica)
-  nif              String?
-  codigo_mec       String?
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome        String    @db.VarChar(200)
+  natureza    natureza? @default(publica)
+  codigo_mec  String?
+  nif         String?   @unique @db.VarChar(20)
+  localizacao Json      @db.JsonB
+  contacto    Json      @db.JsonB
+  logo_url         String?         @db.VarChar(255) 
+
   data_criacao     DateTime        @default(now()) @db.Timestamp(6)
   data_atualizacao DateTime        @default(now()) @updatedAt @db.Timestamp(6)
-  status           Boolean?        @default(true)
-  usuario          usuario         @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario")
   academic_year    academic_year[]
   disciplina       disciplina[]
   professor        professor[]
@@ -119,6 +130,8 @@ model escola {
   aluno            aluno[]
   curso            curso[]
   escolaRegioes    escola_regiao[]
+  usuarioPapels    usuario_papel[]
+  usuarios         usuario[]
 }
 
 model matricula {
@@ -170,22 +183,20 @@ model avaliacao {
 }
 
 model professor {
-  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  usuario_id       String             @unique @db.Uuid
-  escola_id        String             @db.Uuid
-  numero_professor String             @unique @db.VarChar(20)
-  especialidade    String?            @db.VarChar(100)
-  data_contratacao DateTime?          @db.Date
-  escola           escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_escola")
-  usuario          usuario            @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_usuario")
-  turma_disciplina turma_disciplina[]
-  professor_turma  professor_turma[]
-  data_criacao     DateTime           @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime           @default(now()) @updatedAt @db.Timestamp(6)
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pessoa_id         String             @unique @db.Uuid
+  especialidade     String?            @db.VarChar(100)
+  categoria         String?            @db.VarChar(100)
+  habilitacoes      String?            @db.VarChar(255)
+  carga_horaria_sem Int?               @db.Int
+  pessoa            pessoa             @relation(fields: [pessoa_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_pessoa")
+  turma_disciplina  turma_disciplina[]
+  professor_turma   professor_turma[]
+  data_criacao      DateTime           @default(now()) @db.Timestamp(6)
+  escola            escola?            @relation(fields: [escolaId], references: [id])
+  escolaId          String?            @db.Uuid
 
-  @@index([escola_id], map: "idx_professor_escola")
-  @@index([numero_professor], map: "idx_professor_numero")
-  @@index([usuario_id], map: "idx_professor_usuario")
+  @@index([pessoa_id], map: "idx_professor_pessoa")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -277,23 +288,56 @@ model professor_turma {
 }
 
 model usuario {
-  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome_completo    String            @db.VarChar(200)
-  email            String            @unique @db.VarChar(100)
+  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pessoa_id        String              @db.Uuid
+  username         String              @unique @db.VarChar(50)
   senha_hash       String
-  escola_id        String?           @db.Uuid
+  mfa_enabled      Boolean             @default(false)
+  estado           estado_usuario_enum @default(ATIVO)
   tipo_usuario     tipo_usuario_enum
-  ativo            Boolean?          @default(true)
-  data_cadastro    DateTime?         @default(now()) @db.Timestamp(6)
-  aluno            aluno?
-  encarregado      encarregado?
-  escola           escola?
-  professor        professor?
-  data_criacao     DateTime          @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime          @default(now()) @updatedAt @db.Timestamp(6)
+  data_criacao     DateTime            @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime            @default(now()) @updatedAt @db.Timestamp(6)
+  aluno            aluno?              @relation(fields: [alunoId], references: [id])
+  alunoId          String?             @db.Uuid
+  encarregado      encarregado?        @relation(fields: [encarregadoId], references: [id])
+  encarregadoId    String?             @db.Uuid
+  escola           escola?             @relation(fields: [escolaId], references: [id])
+  usuarioPapels    usuario_papel[]
+  escolaId         String?             @db.Uuid
 
-  @@index([email], map: "idx_usuario_email")
   @@index([tipo_usuario], map: "idx_usuario_tipo")
+}
+
+model papel {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome             String          @db.VarChar(100)
+  data_criacao     DateTime        @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime        @default(now()) @updatedAt @db.Timestamp(6)
+  usuarioPapels    usuario_papel[]
+}
+
+model usuario_papel {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuario_id       String   @db.Uuid
+  papel_id         String   @db.Uuid
+  escola_id        String   @db.Uuid
+  usuario          usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario_papel_usuario")
+  papel            papel    @relation(fields: [papel_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario_papel_papel")
+  escola           escola   @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario_papel_escola")
+  data_criacao     DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  @@unique([usuario_id, papel_id], map: "uk_usuario_papel")
+  @@index([usuario_id], map: "idx_usuario_papel_usuario")
+  @@index([papel_id], map: "idx_usuario_papel_papel")
+}
+
+model licenca {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id String   @db.Uuid
+  escopo    String   @db.VarChar(100)
+  dt_inicio DateTime @db.Date
+  dt_fim    DateTime @db.Date
 }
 
 model escola_regiao {
@@ -328,10 +372,21 @@ model feedback {
   data_atualizacao DateTime             @default(now()) @updatedAt @db.Timestamp(6)
 }
 
+enum estado_usuario_enum {
+  ATIVO
+  BLOQUEADO
+}
+
 enum genero_enum {
   M
   F
   OUTRO
+}
+
+enum sexo_enum {
+  M
+  F
+  O
 }
 
 enum regiao_nivel_enum {
@@ -345,7 +400,7 @@ enum regiao_nivel_enum {
 enum natureza {
   publica
   privada
-  hibrida
+  publico_privada
 }
 
 enum tipo_feedback_enum {
