@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -34,7 +34,7 @@ export const verifyAuthentication = (req: Request | any, res: Response, next: Ne
             }
 
             req.userId = user.id;
-            if (user.ativo === false) {
+            if (user.estado === "ATIVO") {
                 res.status(400).json({
                     message: "Conta inativa. Por favor, ative sua conta."
                 });
@@ -49,7 +49,6 @@ export const verifyAuthentication = (req: Request | any, res: Response, next: Ne
         return;
     }
 };
-
 
 export const verifyAuthenticationAdmin = (req: Request | any, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -75,14 +74,14 @@ export const verifyAuthenticationAdmin = (req: Request | any, res: Response, nex
                 return;
             }
 
-            if (user.tipo_usuario !== "ADMIN" && user.tipo_usuario !== "SUPER_ADMIN") {
+            if (user.tipo_usuario !== "SUPER_ADMIN") {
                 res.status(403).json({
                     message: "Acesso negado. Você não tem permissão para acessar este recurso."
                 });
                 return;
             }
             req.userId = user.id;
-            if (user.ativo === false) {
+            if (user.estado === "BLOQUEADO") {
                 res.status(400).json({
                     message: "Conta inativa. Por favor, ative sua conta."
                 });
@@ -129,7 +128,7 @@ export const verifyAuthenticationSuperAdmin = (req: Request | any, res: Response
                 return;
             }
             req.userId = user.id;
-            if (user.ativo === false) {
+            if (user.estado === "BLOQUEADO") {
                 res.status(400).json({
                     message: "Conta inativa. Por favor, ative sua conta."
                 });
@@ -169,7 +168,7 @@ export const verifyAuthenticationAdminSchool = (req: Request | any, res: Respons
                 return;
             }
 
-            if (user.tipo_usuario !== "ADMIN"
+            if (user.tipo_usuario !== "ADMIN_ESCOLA"
                 && user.tipo_usuario !== "SECRETARIA"
                 && user.tipo_usuario !== "COORDENADOR"
                 && user.tipo_usuario !== "DIRETOR") {
@@ -179,7 +178,7 @@ export const verifyAuthenticationAdminSchool = (req: Request | any, res: Respons
                 return;
             }
             req.userId = user.id;
-            if (user.ativo === false) {
+           if (user.estado === "BLOQUEADO") {
                 res.status(400).json({
                     message: "Conta inativa. Por favor, ative sua conta."
                 });

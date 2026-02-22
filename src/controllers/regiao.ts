@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient, tipo_avaliacao_enum } from "../generated/prisma/client";
+import { PrismaClient, tipo_avaliacao_enum } from "@prisma/client";
 import { hash_password } from "../helper/encryption";
 import { validate } from "uuid";
 

@@ -1,4 +1,4 @@
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import * as dto from "../dtos/feedback.schema";
 const prisma = new PrismaClient();

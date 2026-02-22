@@ -1,34 +1,40 @@
 import dotenv from "dotenv";
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 dotenv.config();
 
 const prisma = new PrismaClient();
 
-const ANEP_USER = process.env.ANEP_USER;
-const ANEP_PASSWORD = process.env.ANEP_PASSWORD;
+const SUPER_USER = process.env.USER_EMAIL;
+const SUPER_PASSWORD = process.env.USER_PASSWORD;
 
-
-export const create_anep_user = async () => {
-    if (!ANEP_USER || !ANEP_PASSWORD) {
+export const create_super_user = async () => {
+    if (!SUPER_USER || !SUPER_PASSWORD) {
         return;
     }
-    const existingAnepUser = await prisma.usuario.findFirst({
-        where: { email: ANEP_USER },
+    const existingAnepPessoa = await prisma.pessoa.findFirst({
+        where: { email: SUPER_USER },
     });
 
-    if (existingAnepUser) {
+    if (existingAnepPessoa) {
         return;
     }
-    const hashedPassword = await bcrypt.hash(ANEP_PASSWORD, 10);
+    const hashedPassword = await bcrypt.hash(SUPER_PASSWORD, 10);
+
+    const createdPessoa = await prisma.pessoa.create({
+        data: {
+            nome_completo: process.env.SUPER_FULL_NAME || "Admin Principal",
+            email: SUPER_USER,
+        },
+    });
+
     await prisma.usuario.create({
         data: {
-            nome_completo: "ANEP",
-            email: ANEP_USER,
+            pessoa_id: createdPessoa.id,
+            username: "admin",
             senha_hash: hashedPassword,
             tipo_usuario: "SUPER_ADMIN",
         },
     });
-
-    console.log("ANEP user created successfully.");
+    console.log("Super user created successfully.");
 }

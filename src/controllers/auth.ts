@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { hash_password, compare_password } from "../helper/encryption";
-import { validate } from "uuid";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
@@ -13,11 +12,21 @@ export const login = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Email e senha são obrigatórios" });
     }
     try {
-        const user = await prisma.usuario.findUnique({
+        const pessoa = await prisma.pessoa.findUnique({
             where: {
                 email: email,
             },
         });
+        if (!pessoa) {
+            return res.status(401).json({ message: "Usuário ou senha inválida" });
+        }
+
+        const user = await prisma.usuario.findFirst({
+            where: {
+                pessoa_id: pessoa.id,
+            },
+        });
+
         if (!user) {
             return res.status(401).json({ message: "Usuário ou senha inválida" });
         }
@@ -25,8 +34,13 @@ export const login = async (req: Request, res: Response) => {
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Usuário ou senha inválida" });
         }
+
+        const payload = {
+            userId: user.id,
+            tipo_usuario: user.tipo_usuario,
+        };
         const token = jwt.sign(
-            { userId: user.id, tipo_usuario: user.tipo_usuario },
+            payload,
             process.env.JWT_SECRET || "default_secret"
         );
 

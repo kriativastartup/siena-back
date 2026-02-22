@@ -1,14 +1,12 @@
 import express from 'express';
 
-import { createCurso, getCursoById, updateCurso, deleteCurso, getCursosByEscola, getCursosByProfessor } from '../controllers/curso';
+import * as controller from '../controllers/curso';
 const router = express.Router();
 
-router.post('/create', createCurso);
-router.get('/all', getCursosByEscola);
-router.get('/each/:cursoId', getCursoById);
-router.put('/update/:cursoId', updateCurso);
-router.delete('/delete/:cursoId', deleteCurso);
-
-router.get('/by_teacher/:teacherId', getCursosByProfessor);
+router.post('/create', controller.createCurso);
+router.get('/all', controller.getCursosByEscola);
+router.get('/each/:curso_id', controller.getCursoById);
+router.put('/update/:curso_id', controller.updateCurso);
+router.delete('/delete/:curso_id', controller.deleteCurso);
 
 export default router;

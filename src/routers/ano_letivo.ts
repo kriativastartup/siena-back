@@ -1,11 +1,11 @@
 import express from 'express';
-import { createAnoLetivo, deleteAnoLetivo, getAlunoLetivoById, getAnosLetivos, updateAnoLetivo } from '../controllers/ano_letivo';
+import * as controller from '../controllers/ano_letivo';
 import { get } from 'node:https';
 
 const router = express.Router();
-router.post('/add', createAnoLetivo);
-router.get('/all/:escola_id', getAnosLetivos);
-router.get('/each/:anoId', getAlunoLetivoById);
-router.put('/edit/:anoId', updateAnoLetivo);
-router.delete('/delete/:anoId', deleteAnoLetivo);
+router.post('/add', controller.createAnoLetivo);
+router.get('/all/:escola_id', controller.getAnosLetivos);
+router.get('/each/:ano_id', controller.getAlunoLetivoById);
+router.put('/edit/:ano_id', controller.updateAnoLetivo);
+router.delete('/delete/:ano_id', controller.deleteAnoLetivo);
 export default router;

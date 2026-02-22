@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "../generated/prisma/client";
-import { hash_password } from "../helper/encryption";
+import { PrismaClient } from "@prisma/client";
+/*import { hash_password } from "../helper/encryption";
 import { validate } from "uuid";
 
 const prisma = new PrismaClient();
@@ -146,4 +146,4 @@ export const deleteAnoLetivo = async (req: Request, res: Response) => {
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao deletar Ano Letivo", error: error.message });
     }
-};
+};*/

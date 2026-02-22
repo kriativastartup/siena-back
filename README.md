@@ -20,3 +20,21 @@
 - Lógica de insersão de um aluno a uma escola, com as suas respectivas disciplicas.
 - Criação de feedbacks(Permitindo pessoas fazerem solicitação para criar uma nova escola, ou sugestões e comentários tipo um new latter)
 - Lógica de avaliação ou prova, corrigir avaliação.
+
+### Refatoração do código
+- escola - crud - √ Feito
+- alunos - crud - √ Feito
+- turma - crud -  √ Feito
+- matricula - crud - √ Feito
+- cursos - crud - √ Feito
+- professores - √ Feito
+- encarregados - √ Feito
+- funcionarios √ Feito
+- auth √ Feito
+- Documentar tudo já feito
+- disciplina
+- ano letivo
+- super admin
+- anep
+- criar as relacoes, tipo aluno entrar numa turma, mostrar o horário do aluno.
+- Documentar tudo já feito

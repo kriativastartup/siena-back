@@ -2,22 +2,15 @@ import express from 'express';
 
 const router = express.Router();
 
-import { getEscolas, createEscola, getEscolaById, updateEscola, deleteEscola, createAdminForEscola, getAdminByEscola, updateAdmin, deleteAdmin } from '../controllers/escolas';
-import { getAdminById } from '../controllers/admin';
-import { verifyAuthenticationAdmin, verifyAuthenticationSuperAdmin } from '../middleware/authorized';
+import * as controller from '../controllers/escolas';
+import * as autho from '../middleware/authorized';
+import { validate } from '../middleware/zod_validate';
+import * as dto from "../services/escolas/dto/escola.dto";
 
-router.post('/create', verifyAuthenticationSuperAdmin, createEscola);
-router.get('/all', verifyAuthenticationSuperAdmin, getEscolas);
-router.get('/each/:schoolId', verifyAuthenticationAdmin, getEscolaById);
-router.put('/update/:schoolId', verifyAuthenticationAdmin, updateEscola);
-router.delete('/delete/:schoolId', verifyAuthenticationSuperAdmin, deleteEscola);
-
-// admin para escola como secretario da escola e tal
-router.post('/admin/create', verifyAuthenticationAdmin, createAdminForEscola);
-router.get('/admin/all', verifyAuthenticationAdmin, getAdminByEscola);
-router.get('/admin/each/:adminId', verifyAuthenticationAdmin, getAdminById);
-router.put('/admin/update/:adminId', verifyAuthenticationAdmin, updateAdmin);
-router.delete('/admin/delete/:adminId', verifyAuthenticationAdmin, deleteAdmin);
-
+router.post('/create', autho.verifyAuthenticationSuperAdmin, validate(dto.CreateEscolaSchema), controller.createEscola);
+router.get('/all', autho.verifyAuthenticationSuperAdmin, controller.getEscolas);
+router.get('/each/:schoolId', autho.verifyAuthenticationAdmin, controller.getEscolaById);
+router.put('/update/:schoolId', autho.verifyAuthenticationAdmin, controller.updateEscola);
+router.delete('/delete/:schoolId', autho.verifyAuthenticationSuperAdmin, controller.deleteEscola);
 
 export default router;

@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+
 }
 
 datasource db {
@@ -9,19 +9,22 @@ datasource db {
 }
 
 model pessoa {
-  id               String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome_completo    String       @db.VarChar(200)
-  bi               String?      @unique @db.VarChar(20)
-  dt_nascimento    DateTime?    @db.Date
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome_completo String @db.VarChar(100)
+
+  bi               String?       @unique @db.VarChar(20)
+  dt_nascimento    DateTime?     @db.Date
   sexo             sexo_enum?
-  telefone         String?      @db.VarChar(20)
-  nacionalidade    String?      @db.VarChar(50)
-  morada           String?      @db.VarChar(300)
-  email            String?      @unique @db.VarChar(100)
-  data_criacao     DateTime     @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime     @default(now()) @updatedAt @db.Timestamp(6)
+  telefone         String?       @db.VarChar(20)
+  nacionalidade    String?       @db.VarChar(50)
+  morada           String?       @db.VarChar(300)
+  email            String?       @unique @db.VarChar(100)
+  data_criacao     DateTime      @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime      @default(now()) @updatedAt @db.Timestamp(6)
   encarregado      encarregado?
   professor        professor?
+  alunos           aluno[]
+  funcionarios     funcionario[]
 }
 
 model ano_letivo {
@@ -38,21 +41,32 @@ model ano_letivo {
 }
 
 model aluno {
-  id                     String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  pessoa_id              String              @db.Uuid
-  escola_id              String              @db.Uuid
-  n_processo             String              @unique @db.VarChar(20)
-  necessidades_especiais Json?               @db.Json
-  status                 status_aluno?       @default(activo)
-  foto                   String?             @db.VarChar(255)
-  data_criacao           DateTime            @default(now()) @db.Timestamp(6)
-  data_atualizacao       DateTime            @default(now()) @updatedAt @db.Timestamp(6)
+  id                     String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pessoa_id              String                  @db.Uuid
+  escola_id              String                  @db.Uuid
+  n_processo             String                  @unique @db.VarChar(20)
+  necessidades_especiais Json?                   @db.Json
+  status                 status_aluno?           @default(ACTIVO)
+  foto                   String?                 @db.VarChar(255)
+  data_criacao           DateTime                @default(now()) @db.Timestamp(6)
+  data_atualizacao       DateTime                @default(now()) @updatedAt @db.Timestamp(6)
   aluno_encarregado      aluno_encarregado[]
   matricula              matricula[]
   nota                   nota[]
   aluno_turma            aluno_turma[]
-  escola                 escola?             @relation(fields: [escola_id], references: [id])
+  escola                 escola?                 @relation(fields: [escola_id], references: [id])
   usuarios               usuario[]
+  pessoa                 pessoa                  @relation(fields: [pessoa_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_pessoa")
+  curriculos             curriculo[]
+  frequencias            frequencia[]
+  faturas                fatura[]
+  bolsaIsencaos          bolsa_isencao[]
+  respostaProva          resposta_prova[]
+  resultadoProva         resultado_prova[]
+  respostasVocacionais   respostas_vocacionais[]
+  perfilVocacional       perfil_vocacional?
+  pedidos                pedido[]
+  registroRefeicaos      registro_refeicao[]
 
   @@index([n_processo], map: "idx_aluno_numero_processo")
   @@index([pessoa_id], map: "idx_aluno_pessoa")
@@ -83,6 +97,11 @@ model disciplina {
   turma_disciplina turma_disciplina[]
   professor_turma  professor_turma[]
   nota             nota[]
+  escola           escola?            @relation(fields: [escola_id], references: [id])
+  escola_id        String?            @db.Uuid
+  avaliacaos       avaliacao[]
+  horarioAulas     horario_aula[]
+  diarioClasses    diario_classe[]
 }
 
 model encarregado {
@@ -94,36 +113,44 @@ model encarregado {
   data_criacao      DateTime            @default(now()) @db.Timestamp(6)
   data_atualizacao  DateTime            @default(now()) @updatedAt @db.Timestamp(6)
   pessoa            pessoa              @relation(fields: [pessoa_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_encarregado_pessoa")
-  escola            escola?             @relation(fields: [escolaId], references: [id])
-  escolaId          String?             @db.Uuid
+  escola            escola?             @relation(fields: [escola_id], references: [id])
+  escola_id         String?             @db.Uuid
   usuarios          usuario[]
 
   @@index([pessoa_id], map: "idx_encarregado_pessoa")
 }
 
 model escola {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome        String    @db.VarChar(200)
-  natureza    natureza? @default(publica)
-  codigo_mec  String?
-  nif         String?   @unique @db.VarChar(20)
-  localizacao Json      @db.JsonB
-  contacto    Json      @db.JsonB
-  logo_url    String?   @db.VarChar(255)
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome             String    @db.VarChar(200)
+  natureza         natureza? @default(PUBLICA)
+  codigo_mec       String?
+  nif              String?   @unique @db.VarChar(20)
+  localizacao      Json      @db.JsonB
+  contacto         Json      @db.JsonB
+  logo_url         String?   @db.VarChar(255)
+  data_criacao     DateTime  @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime  @default(now()) @updatedAt @db.Timestamp(6)
 
-  data_criacao     DateTime        @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime        @default(now()) @updatedAt @db.Timestamp(6)
-  ano_letivo       ano_letivo[]
-  disciplina       disciplina[]
-  professor        professor[]
-  turma            turma[]
-  encarregado      encarregado[]
-  matricula        matricula[]
-  aluno            aluno[]
-  curso            curso[]
-  escolaRegioes    escola_regiao[]
-  usuarioPapels    usuario_papel[]
-  usuarios         usuario[]
+  ano_letivo        ano_letivo[]
+  disciplina        disciplina[]
+  professor         professor[]
+  turma             turma[]
+  encarregado       encarregado[]
+  matricula         matricula[]
+  aluno             aluno[]
+  curso             curso[]
+  escolaRegioes     escola_regiao[]
+  usuarioPapels     usuario_papel[]
+  usuarios          usuario[]
+  infraEscolas      infra_escola[]
+  pessoaNaoDocentes pessoa_nao_docente[]
+  curriculos        curriculo[]
+  regraMedias       regra_media[]
+  planoCobrancas    plano_cobranca[]
+  planoCardapios    plano_cardapio[]
+  registroRefeicaos registro_refeicao[]
+  funcionarios      funcionario[]
 }
 
 model infra_escola {
@@ -157,21 +184,21 @@ model matricula {
   id         String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   aluno_id   String                @db.Uuid
   escola_id  String                @db.Uuid
-  ano_letivo String                @db.VarChar(9)
-  classe     Int                   @db.Int
-  turma_id   String?               @db.Uuid
+  ano_letivo String
+  classe     Int
+  turma_id   String               @db.Uuid
   turno      turno
   status     status_matricula_enum @default(ATIVA)
-  aluno      aluno                 @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_matricula_aluno")
-  escola     escola                @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_matricula_escola")
 
-  data_criacao     DateTime @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  aluno  aluno  @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
+  escola escola @relation(fields: [escola_id], references: [id], onDelete: Cascade)
+  turma  turma? @relation(fields: [turma_id], references: [id])
 
-  @@unique([aluno_id, turma_id, ano_letivo], map: "uk_matricula_aluno_turma")
-  @@index([aluno_id], map: "idx_matricula_aluno")
-  @@index([status], map: "idx_matricula_status")
-  @@index([turma_id], map: "idx_matricula_turma")
+  data_criacao        DateTime              @default(now())
+  data_atualizacao    DateTime              @updatedAt
+  documentoMatriculas documento_matricula[]
+
+  @@index([aluno_id, ano_letivo])
 }
 
 model documento_matricula {
@@ -188,7 +215,7 @@ model documento_matricula {
 model regra_vagas {
   id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   turma_id             String   @db.Uuid
-  limite               Int      @db.Int
+  limite               Int
   criterios_prioridade Json     @db.JsonB
   data_criacao         DateTime @default(now()) @db.Timestamp(6)
   data_atualizacao     DateTime @default(now()) @updatedAt @db.Timestamp(6)
@@ -198,17 +225,17 @@ model regra_vagas {
 }
 
 model curriculo {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  escola_id        String   @db.Uuid
-  alçuno_id       String   @db.Uuid
-  nivel            String   @db.VarChar(50)
-  descr            String?  @db.VarChar(255)
-  data_criacao     DateTime @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
-  escola           escola   @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_curriculo_escola")
-  aluno            aluno    @relation(fields: [alçuno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_curriculo_aluno")
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id String  @db.Uuid
+  aluno_id  String  @db.Uuid
+  nivel     String  @db.VarChar(50)
+  descr     String? @db.VarChar(255)
 
-  @@index([escola_id], map: "idx_curriculo_escola")
+  escola escola @relation(fields: [escola_id], references: [id], onDelete: Cascade)
+  aluno  aluno  @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
+
+  data_criacao     DateTime @default(now())
+  data_atualizacao DateTime @updatedAt
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -241,41 +268,46 @@ model frequencia {
 }
 
 model regra_media {
-  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  escola_id        String              @db.Uuid
-  escopo           String              @db.VarChar(50)
-  politica         String              @db.VarChar(255)
-  minima_aprovacao Float               @db.Decimal(5, 2)
-  arredondamento    String              @db.VarChar(50)
-  data_criacao     DateTime            @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime            @default(now()) @updatedAt @db.Timestamp(6)
-  escola           escola              @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_regra_media_escola")
+  id               String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id        String  @db.Uuid
+  escopo           String  @db.VarChar(50)
+  politica         String  @db.VarChar(255)
+  minima_aprovacao Decimal
+  arredondamento   String  @db.VarChar(50)
 
-  @@index([escola_id], map: "idx_regra_media_escola")
+  escola escola @relation(fields: [escola_id], references: [id], onDelete: Cascade)
+
+  data_criacao     DateTime           @default(now())
+  data_atualizacao DateTime           @updatedAt
+  regraMediaItems  regra_media_item[]
 }
 
 model regra_media_item {
-  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  regra_media_id   String      @db.Uuid
-  componente       String      @db.VarChar(100)
-  peso             Float       @db.Decimal(5, 2)
-  quantidade_descartar Int?     @db.Int
-  regra_media      regra_media @relation(fields: [regra_media_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_regra_media_item_regra_media")
+  id                   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  regra_media_id       String  @db.Uuid
+  componente           String  @db.VarChar(100)
+  peso                 Decimal
+  quantidade_descartar Int?
 
-  @@index([regra_media_id], map: "idx_regra_media_item_regra_media")
+  regra_media regra_media @relation(fields: [regra_media_id], references: [id], onDelete: Cascade)
 }
 
 model avaliacao {
-  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  turma_id         String              @db.Uuid
-  disciplina_id    String              @db.Uuid
-  trimestre        Int
-  tipo_avaliacao   tipo_avaliacao_enum
-  descricao        String?             @db.VarChar(255)
-  data_avaliacao   DateTime            @db.Date
-  data_criacao     DateTime            @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime            @default(now()) @updatedAt @db.Timestamp(6)
-  nota             nota[]
+  id             String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  turma_id       String              @db.Uuid
+  disciplina_id  String              @db.Uuid
+  trimestre      Int
+  tipo_avaliacao tipo_avaliacao_enum
+  descricao      String?             @db.VarChar(255)
+  data_avaliacao DateTime            @db.Date
+
+  turma      turma      @relation(fields: [turma_id], references: [id])
+  disciplina disciplina @relation(fields: [disciplina_id], references: [id])
+
+  nota nota[]
+
+  data_criacao     DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
 }
 
 model professor {
@@ -284,40 +316,43 @@ model professor {
   especialidade     String?            @db.VarChar(100)
   categoria         String?            @db.VarChar(100)
   habilitacoes      String?            @db.VarChar(255)
-  carga_horaria_sem Int?               @db.Int
+  carga_horaria_sem Int?
   pessoa            pessoa             @relation(fields: [pessoa_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_professor_pessoa")
   turma_disciplina  turma_disciplina[]
   professor_turma   professor_turma[]
   data_criacao      DateTime           @default(now()) @db.Timestamp(6)
-  escola            escola?            @relation(fields: [escolaId], references: [id])
-  escolaId          String?            @db.Uuid
+  escola            escola?            @relation(fields: [escola_id], references: [id])
+  escola_id         String?            @db.Uuid
 
   @@index([pessoa_id], map: "idx_professor_pessoa")
 }
 
 model turma {
-  id                   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  escola_id            String  @db.Uuid
-  nome                 String  @db.VarChar(100)
-  ano_letivo           String  @db.VarChar(9)
-  ano_letivo_id        String  @db.Uuid
-  classe               Int     @db.Int
-  turno                turno   @default(MANHA)
-  capacidade           Int     @default(30)
-  curso_id             String? @db.Uuid
-  professor_titular_id String? @db.Uuid
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id     String @db.Uuid
+  nome          String @db.VarChar(100)
+  ano_letivo    String @db.VarChar(9)
+  ano_letivo_id String @db.Uuid
+  classe        Int
+  turno         turno  @default(MANHA)
+  capacidade    Int    @default(30)
+  curso_id      String @db.Uuid
 
+  escola           escola             @relation(fields: [escola_id], references: [id])
+  ano              ano_letivo         @relation(fields: [ano_letivo_id], references: [id])
+  curso            curso              @relation(fields: [curso_id], references: [id])
   matricula        matricula[]
-  escola           escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_turma_escola")
-  ano              ano_letivo?        @relation(fields: [ano_letivo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_turma_ano_letivo")
+  aluno_turma      aluno_turma[]
   turma_disciplina turma_disciplina[]
   professor_turma  professor_turma[]
-  aluno_turma      aluno_turma[]
-  data_criacao     DateTime           @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime           @default(now()) @updatedAt @db.Timestamp(6)
 
-  @@index([ano_letivo], map: "idx_turma_ano_letivo")
-  @@index([escola_id], map: "idx_turma_escola")
+  data_criacao     DateTime        @default(now())
+  data_atualizacao DateTime        @updatedAt
+  regraVagases     regra_vagas[]
+  frequencias      frequencia[]
+  avaliacaos       avaliacao[]
+  horarioAulas     horario_aula[]
+  diarioClasses    diario_classe[]
 }
 
 model curso {
@@ -329,6 +364,8 @@ model curso {
   data_criacao     DateTime @default(now()) @db.Timestamp(6)
   data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
   escola           escola   @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_curso_escola")
+
+  turma turma[]
 
   @@index([escola_id], map: "idx_curso_escola")
 }
@@ -367,7 +404,7 @@ model horario_aula {
   id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   turma_id      String     @db.Uuid
   disciplina_id String     @db.Uuid
-  dia_semana    Int        @db.Int
+  dia_semana    Int
   hora_inicio   DateTime   @db.Time
   hora_fim      DateTime   @db.Time
   turma         turma      @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_horario_aula_turma")
@@ -413,6 +450,19 @@ model professor_turma {
   @@index([turma_id], map: "idx_professor_turma_turma")
 }
 
+model notificacoes {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  usuario_id       String   @db.Uuid
+  titulo           String   @db.VarChar(100)
+  mensagem         String   @db.VarChar(255)
+  lida             Boolean  @default(false)
+  data_criacao     DateTime @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  usuario          usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_notificacoes_usuario")
+
+  @@index([usuario_id], map: "idx_notificacoes_usuario")
+}
+
 model usuario {
   id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   pessoa_id        String              @db.Uuid
@@ -428,10 +478,24 @@ model usuario {
   encarregado      encarregado?        @relation(fields: [encarregadoId], references: [id])
   encarregadoId    String?             @db.Uuid
   escola           escola?             @relation(fields: [escolaId], references: [id])
-  usuarioPapels    usuario_papel[]
   escolaId         String?             @db.Uuid
+  notificacoes     notificacoes[]
+  usuarioPapels    usuario_papel[]
+}
 
-  @@index([tipo_usuario], map: "idx_usuario_tipo")
+model funcionario {
+  id               String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pessoa_id        String                 @db.Uuid
+  escola_id        String                 @db.Uuid
+  cargo            cargo_funcionario_enum @default(SECRETARIA)
+  departamento     String?                @db.VarChar(100)
+  data_criacao     DateTime               @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime               @default(now()) @updatedAt @db.Timestamp(6)
+  pessoa           pessoa                 @relation(fields: [pessoa_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_funcionario_pessoa")
+  escola           escola                 @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_funcionario_escola")
+
+  @@index([pessoa_id], map: "idx_funcionario_pessoa")
+  @@index([escola_id], map: "idx_funcionario_escola")
 }
 
 model papel {
@@ -498,55 +562,55 @@ model feedback {
   data_atualizacao DateTime             @default(now()) @updatedAt @db.Timestamp(6)
 }
 
-
 // MODULO FINANCEIRO
 model plano_cobranca {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  escola_id        String   @db.Uuid
-  periodicidade    periodicidade_enum   @default(MENSAL)
-  valor_base       Float    @db.Decimal(12, 2)
-  descontos        Json     @db.JsonB
-  data_criacao     DateTime @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
-  escola           escola   @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_plano_cobranca_escola")
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id        String             @db.Uuid
+  periodicidade    periodicidade_enum @default(MENSAL)
+  valor_base       Float
+  descontos        Json               @db.JsonB
+  data_criacao     DateTime           @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime           @default(now()) @updatedAt @db.Timestamp(6)
+  escola           escola             @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_plano_cobranca_escola")
 
   @@index([escola_id], map: "idx_plano_cobranca_escola")
 }
 
 model fatura {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  aluno_id    String   @db.Uuid
-  competencia DateTime @db.Date
-  itens       Json     @db.JsonB
-  total       Float    @db.Decimal(12, 2)
-  estado      fatura_estado_enum   @default(PENDENTE)
-  data_criacao     DateTime @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
-  aluno       aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_fatura_aluno")
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id         String             @db.Uuid
+  competencia      DateTime           @db.Date
+  itens            Json               @db.JsonB
+  total            Float
+  estado           fatura_estado_enum @default(PENDENTE)
+  data_criacao     DateTime           @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime           @default(now()) @updatedAt @db.Timestamp(6)
+  aluno            aluno              @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_fatura_aluno")
+  pagamentos       pagamento[]
 
   @@index([aluno_id], map: "idx_fatura_aluno")
 }
 
 model pagamento {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  fatura_id   String   @db.Uuid
-  valor       Float    @db.Decimal(12, 2)
-  meio        meio_pagamento_enum   
-  nsu         String?  @db.VarChar(50)
-  dt_pagamento DateTime @db.Timestamp(6)
-  fatura      fatura   @relation(fields: [fatura_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_pagamento_fatura")
+  id           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fatura_id    String              @db.Uuid
+  valor        Float
+  meio         meio_pagamento_enum
+  nsu          String?             @db.VarChar(50)
+  dt_pagamento DateTime            @db.Timestamp(6)
+  fatura       fatura              @relation(fields: [fatura_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_pagamento_fatura")
 
   @@index([fatura_id], map: "idx_pagamento_fatura")
   @@index([nsu], map: "idx_pagamento_nsu")
 }
 
 model bolsa_isencao {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  aluno_id  String   @db.Uuid
-  percentual Float    @db.Decimal(5, 2)
-  valor     Float    @db.Decimal(12, 2)
-  vigencia  String   @db.Daterange
-  aluno     aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_bolsa_isencao_aluno")
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id   String @db.Uuid
+  percentual Float
+  valor      Float
+  vigencia   String
+  aluno      aluno  @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_bolsa_isencao_aluno")
 
   @@index([aluno_id], map: "idx_bolsa_isencao_aluno")
 }
@@ -554,49 +618,49 @@ model bolsa_isencao {
 // Provas (ANEP)
 
 model prova {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organizador    organizador_prova_enum   @default(ANEP)
-  nome           String   @db.VarChar(100)
-  modalidade     modalidade_prova_enum @default(PRESENCIAL)
-  janela_inicio  DateTime @db.Timestamptz
-  janela_fim     DateTime @db.Timestamptz
-  antifraude     Json     @db.JsonB
+  id               String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizador      organizador_prova_enum @default(ANEP)
+  nome             String                 @db.VarChar(100)
+  modalidade       modalidade_prova_enum  @default(PRESENCIAL)
+  janela_inicio    DateTime               @db.Timestamptz
+  janela_fim       DateTime               @db.Timestamptz
+  antifraude       Json                   @db.JsonB
   caderno_questoes caderno_questoes[]
-  resposta_prova resposta_prova[]
-  resultado_prova resultado_prova[]
+  resposta_prova   resposta_prova[]
+  resultado_prova  resultado_prova[]
 }
 
 model caderno_questoes {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  prova_id  String   @db.Uuid
-  versao    String   @db.VarChar(20)
-  itens     Json     @db.JsonB
-  prova     prova    @relation(fields: [prova_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_caderno_questoes_prova")
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  prova_id String @db.Uuid
+  versao   String @db.VarChar(20)
+  itens    Json   @db.JsonB
+  prova    prova  @relation(fields: [prova_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_caderno_questoes_prova")
 }
 
 model resposta_prova {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  prova_id  String   @db.Uuid
-  aluno_id  String   @db.Uuid
-  item_id   String   @db.VarChar(50)
-  resposta  String   @db.VarChar(255)
-  tempo_ms  Int      @db.Int
-  prova     prova    @relation(fields: [prova_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_resposta_prova_prova")
-  aluno     aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_resposta_prova_aluno")
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  prova_id String @db.Uuid
+  aluno_id String @db.Uuid
+  item_id  String @db.VarChar(50)
+  resposta String @db.VarChar(255)
+  tempo_ms Int
+  prova    prova  @relation(fields: [prova_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_resposta_prova_prova")
+  aluno    aluno  @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_resposta_prova_aluno")
 
   @@unique([prova_id, aluno_id, item_id], map: "uk_resposta_prova")
 }
 
 model resultado_prova {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  prova_id       String   @db.Uuid
-  aluno_id       String   @db.Uuid
-  nota           Float    @db.Decimal(5, 2)
-  percentil      Float    @db.Decimal(5, 2)
-  ranking_local  Int      @db.Int
-  ranking_nacional Int    @db.Int
-  prova          prova    @relation(fields: [prova_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_resultado_prova_prova")
-  aluno          aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_resultado_prova_aluno")
+  id               String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  prova_id         String @db.Uuid
+  aluno_id         String @db.Uuid
+  nota             Float
+  percentil        Float
+  ranking_local    Int
+  ranking_nacional Int
+  prova            prova  @relation(fields: [prova_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_resultado_prova_prova")
+  aluno            aluno  @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_resultado_prova_aluno")
 
   @@unique([prova_id, aluno_id], map: "uk_resultado_prova")
 }
@@ -604,32 +668,32 @@ model resultado_prova {
 // Vocacional
 
 model teste_vocacional {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  versao    String   @db.VarChar(20)
-  modelo    String   @db.VarChar(20) // CHECK constraint to ensure values are 'interesses', 'aptidoes', or 'misto'
-  duracao_min Int     @db.Int
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  versao                String                  @db.VarChar(20)
+  modelo                String                  @db.VarChar(20) // CHECK constraint to ensure values are 'interesses', 'aptidoes', or 'misto'
+  duracao_min           Int
   respostas_vocacionais respostas_vocacionais[]
 }
 
 model respostas_vocacionais {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  teste_id  String   @db.Uuid
-  aluno_id  String   @db.Uuid
-  vetor_respostas Json @db.JsonB
-  teste     teste_vocacional @relation(fields: [teste_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_respostas_vocacionais_teste")
-  aluno     aluno           @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_respostas_vocacionais_aluno")
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teste_id        String           @db.Uuid
+  aluno_id        String           @db.Uuid
+  vetor_respostas Json             @db.JsonB
+  teste           teste_vocacional @relation(fields: [teste_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_respostas_vocacionais_teste")
+  aluno           aluno            @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_respostas_vocacionais_aluno")
 
   @@unique([teste_id, aluno_id], map: "uk_respostas_vocacionais")
 }
 
 model perfil_vocacional {
-  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  aluno_id           String   @db.Uuid
-  areas_interesse    String[] @db.VarChar(100)
-  aptidoes_destaque  String[] @db.VarChar(100)
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id             String   @db.Uuid
+  areas_interesse      String[] @db.VarChar(100)
+  aptidoes_destaque    String[] @db.VarChar(100)
   recomendacoes_cursos String[] @db.VarChar(255)
-  dt_emissao         DateTime @db.Date
-  aluno              aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_perfil_vocacional_aluno")
+  dt_emissao           DateTime @db.Date
+  aluno                aluno    @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_perfil_vocacional_aluno")
 
   @@unique([aluno_id], map: "uk_perfil_vocacional_aluno")
 }
@@ -637,95 +701,98 @@ model perfil_vocacional {
 // Estoque (Uniformes/Livros)
 
 model produto {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tipo             tipo_estoque_enum
-  sku              String   @unique @db.VarChar(50)
-  nome             String   @db.VarChar(100)
-  tamanho_ou_serie String   @db.VarChar(50)
-  preco            Float?   @db.Decimal(12, 2)
-  estoque_atual    Int      @db.Int
-  minimo_alerta    Int      @db.Int
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tipo              tipo_estoque_enum
+  sku               String              @unique @db.VarChar(50)
+  nome              String              @db.VarChar(100)
+  tamanho_ou_serie  String              @db.VarChar(50)
+  preco             Float?
+  estoque_atual     Int
+  minimo_alerta     Int
+  data_criacao      DateTime            @default(now()) @db.Timestamp(6)
+  data_atualizacao  DateTime            @default(now()) @updatedAt @db.Timestamp(6)
+  movimento_estoque movimento_estoque[]
 }
 
 model movimento_estoque {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  produto_id String   @db.Uuid
-  tipo      tipo_movimento_enum
-  quantidade Int      @db.Int
-  origem    origem_movimento_enum
-  ref       String?  @db.VarChar(100)
-  data      DateTime @db.Timestamptz
-  produto   produto  @relation(fields: [produto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_movimento_estoque_produto")
+  id         String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  produto_id String                @db.Uuid
+  tipo       tipo_movimento_enum
+  quantidade Int
+  origem     origem_movimento_enum
+  ref        String?               @db.VarChar(100)
+  data       DateTime
+  produto    produto               @relation(fields: [produto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_movimento_estoque_produto")
 }
 
 model pedido {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  aluno_id  String?  @db.Uuid
-  itens     Json     @db.JsonB
-  total     Float    @db.Decimal(12, 2)
-  status    status_pedido_enum @default(ABERTO)
-  canal     canal_pedido_enum
-  aluno     aluno?   @relation(fields: [aluno_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "fk_pedido_aluno")
+  id       String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id String?            @db.Uuid
+  itens    Json               @db.JsonB
+  total    Float
+  status   status_pedido_enum @default(ABERTO)
+  canal    canal_pedido_enum
+  aluno    aluno?             @relation(fields: [aluno_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "fk_pedido_aluno")
 }
 
 // Alimentação Escolar
 
 model item_alimento {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome             String   @db.VarChar(100)
-  unidade          String   @db.VarChar(50)
-  validade         DateTime @db.Date
-  estoque_atual    Int      @db.Int
-  minimo_alerta    Int      @db.Int
-  lote             String   @db.VarChar(50)
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome          String   @db.VarChar(100)
+  unidade       String   @db.VarChar(50)
+  validade      DateTime @db.Date
+  estoque_atual Int
+  minimo_alerta Int
+  lote          String   @db.VarChar(50)
 }
 
 model plano_cardapio {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  escola_id        String   @db.Uuid
-  semana           DateTime @db.Date
-  refeicoes        Json     @db.JsonB
-  escola           escola   @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_plano_cardapio_escola")
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id String   @db.Uuid
+  semana    DateTime @db.Date
+  refeicoes Json     @db.JsonB
+  escola    escola   @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_plano_cardapio_escola")
 }
 
 model registro_refeicao {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  data             DateTime @db.Date
-  escola_id        String   @db.Uuid
-  aluno_id         String?  @db.Uuid
-  tipo             tipo_refeicao_enum
-  custo            Float?   @db.Decimal(12, 2)
-  status           status_refeicao_enum
-  escola           escola   @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_registro_refeicao_escola")
-  aluno            aluno?   @relation(fields: [aluno_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "fk_registro_refeicao_aluno")
+  id        String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  data      DateTime             @db.Date
+  escola_id String               @db.Uuid
+  aluno_id  String?              @db.Uuid
+  tipo      tipo_refeicao_enum
+  custo     Float?
+  status    status_refeicao_enum
+  escola    escola               @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_registro_refeicao_escola")
+  aluno     aluno?               @relation(fields: [aluno_id], references: [id], onDelete: SetNull, onUpdate: NoAction, map: "fk_registro_refeicao_aluno")
 }
 
 // Relatórios & Sync
 
 model sync_log {
-  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tabela           String   @db.VarChar(100)
-  pk               String   @db.Uuid
-  op               String   @db.VarChar(1) // CHECK constraint to ensure values are 'I', 'U', or 'D'
-  payload          Json     @db.JsonB
-  ts               DateTime @db.Timestamptz
+  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tabela  String   @db.VarChar(100)
+  pk      String   @db.Uuid
+  op      String   @db.VarChar(1) // CHECK constraint to ensure values are 'I', 'U', or 'D'
+  payload Json     @db.JsonB
+  ts      DateTime @db.Timestamptz
 }
 
 model outbox_event {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tipo           String   @db.VarChar(100)
-  agregado       String   @db.VarChar(100)
-  agregado_id    String   @db.Uuid
-  payload        Json     @db.JsonB
-  status         String   @db.VarChar(20) // CHECK constraint to ensure values are 'pendente', 'enviado', or 'erro'
-  tentativas     Int      @db.Int
-  disponivel_em  DateTime @db.Timestamptz
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tipo          String   @db.VarChar(100)
+  agregado      String   @db.VarChar(100)
+  agregado_id   String   @db.Uuid
+  payload       Json     @db.JsonB
+  status        String   @db.VarChar(20) // CHECK constraint to ensure values are 'pendente', 'enviado', or 'erro'
+  tentativas    Int
+  disponivel_em DateTime @db.Timestamptz
 }
 
 model sync_watermark {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tabela    String   @db.VarChar(100)
-  last_ts   DateTime @db.Timestamptz
+  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tabela  String   @db.VarChar(100)
+  last_ts DateTime @db.Timestamptz
 }
 
 enum tipo_refeicao_enum {
@@ -827,9 +894,9 @@ enum regiao_nivel_enum {
 }
 
 enum natureza {
-  publica
-  privada
-  publico_privada
+  PUBLICA
+  PRIVADA
+  PUBLICA_PRIVADA
 }
 
 enum tipo_feedback_enum {
@@ -857,11 +924,11 @@ enum role {
 }
 
 enum status_aluno {
-  activo
-  transferido
-  desistente
-  concluinte
-  suspendido
+  ACTIVO
+  TRANSFERIDO
+  DESISTENTE
+  CONCLUENTE
+  SUSPENDIDO
 }
 
 enum status_matricula_enum {
@@ -887,22 +954,30 @@ enum tipo_avaliacao_enum {
   TAREFA
 }
 
+enum cargo_funcionario_enum {
+  SECRETARIA // secretaria da escola
+  COORDENADOR // coordenador pedagógico de uma turma ou de um curso
+  DIRETOR // diretor da escola
+  ADMIN_ESCOLA // administrador da escola, responsável por gestão de usuários, turmas, etc.
+}
+
 enum tipo_usuario_enum {
+  SUPER_ADMIN // Super Administrador do Sistema
+
   ALUNO // Aluno ou Estudante
   PROFESSOR // Professor ou Docente
   ENCARREGADO // Encarregado de Educação ou Responsável
-  ADMIN // Administrador da Escola
-  SUPER_ADMIN // Super Administrador do Sistema
-  ADMINISTRACAO // administração local como direcção regional ou municipal
 
   SECRETARIA // secretaria da escola
   COORDENADOR // coordenador pedagógico de uma turma ou de um curso
   DIRETOR // diretor da escola
+  ADMIN_ESCOLA // administrador da escola, responsável por gestão de usuários, turmas, etc.
 
   ANEP // Associação Nacional de Ensino Privado
   MED // Ministerio da Educação
   GEPE // Gabinete de Planeamento e Estudos
   INADE // Instituto Nacional de Avaliação Educativa
   INE // Instituto Nacional de Estatística
+  ADMINISTRACAO //?? administração local como direcção regional ou municipal
   PARCEIROS // parceiros externos como ONGs, empresas, etc.
 }

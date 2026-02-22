@@ -1,150 +1,75 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "../generated/prisma/client";
-import { hash_password } from "../helper/encryption";
+import { PrismaClient } from "@prisma/client";
 import { validate } from "uuid";
-import { generateRandomNumber } from "../helper/random";
+import * as AlunoDTO from "../services/alunos/dto/alunos.dto";
+import * as services from "../services/alunos";
 
 const prisma = new PrismaClient();
 
 export const createAluno = async (req: Request | any, res: Response) => {
-    const { nome_completo, email, senha, data_nascimento, genero, telefone, endereco, foto, escola_id } = req.body;
+    const { nome_completo, bi, dt_nascimento, sexo, telefone, nacionalidade, morada, email, n_processo, necessidades_especiais, foto, senha_hash, escola_id } = req.body;
+
     try {
-        const existUsuario = await prisma.usuario.findFirst({
-            where: {
-                email: email,
-            },
-        });
+        const createAlunoDTO: AlunoDTO.CreateAlunoDTO = {
+            nome_completo,
+            bi,
+            dt_nascimento,
+            sexo,
+            telefone,
+            nacionalidade,
+            morada,
+            email,
+            n_processo,
+            necessidades_especiais,
+            foto,
+            senha_hash,
+            escola_id
+        };
 
-        if (existUsuario) {
-            return res.status(400).json({ message: "Usuário com esse email já existe" });
+        const newAluno = await services.createAlunoService(createAlunoDTO);
+        if ("status" in newAluno && "message" in newAluno && typeof newAluno.status === "number") {
+            return res.status(newAluno.status as number).json({ message: newAluno.message });
         }
-
-        if (!escola_id || !validate(escola_id)) {
-            return res.status(400).json({ message: "ID de escola inválido" });
-        }
-
-        if (!nome_completo || !email || !senha || !data_nascimento) {
-            return res.status(400).json({ error: "Todos os campos são obrigatórios" });
-        }
-
-        if (genero) {
-            const validGeneros = ["M", "F", "OUTRO"];
-            if (!validGeneros.includes(genero)) {
-                return res.status(400).json({ message: "Gênero inválido" });
-            }
-        }
-
-        const newUsuario = await prisma.usuario.create({
-            data: {
-                nome_completo,
-                email,
-                senha_hash: await hash_password(senha),
-                tipo_usuario: "ALUNO"
-            },
-        });
-
-        const newAluno = await prisma.aluno.create({
-            data: {
-                data_nascimento: new Date(data_nascimento),
-                usuario_id: newUsuario.id,
-                numero_aluno: generateRandomNumber(6),
-                genero,
-                telefone,
-                endereco,
-                foto,
-                escola_id: escola_id
-            },
-        });
-        return res.status(201).json({
-            ...newAluno,
-            nome_completo: newUsuario.nome_completo,
-            email: newUsuario.email,
-            tipo_usuario: newUsuario.tipo_usuario
-        });
+        return res.status(201).json(newAluno);
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao criar aluno", error: error.message });
     }
 };
 
 export const getAlunosTurma = async (req: Request, res: Response) => {
-    try {
-        const turmaId = req.params.turmaId as string | undefined;
-
-        if (!turmaId || !validate(turmaId)) {
-            return res.status(400).json({ message: "ID de turma inválido" });
-        }
-
-        const existTurma = await prisma.turma.findFirst({
-            where: { id: turmaId },
-        });
-
-        if (!existTurma) {
-            return res.status(404).json({ message: "Turma não encontrada" });
-        }
-        const alunos = await prisma.aluno.findMany({
-            where: {
-                aluno_turma: {
-                    some: {
-                        turma_id: turmaId
-                    }
-                }
-            },
-        });
-
-        const alunosWithUserData = await Promise.all(alunos.map(async (aluno) => {
-            const user = await prisma.usuario.findFirst({
-                where: { id: aluno.usuario_id },
-            });
-            return {
-                ...aluno,
-                nome_completo: user?.nome_completo,
-                email: user?.email,
-                tipo_usuario: user?.tipo_usuario,
-                turma: existTurma
-            };
-        }));
-
-        return res.status(200).json(alunosWithUserData);
-    } catch (error: any) {
-        return res.status(500).json({ message: "Erro ao buscar alunos", error: error.message });
+    const { turma_id } = req.params;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const offset =  (page - 1) * limit;
+    const search = `${req.query.search || ""}`.trim();
+    const alunos = await services.getAlunosTurmaService(turma_id, limit, offset, search);
+    if ("status" in alunos && "message" in alunos && typeof alunos.status === "number") {
+        return res.status(alunos.status).json({ message: alunos.message });
     }
+    return res.status(200).json(alunos);
+};
+
+export const getAlunosEscola = async (req: Request, res: Response) => {
+    const { escola_id } = req.params;
+    const alunos = await services.getAlunosEscolaService(escola_id);
+    if ("status" in alunos && "message" in alunos && typeof alunos.status === "number") {
+        return res.status(alunos.status).json({ message: alunos.message });
+    }
+    return res.status(200).json(alunos);
 };
 
 export const getAlunoById = async (req: Request, res: Response) => {
-    const { usuarioId } = req.params;
+    const { aluno_id } = req.params;
 
-    if (!validate(usuarioId)) {
+    if (!aluno_id || !validate(aluno_id)) {
         return res.status(400).json({ message: "ID de aluno inválido" });
     }
 
-    try {
-        const aluno = await prisma.aluno.findFirst({
-            where: { usuario_id: usuarioId },
-        });
-        if (!aluno) {
-            return res.status(404).json({ message: "Aluno não encontrado" });
-        }
-
-        const user = await prisma.usuario.findFirst({
-            where: { id: usuarioId },
-        });
-
-        const turmas = await prisma.aluno_turma.findFirst({
-            where: { aluno_id: aluno.id },
-            include: { turma: true },
-            orderBy: { data_criacao: 'desc' }
-        });
-
-        return res.status(200).json({
-            ...aluno,
-            nome_completo: user?.nome_completo,
-            email: user?.email,
-            tipo_usuario: user?.tipo_usuario,
-            turma: turmas?.turma
-        });
-    } catch (error: any) {
-        return res.status(500).json({ message: "Erro ao buscar aluno", error: error.message });
+    const aluno = await services.getAlunoByIdService(aluno_id);
+    if ("status" in aluno && "message" in aluno && typeof aluno.status === "number") {
+        return res.status(aluno.status).json({ message: aluno.message });
     }
+    return res.status(200).json(aluno);
 }
 
 export const getAlunoByMe = async (req: Request | any, res: Response) => {
@@ -154,163 +79,59 @@ export const getAlunoByMe = async (req: Request | any, res: Response) => {
         return res.status(400).json({ message: "ID de aluno inválido" });
     }
 
-    try {
-        const user = await prisma.usuario.findFirst({
-            where: { id: userId },
-        });
-
-        if (!user) {
-            return res.status(404).json({ message: "Usuário não encontrado" });
-        }
-
-        if (user.tipo_usuario != "ALUNO") {
-            return res.status(403).json({ message: "Acesso negado. Usuário não é um aluno." });
-        }
-
-        const aluno = await prisma.aluno.findFirst({
-            where: { usuario_id: userId },
-        });
-        if (!aluno) {
-            return res.status(404).json({ message: "Aluno não encontrado" });
-        }
-        const turmas = await prisma.aluno_turma.findFirst({
-            where: { aluno_id: aluno.id },
-            include: { turma: true },
-            orderBy: { data_criacao: 'desc' }
-        });
-
-        return res.status(200).json({
-            ...aluno,
-            nome_completo: user?.nome_completo,
-            email: user?.email,
-            tipo_usuario: user?.tipo_usuario,
-            turma: turmas?.turma ? turmas.turma : null
-        });
-    } catch (error: any) {
-        return res.status(500).json({ message: "Erro ao buscar aluno", error: error.message });
+    const aluno = await services.getAlunoByIdService(userId);
+    if ("status" in aluno && "message" in aluno && typeof aluno.status === "number") {
+        return res.status(aluno.status).json({ message: aluno.message });
     }
+    return res.status(200).json(aluno);
 }
 
 export const updateAluno = async (req: Request, res: Response) => {
-    const { usuarioId } = req.params;
-    const { nome_completo, email, data_nascimento, genero, telefone, endereco, foto } = req.body;
+    const { aluno_id } = req.params;
+    const { nome_completo, bi, dt_nascimento, sexo, telefone, nacionalidade, morada, email, n_processo, necessidades_especiais, foto, status } = req.body;
 
-    if (!usuarioId || !validate(usuarioId)) {
-        return res.status(400).json({ message: "ID de aluno inválido" });
-    }
-    const exitAluno = await prisma.aluno.findFirst({
-        where: { usuario_id: usuarioId },
-    });
-
-    if (!exitAluno) {
-        return res.status(404).json({ message: "Aluno não encontrado" });
-    }
-
-    try {
-        const existUsuario = await prisma.usuario.findFirst({
-            where: { id: exitAluno.usuario_id },
-        });
-
-        if (!existUsuario) {
-            return res.status(404).json({ message: "Usuário do aluno não encontrado" });
-        }
-
-        if (email) {
-            const existUsuarioEmail = await prisma.usuario.findFirst({
-                where: {
-                    email: email,
-                    NOT: { id: existUsuario.id }
-                },
-            });
-
-            if (existUsuarioEmail) {
-                return res.status(400).json({ message: "Outro usuário com esse email já existe" });
-            }
-        }
-
-
-        await prisma.usuario.update({
-            where: { id: existUsuario.id },
-            data: {
-                nome_completo: nome_completo ? nome_completo : existUsuario.nome_completo,
-                email: email ? email : existUsuario.email
-            },
-        });
-
-
-        const updatedAluno = await prisma.aluno.update({
-            where: { usuario_id: usuarioId },
-            data: {
-                data_nascimento: data_nascimento ? new Date(data_nascimento) : exitAluno.data_nascimento || undefined,
-                genero: genero ? genero : exitAluno.genero,
-                telefone: telefone ? telefone : exitAluno.telefone || undefined,
-                endereco: endereco ? endereco : exitAluno.endereco || undefined,
-                foto: foto ? foto : exitAluno.foto || undefined,
-            },
-        });
-
-        return res.status(200).json({
-            ...updatedAluno,
-            nome_completo: existUsuario.nome_completo,
-            email: existUsuario.email,
-            tipo_usuario: existUsuario.tipo_usuario
-        });
-    } catch (error: any) {
-        return res.status(500).json({ message: "Erro ao atualizar aluno", error: error.message });
-    }
-}
-
-export const deleteAluno = async (req: Request, res: Response) => {
-    const { usuarioId } = req.params;
-
-    if (!usuarioId || !validate(usuarioId)) {
+    if (!aluno_id || !validate(aluno_id)) {
         return res.status(400).json({ message: "ID de aluno inválido" });
     }
 
     try {
-        const aluno = await prisma.aluno.findFirst({
-            where: { usuario_id: usuarioId },
-        });
-
-        if (!aluno) {
+        
+        const existeAluno = await prisma.aluno.findFirst({ where: { id: aluno_id } });
+        if (!existeAluno) {
             return res.status(404).json({ message: "Aluno não encontrado" });
         }
 
-        const existUsuario = await prisma.usuario.findFirst({
-            where: { id: aluno.usuario_id },
-        });
-
-        try {
-            await prisma.aluno_turma.deleteMany({
-                where: { aluno_id: aluno.id },
-            });
-            await prisma.matricula.deleteMany({
-                where: { aluno_id: aluno.id },
-            });
-            await prisma.nota.deleteMany({
-                where: { aluno_id: aluno.id },
-            });
-            await prisma.aluno_encarregado.deleteMany({
-                where: { aluno_id: aluno.id },
-            });
-
-            await prisma.aluno.delete({
-                where: { id: aluno.id },
-            });
-
-            if (existUsuario) {
-                await prisma.usuario.delete({
-                    where: { id: existUsuario.id },
-                });
-            }
-        } catch (error: any) {
-            return res.status(500).json({
-                message: "Erro ao deletar dados relacionados ao aluno",
-                error: error.message
-            });
+        const existePessoa = await prisma.pessoa.findFirst({ where: { id: existeAluno.pessoa_id } });
+        if (!existePessoa) {
+            return res.status(404).json({ message: "Pessoa associada ao aluno não encontrada" });
         }
-        return res.status(200).json({ message: "Aluno deletado com sucesso" });
+        
+        const updateAlunoDTO: Partial<AlunoDTO.CreateAlunoDTO> = {
+            nome_completo : nome_completo || existePessoa.nome_completo,
+            bi : bi || existePessoa.bi,
+            dt_nascimento : dt_nascimento || existePessoa.dt_nascimento,
+            sexo : sexo || existePessoa.sexo,
+            telefone : telefone || existePessoa.telefone,
+            nacionalidade : nacionalidade || existePessoa.nacionalidade,
+            morada : morada || existePessoa.morada,
+            email : email || existePessoa.email,
+            n_processo : n_processo || existeAluno.n_processo,
+            necessidades_especiais : necessidades_especiais || existeAluno.necessidades_especiais,
+            foto : foto || existeAluno.foto,
+            status : status || existeAluno.status
+        };
+
+        const updatedAluno = await services.updateAlunoService(aluno_id, updateAlunoDTO);
+        if ("status" in updatedAluno && "message" in updatedAluno && typeof updatedAluno.status === "number") {
+            return res.status(updatedAluno.status).json({ message: updatedAluno.message });
+        }
+        return res.status(200).json(updatedAluno);
     } catch (error: any) {
-        return res.status(500).json({ message: "Erro ao deletar aluno", error: error.message });
+        return res.status(500).json({ message: "Erro ao atualizar aluno", error: error.message });
     }
+   
+}
+
+export const deleteAluno = async (req: Request, res: Response) => {
+    return res.status(200).json({ message: "Funcionalidade de exclusão de aluno ainda não implementada" });
 };
