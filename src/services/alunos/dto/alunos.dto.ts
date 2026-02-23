@@ -9,10 +9,10 @@ export const CreateAlunoSchema = z.object({
         return !isNaN(Date.parse(date));
     }, "Data de nascimento inválida"),
     sexo: z.enum(sexo_enum, "O sexo é obrigatório e deve ser um tipo válido"),
-    telefone: z.string("O telefone é obrigatório").min(9, "O telefone deve ter pelo menos 9 caracteres").max(20).optional(),
+    telefone: z.string("O telefone é obrigatório").min(9, "O telefone deve ter pelo menos 9 caracteres").max(20),
     nacionalidade: z.string("A nacionalidade é obrigatória").min(2, "A nacionalidade deve ter pelo menos 2 caracteres").max(50).optional(),
     morada: z.string("A morada é obrigatória").min(5, "A morada deve ter pelo menos 5 caracteres").max(300).optional(),
-    email: z.string("O email é obrigatório").email("Formato de email inválido").optional(),
+    email: z.string("O email é obrigatório").email("Formato de email inválido"),
     n_processo: z.string("O número de processo é obrigatório").min(3, "O número de processo deve ter pelo menos 3 caracteres").max(20),
     necessidades_especiais: z.object({
         descricao: z.string("A descrição das necessidades especiais é obrigatória").min(5, "A descrição deve ter pelo menos 5 caracteres").max(300).optional(),
@@ -58,10 +58,10 @@ export const ResponseAlunoSchema = z.object({
     dt_nascimento: z.date(),
     sexo: z.enum(sexo_enum),
     escola_id: z.string(),
-    telefone: z.string().optional(),
+    telefone: z.string(),
     nacionalidade: z.string().optional(),
     morada: z.string().optional(),
-    email: z.string().optional(),
+    email: z.string(),
     n_processo: z.string(),
     necessidades_especiais: z.object({
         descricao: z.string(),

@@ -51,7 +51,7 @@ export const createEscola = async (req: Request | any, res: Response) => {
         logo_url,
     });
     if (result && (typeof result === "object" && (result as PropsResponseBad).status)) {
-      return res.status((result as PropsResponseBad).status).json((result as PropsResponseBad).message);
+      return res.status((result as PropsResponseBad).status).json({ message: (result as PropsResponseBad).message });
     }
     return res.status(201).json(result);
   } catch (error: any) {
@@ -66,7 +66,7 @@ export const getEscolaById = async (req: Request, res: Response) => {
   try {
     const result = await services.getEscolaByIdService(escola_id);
     if (result && (typeof result === "object" && (result as PropsResponseBad).status)) {
-      return res.status((result as PropsResponseBad).status).json((result as PropsResponseBad).message);
+      return res.status((result as PropsResponseBad).status).json({ message: (result as PropsResponseBad).message });
     }
     return res.status(200).json(result);
   } catch (error: any) {
@@ -78,6 +78,9 @@ export const getEscolaById = async (req: Request, res: Response) => {
 
 export const updateEscola = async (req: Request, res: Response) => {
   const { escola_id } = req.params;
+  if (!validate(escola_id)) {
+    return res.status(400).json({ message: "ID da escola inválido" });
+  }
   const {
     nome,
     natureza,
@@ -99,7 +102,7 @@ export const updateEscola = async (req: Request, res: Response) => {
         logo_url,
     });
     if (result && (typeof result === "object" && (result as PropsResponseBad).status)) {
-      return res.status((result as PropsResponseBad).status).json((result as PropsResponseBad).message);
+      return res.status((result as PropsResponseBad).status).json({ message: (result as PropsResponseBad).message });
     }
     return res.status(200).json(result);
   } catch (error: any) {
@@ -114,7 +117,7 @@ export const deleteEscola = async (req: Request, res: Response) => {
   try {
     const result = await services.deleteEscolaService(escola_id);
     if (result && (typeof result === "object" && (result as PropsResponseBad).status)) {
-      return res.status((result as PropsResponseBad).status).json((result as PropsResponseBad).message);
+      return res.status((result as PropsResponseBad).status).json({ message: (result as PropsResponseBad).message });
     }
     return res.status(200).json({ message: "Escola deletada com sucesso" });
   } catch (error: any) {
