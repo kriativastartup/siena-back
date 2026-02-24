@@ -1,6 +1,8 @@
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi"
 import { registry } from "./registry";
 
+
+import "../services/auth/dto/auth.openapi"
 import "../services/alunos/dto/aluno.openapi"
 import "../services/escolas/dto/escola.openapi"
 import "../services/funcionarios/dto/funcionario.openapi"

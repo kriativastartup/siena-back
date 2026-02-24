@@ -11,6 +11,23 @@
   ],
   "components": {
     "schemas": {
+      "LoginDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "senha": {
+            "type": "string",
+            "minLength": 6
+          }
+        },
+        "required": [
+          "email",
+          "senha"
+        ]
+      },
       "Aluno": {
         "type": "object",
         "properties": {
@@ -113,11 +130,663 @@
           "tipo_usuario",
           "estado"
         ]
+      },
+      "Escola": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "natureza": {
+            "type": "string",
+            "enum": [
+              "PUBLICA",
+              "PRIVADA",
+              "PUBLICA_PRIVADA"
+            ]
+          },
+          "codigo_mec": {
+            "type": "string"
+          },
+          "nif": {
+            "type": "string"
+          },
+          "localizacao": {
+            "type": "object",
+            "properties": {
+              "endereco": {
+                "type": "string"
+              },
+              "cidade": {
+                "type": "string"
+              },
+              "provincia": {
+                "type": "string"
+              },
+              "pais": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "endereco",
+              "provincia",
+              "pais"
+            ]
+          },
+          "contacto": {
+            "type": "object",
+            "properties": {
+              "telefone": {
+                "type": "string"
+              },
+              "outro_telefone": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "outro_email": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "telefone",
+              "email"
+            ]
+          },
+          "logo_url": {
+            "type": "string"
+          },
+          "data_criacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_atualizacao": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "natureza",
+          "codigo_mec",
+          "nif",
+          "localizacao",
+          "contacto",
+          "data_criacao",
+          "data_atualizacao"
+        ]
+      },
+      "Funcionario": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pessoa_id": {
+            "type": "string"
+          },
+          "nome_completo": {
+            "type": "string"
+          },
+          "bi": {
+            "type": "string"
+          },
+          "dt_nascimento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sexo": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F",
+              "O"
+            ]
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "nacionalidade": {
+            "type": "string"
+          },
+          "morada": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "cargo": {
+            "type": "string"
+          },
+          "departamento": {
+            "type": "string"
+          },
+          "tipo_usuario": {
+            "type": "string",
+            "enum": [
+              "SUPER_ADMIN",
+              "ALUNO",
+              "PROFESSOR",
+              "ENCARREGADO",
+              "SECRETARIA",
+              "COORDENADOR",
+              "DIRETOR",
+              "ADMIN_ESCOLA",
+              "ANEP",
+              "MED",
+              "GEPE",
+              "INADE",
+              "INE",
+              "ADMINISTRACAO",
+              "PARCEIROS"
+            ]
+          },
+          "escola_id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "data_criacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_atualizacao": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "pessoa_id",
+          "nome_completo",
+          "escola_id",
+          "username",
+          "estado",
+          "data_criacao",
+          "data_atualizacao"
+        ]
+      },
+      "Matricula": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "aluno_id": {
+            "type": "string"
+          },
+          "turma_id": {
+            "type": "string"
+          },
+          "escola_id": {
+            "type": "string"
+          },
+          "ano_letivo": {
+            "type": "string"
+          },
+          "classe": {
+            "type": "number"
+          },
+          "turno": {
+            "type": "string",
+            "enum": [
+              "MANHA",
+              "TARDE",
+              "NOITE",
+              "INTEGRAL"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ATIVA",
+              "CONCLUIDA",
+              "CANCELADA",
+              "SUSPENSA"
+            ]
+          },
+          "pessoa_id": {
+            "type": "string"
+          },
+          "nome_completo": {
+            "type": "string"
+          },
+          "bi": {
+            "type": "string"
+          },
+          "dt_nascimento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sexo": {
+            "type": "string"
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "nacionalidade": {
+            "type": "string"
+          },
+          "morada": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "data_criacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_atualizacao": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "aluno_id",
+          "turma_id",
+          "escola_id",
+          "ano_letivo",
+          "classe",
+          "turno",
+          "status",
+          "pessoa_id",
+          "nome_completo",
+          "bi",
+          "dt_nascimento",
+          "sexo",
+          "telefone",
+          "nacionalidade",
+          "morada",
+          "email",
+          "data_criacao",
+          "data_atualizacao"
+        ]
+      },
+      "Curso": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string",
+            "nullable": true
+          },
+          "abreviacao": {
+            "type": "string",
+            "nullable": true
+          },
+          "escola_id": {
+            "type": "string"
+          },
+          "data_criacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_atualizacao": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "descricao",
+          "abreviacao",
+          "escola_id",
+          "data_criacao",
+          "data_atualizacao"
+        ]
+      },
+      "Turma": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "escola_id": {
+            "type": "string"
+          },
+          "curso_id": {
+            "type": "string"
+          },
+          "ano_letivo": {
+            "type": "string"
+          },
+          "ano_letivo_id": {
+            "type": "string"
+          },
+          "turno": {
+            "type": "string",
+            "enum": [
+              "MANHA",
+              "TARDE",
+              "NOITE",
+              "INTEGRAL"
+            ]
+          },
+          "classe": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "capacidade": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "data_criacao": {
+            "type": "string"
+          },
+          "data_atualizacao": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "escola_id",
+          "curso_id",
+          "ano_letivo",
+          "ano_letivo_id",
+          "turno",
+          "classe",
+          "capacidade",
+          "data_criacao",
+          "data_atualizacao"
+        ]
+      },
+      "Professor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pessoa_id": {
+            "type": "string"
+          },
+          "nome_completo": {
+            "type": "string"
+          },
+          "bi": {
+            "type": "string"
+          },
+          "dt_nascimento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sexo": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F",
+              "O"
+            ]
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "nacionalidade": {
+            "type": "string"
+          },
+          "morada": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "especialidade": {
+            "type": "string"
+          },
+          "categoria": {
+            "type": "string"
+          },
+          "habilitacoes": {
+            "type": "string"
+          },
+          "carga_horaria_sem": {
+            "type": "number"
+          },
+          "escola_id": {
+            "type": "string"
+          },
+          "data_criacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "username": {
+            "type": "string"
+          },
+          "tipo_usuario": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "pessoa_id",
+          "nome_completo",
+          "data_criacao",
+          "username",
+          "tipo_usuario",
+          "estado"
+        ]
+      },
+      "Encarregado": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pessoa_id": {
+            "type": "string"
+          },
+          "nome_completo": {
+            "type": "string"
+          },
+          "bi": {
+            "type": "string"
+          },
+          "dt_nascimento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sexo": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F",
+              "O"
+            ]
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "nacionalidade": {
+            "type": "string"
+          },
+          "morada": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "profissao": {
+            "type": "string"
+          },
+          "escolaridade": {
+            "type": "string"
+          },
+          "data_criacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_atualizacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "username": {
+            "type": "string"
+          },
+          "tipo_usuario": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "pessoa_id",
+          "nome_completo",
+          "data_criacao",
+          "data_atualizacao",
+          "username",
+          "tipo_usuario",
+          "estado"
+        ]
+      },
+      "AnoLetivo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "data_inicio": {
+            "type": "string"
+          },
+          "data_fim": {
+            "type": "string"
+          },
+          "escola_id": {
+            "type": "string"
+          },
+          "data_criacao": {
+            "type": "string"
+          },
+          "data_atualizacao": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "data_inicio",
+          "data_fim",
+          "escola_id",
+          "data_criacao",
+          "data_atualizacao"
+        ]
       }
     },
     "parameters": {}
   },
   "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "minLength": 6
+                  }
+                },
+                "required": [
+                  "email",
+                  "senha"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login bem-sucedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "token"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/student/{turma_id}": {
       "get": {
         "tags": [
@@ -161,6 +830,11 @@
         "responses": {
           "200": {
             "description": "Lista de alunos da turma",
+            "headers": {
+              "Authorization": {
+                "description": "Token de autenticação JWT"
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -286,6 +960,5443 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v1/student/create": {
+      "post": {
+        "tags": [
+          "Aluno"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome_completo": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "bi": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "dt_nascimento": {
+                    "type": "string"
+                  },
+                  "sexo": {
+                    "type": "string",
+                    "enum": [
+                      "M",
+                      "F",
+                      "O"
+                    ]
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "nacionalidade": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 50
+                  },
+                  "morada": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 300
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "n_processo": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 20
+                  },
+                  "necessidades_especiais": {
+                    "type": "object",
+                    "properties": {
+                      "descricao": {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 300
+                      },
+                      "tipo": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 50
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "ACTIVO",
+                      "TRANSFERIDO",
+                      "DESISTENTE",
+                      "CONCLUENTE",
+                      "SUSPENDIDO"
+                    ],
+                    "default": "ACTIVO"
+                  },
+                  "foto": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 255
+                  },
+                  "senha_hash": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255
+                  },
+                  "escola_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  }
+                },
+                "required": [
+                  "nome_completo",
+                  "bi",
+                  "dt_nascimento",
+                  "sexo",
+                  "telefone",
+                  "email",
+                  "n_processo",
+                  "senha_hash",
+                  "escola_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Aluno criado com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "n_processo": {
+                      "type": "string"
+                    },
+                    "necessidades_especiais": {
+                      "type": "object",
+                      "properties": {
+                        "descricao": {
+                          "type": "string"
+                        },
+                        "tipo": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "descricao",
+                        "tipo"
+                      ]
+                    },
+                    "foto": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "bi",
+                    "dt_nascimento",
+                    "sexo",
+                    "escola_id",
+                    "telefone",
+                    "email",
+                    "n_processo",
+                    "status",
+                    "data_criacao",
+                    "data_atualizacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/student/each/{id}": {
+      "get": {
+        "tags": [
+          "Aluno"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aluno encontrado",
+            "headers": {
+              "Authorization": {
+                "description": "Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "n_processo": {
+                      "type": "string"
+                    },
+                    "necessidades_especiais": {
+                      "type": "object",
+                      "properties": {
+                        "descricao": {
+                          "type": "string"
+                        },
+                        "tipo": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "descricao",
+                        "tipo"
+                      ]
+                    },
+                    "foto": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "bi",
+                    "dt_nascimento",
+                    "sexo",
+                    "escola_id",
+                    "telefone",
+                    "email",
+                    "n_processo",
+                    "status",
+                    "data_criacao",
+                    "data_atualizacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de aluno inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aluno não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/student/update/{id}": {
+      "put": {
+        "tags": [
+          "Aluno"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome_completo": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "bi": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "dt_nascimento": {
+                    "type": "string"
+                  },
+                  "sexo": {
+                    "type": "string",
+                    "enum": [
+                      "M",
+                      "F",
+                      "O"
+                    ]
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "nacionalidade": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 50
+                  },
+                  "morada": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 300
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "n_processo": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 20
+                  },
+                  "necessidades_especiais": {
+                    "type": "object",
+                    "properties": {
+                      "descricao": {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 300
+                      },
+                      "tipo": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 50
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "ACTIVO",
+                      "TRANSFERIDO",
+                      "DESISTENTE",
+                      "CONCLUENTE",
+                      "SUSPENDIDO"
+                    ]
+                  },
+                  "foto": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 255
+                  },
+                  "senha_hash": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255
+                  },
+                  "escola_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Aluno actualizado com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "n_processo": {
+                      "type": "string"
+                    },
+                    "necessidades_especiais": {
+                      "type": "object",
+                      "properties": {
+                        "descricao": {
+                          "type": "string"
+                        },
+                        "tipo": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "descricao",
+                        "tipo"
+                      ]
+                    },
+                    "foto": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "bi",
+                    "dt_nascimento",
+                    "sexo",
+                    "escola_id",
+                    "telefone",
+                    "email",
+                    "n_processo",
+                    "status",
+                    "data_criacao",
+                    "data_atualizacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos ou ID de aluno inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aluno não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/student/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Aluno"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aluno eliminado com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de aluno inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Aluno não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/school/create": {
+      "post": {
+        "tags": [
+          "Escola"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "natureza": {
+                    "type": "string",
+                    "enum": [
+                      "PUBLICA",
+                      "PRIVADA",
+                      "PUBLICA_PRIVADA"
+                    ]
+                  },
+                  "codigo_mec": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 20
+                  },
+                  "nif": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "localizacao": {
+                    "type": "object",
+                    "properties": {
+                      "endereco": {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 200
+                      },
+                      "cidade": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      },
+                      "provincia": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      },
+                      "pais": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      }
+                    },
+                    "required": [
+                      "endereco",
+                      "provincia",
+                      "pais"
+                    ]
+                  },
+                  "contacto": {
+                    "type": "object",
+                    "properties": {
+                      "telefone": {
+                        "type": "string",
+                        "minLength": 9,
+                        "maxLength": 20
+                      },
+                      "outro_telefone": {
+                        "type": "string",
+                        "minLength": 9,
+                        "maxLength": 20
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "outro_email": {
+                        "type": "string",
+                        "format": "email"
+                      }
+                    },
+                    "required": [
+                      "telefone",
+                      "email"
+                    ]
+                  },
+                  "logo_url": {
+                    "type": "string",
+                    "maxLength": 255
+                  }
+                },
+                "required": [
+                  "nome",
+                  "natureza",
+                  "codigo_mec",
+                  "nif",
+                  "localizacao",
+                  "contacto"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Escola criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "natureza": {
+                      "type": "string",
+                      "enum": [
+                        "PUBLICA",
+                        "PRIVADA",
+                        "PUBLICA_PRIVADA"
+                      ]
+                    },
+                    "codigo_mec": {
+                      "type": "string"
+                    },
+                    "nif": {
+                      "type": "string"
+                    },
+                    "localizacao": {
+                      "type": "object",
+                      "properties": {
+                        "endereco": {
+                          "type": "string"
+                        },
+                        "cidade": {
+                          "type": "string"
+                        },
+                        "provincia": {
+                          "type": "string"
+                        },
+                        "pais": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "endereco",
+                        "provincia",
+                        "pais"
+                      ]
+                    },
+                    "contacto": {
+                      "type": "object",
+                      "properties": {
+                        "telefone": {
+                          "type": "string"
+                        },
+                        "outro_telefone": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "outro_email": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "telefone",
+                        "email"
+                      ]
+                    },
+                    "logo_url": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "natureza",
+                    "codigo_mec",
+                    "nif",
+                    "localizacao",
+                    "contacto",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/school/list": {
+      "get": {
+        "tags": [
+          "Escola"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "search",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de escolas obtida com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "nome": {
+                        "type": "string"
+                      },
+                      "natureza": {
+                        "type": "string",
+                        "enum": [
+                          "PUBLICA",
+                          "PRIVADA",
+                          "PUBLICA_PRIVADA"
+                        ]
+                      },
+                      "codigo_mec": {
+                        "type": "string"
+                      },
+                      "nif": {
+                        "type": "string"
+                      },
+                      "localizacao": {
+                        "type": "object",
+                        "properties": {
+                          "endereco": {
+                            "type": "string"
+                          },
+                          "cidade": {
+                            "type": "string"
+                          },
+                          "provincia": {
+                            "type": "string"
+                          },
+                          "pais": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "endereco",
+                          "provincia",
+                          "pais"
+                        ]
+                      },
+                      "contacto": {
+                        "type": "object",
+                        "properties": {
+                          "telefone": {
+                            "type": "string"
+                          },
+                          "outro_telefone": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "outro_email": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "telefone",
+                          "email"
+                        ]
+                      },
+                      "logo_url": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "data_atualizacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "nome",
+                      "natureza",
+                      "codigo_mec",
+                      "nif",
+                      "localizacao",
+                      "contacto",
+                      "data_criacao",
+                      "data_atualizacao"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nenhuma escola encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/school/each/{escola_id}": {
+      "get": {
+        "tags": [
+          "Escola"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "search",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pegar uma escola específica",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "natureza": {
+                      "type": "string",
+                      "enum": [
+                        "PUBLICA",
+                        "PRIVADA",
+                        "PUBLICA_PRIVADA"
+                      ]
+                    },
+                    "codigo_mec": {
+                      "type": "string"
+                    },
+                    "nif": {
+                      "type": "string"
+                    },
+                    "localizacao": {
+                      "type": "object",
+                      "properties": {
+                        "endereco": {
+                          "type": "string"
+                        },
+                        "cidade": {
+                          "type": "string"
+                        },
+                        "provincia": {
+                          "type": "string"
+                        },
+                        "pais": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "endereco",
+                        "provincia",
+                        "pais"
+                      ]
+                    },
+                    "contacto": {
+                      "type": "object",
+                      "properties": {
+                        "telefone": {
+                          "type": "string"
+                        },
+                        "outro_telefone": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "outro_email": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "telefone",
+                        "email"
+                      ]
+                    },
+                    "logo_url": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "natureza",
+                    "codigo_mec",
+                    "nif",
+                    "localizacao",
+                    "contacto",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Escola não encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/school/update/{escola_id}": {
+      "put": {
+        "tags": [
+          "Escola"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "natureza": {
+                    "type": "string",
+                    "enum": [
+                      "PUBLICA",
+                      "PRIVADA",
+                      "PUBLICA_PRIVADA"
+                    ]
+                  },
+                  "codigo_mec": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 20
+                  },
+                  "nif": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "localizacao": {
+                    "type": "object",
+                    "properties": {
+                      "endereco": {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 200
+                      },
+                      "cidade": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      },
+                      "provincia": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      },
+                      "pais": {
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100
+                      }
+                    }
+                  },
+                  "contacto": {
+                    "type": "object",
+                    "properties": {
+                      "telefone": {
+                        "type": "string",
+                        "minLength": 9,
+                        "maxLength": 20
+                      },
+                      "outro_telefone": {
+                        "type": "string",
+                        "minLength": 9,
+                        "maxLength": 20
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "outro_email": {
+                        "type": "string",
+                        "format": "email"
+                      }
+                    }
+                  },
+                  "logo_url": {
+                    "type": "string",
+                    "maxLength": 255
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Escola actualizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "natureza": {
+                      "type": "string",
+                      "enum": [
+                        "PUBLICA",
+                        "PRIVADA",
+                        "PUBLICA_PRIVADA"
+                      ]
+                    },
+                    "codigo_mec": {
+                      "type": "string"
+                    },
+                    "nif": {
+                      "type": "string"
+                    },
+                    "localizacao": {
+                      "type": "object",
+                      "properties": {
+                        "endereco": {
+                          "type": "string"
+                        },
+                        "cidade": {
+                          "type": "string"
+                        },
+                        "provincia": {
+                          "type": "string"
+                        },
+                        "pais": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "endereco",
+                        "provincia",
+                        "pais"
+                      ]
+                    },
+                    "contacto": {
+                      "type": "object",
+                      "properties": {
+                        "telefone": {
+                          "type": "string"
+                        },
+                        "outro_telefone": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "outro_email": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "telefone",
+                        "email"
+                      ]
+                    },
+                    "logo_url": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "natureza",
+                    "codigo_mec",
+                    "nif",
+                    "localizacao",
+                    "contacto",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Escola não encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/school/delete/{escola_id}": {
+      "delete": {
+        "tags": [
+          "Escola"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Escola eliminada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Escola não encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/funcionarios/add": {
+      "post": {
+        "tags": [
+          "Funcionario"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome_completo": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "bi": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "dt_nascimento": {
+                    "type": "string"
+                  },
+                  "sexo": {
+                    "type": "string",
+                    "enum": [
+                      "M",
+                      "F",
+                      "O"
+                    ]
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "nacionalidade": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 50
+                  },
+                  "morada": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 300
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "cargo": {
+                    "type": "string",
+                    "enum": [
+                      "SECRETARIA",
+                      "COORDENADOR",
+                      "DIRETOR",
+                      "ADMIN_ESCOLA"
+                    ]
+                  },
+                  "departamento": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "tipo_usuario": {
+                    "type": "string",
+                    "enum": [
+                      "SUPER_ADMIN",
+                      "ALUNO",
+                      "PROFESSOR",
+                      "ENCARREGADO",
+                      "SECRETARIA",
+                      "COORDENADOR",
+                      "DIRETOR",
+                      "ADMIN_ESCOLA",
+                      "ANEP",
+                      "MED",
+                      "GEPE",
+                      "INADE",
+                      "INE",
+                      "ADMINISTRACAO",
+                      "PARCEIROS"
+                    ]
+                  },
+                  "senha_hash": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255
+                  },
+                  "escola_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "nome_completo",
+                  "bi",
+                  "dt_nascimento",
+                  "sexo",
+                  "cargo",
+                  "tipo_usuario",
+                  "senha_hash",
+                  "escola_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Funcionário criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "cargo": {
+                      "type": "string"
+                    },
+                    "departamento": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string",
+                      "enum": [
+                        "SUPER_ADMIN",
+                        "ALUNO",
+                        "PROFESSOR",
+                        "ENCARREGADO",
+                        "SECRETARIA",
+                        "COORDENADOR",
+                        "DIRETOR",
+                        "ADMIN_ESCOLA",
+                        "ANEP",
+                        "MED",
+                        "GEPE",
+                        "INADE",
+                        "INE",
+                        "ADMINISTRACAO",
+                        "PARCEIROS"
+                      ]
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "escola_id",
+                    "username",
+                    "estado",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/funcionarios/all/{escola_id}": {
+      "get": {
+        "tags": [
+          "Funcionario"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Funcionários listados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "pessoa_id": {
+                        "type": "string"
+                      },
+                      "nome_completo": {
+                        "type": "string"
+                      },
+                      "bi": {
+                        "type": "string"
+                      },
+                      "dt_nascimento": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "sexo": {
+                        "type": "string",
+                        "enum": [
+                          "M",
+                          "F",
+                          "O"
+                        ]
+                      },
+                      "telefone": {
+                        "type": "string"
+                      },
+                      "nacionalidade": {
+                        "type": "string"
+                      },
+                      "morada": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "cargo": {
+                        "type": "string"
+                      },
+                      "departamento": {
+                        "type": "string"
+                      },
+                      "tipo_usuario": {
+                        "type": "string",
+                        "enum": [
+                          "SUPER_ADMIN",
+                          "ALUNO",
+                          "PROFESSOR",
+                          "ENCARREGADO",
+                          "SECRETARIA",
+                          "COORDENADOR",
+                          "DIRETOR",
+                          "ADMIN_ESCOLA",
+                          "ANEP",
+                          "MED",
+                          "GEPE",
+                          "INADE",
+                          "INE",
+                          "ADMINISTRACAO",
+                          "PARCEIROS"
+                        ]
+                      },
+                      "escola_id": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "estado": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "data_atualizacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "pessoa_id",
+                      "nome_completo",
+                      "escola_id",
+                      "username",
+                      "estado",
+                      "data_criacao",
+                      "data_atualizacao"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID da escola inválido"
+          },
+          "404": {
+            "description": "Escola não encontrada"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/funcionarios/each/{funcionario_id}": {
+      "get": {
+        "tags": [
+          "Funcionario"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "funcionario_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Funcionário encontrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "cargo": {
+                      "type": "string"
+                    },
+                    "departamento": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string",
+                      "enum": [
+                        "SUPER_ADMIN",
+                        "ALUNO",
+                        "PROFESSOR",
+                        "ENCARREGADO",
+                        "SECRETARIA",
+                        "COORDENADOR",
+                        "DIRETOR",
+                        "ADMIN_ESCOLA",
+                        "ANEP",
+                        "MED",
+                        "GEPE",
+                        "INADE",
+                        "INE",
+                        "ADMINISTRACAO",
+                        "PARCEIROS"
+                      ]
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "escola_id",
+                    "username",
+                    "estado",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID do funcionário inválido"
+          },
+          "404": {
+            "description": "Funcionário não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/funcionarios/delete/{funcionario_id}": {
+      "delete": {
+        "tags": [
+          "Funcionario"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "funcionario_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Funcionário eliminado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID do funcionário inválido"
+          },
+          "404": {
+            "description": "Funcionário não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/funcionarios/update/{funcionario_id}": {
+      "put": {
+        "tags": [
+          "Funcionario"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "funcionario_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome_completo": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "bi": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "dt_nascimento": {
+                    "type": "string"
+                  },
+                  "sexo": {
+                    "type": "string",
+                    "enum": [
+                      "M",
+                      "F",
+                      "O"
+                    ]
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "nacionalidade": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 50
+                  },
+                  "morada": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 300
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "cargo": {
+                    "type": "string",
+                    "enum": [
+                      "SECRETARIA",
+                      "COORDENADOR",
+                      "DIRETOR",
+                      "ADMIN_ESCOLA"
+                    ]
+                  },
+                  "departamento": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "tipo_usuario": {
+                    "type": "string",
+                    "enum": [
+                      "SUPER_ADMIN",
+                      "ALUNO",
+                      "PROFESSOR",
+                      "ENCARREGADO",
+                      "SECRETARIA",
+                      "COORDENADOR",
+                      "DIRETOR",
+                      "ADMIN_ESCOLA",
+                      "ANEP",
+                      "MED",
+                      "GEPE",
+                      "INADE",
+                      "INE",
+                      "ADMINISTRACAO",
+                      "PARCEIROS"
+                    ]
+                  },
+                  "senha_hash": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255
+                  },
+                  "escola_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Funcionário atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "cargo": {
+                      "type": "string"
+                    },
+                    "departamento": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string",
+                      "enum": [
+                        "SUPER_ADMIN",
+                        "ALUNO",
+                        "PROFESSOR",
+                        "ENCARREGADO",
+                        "SECRETARIA",
+                        "COORDENADOR",
+                        "DIRETOR",
+                        "ADMIN_ESCOLA",
+                        "ANEP",
+                        "MED",
+                        "GEPE",
+                        "INADE",
+                        "INE",
+                        "ADMINISTRACAO",
+                        "PARCEIROS"
+                      ]
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "escola_id",
+                    "username",
+                    "estado",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Funcionário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matriculas": {
+      "post": {
+        "tags": [
+          "Matricula"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "aluno_id": {
+                    "type": "string"
+                  },
+                  "turma_id": {
+                    "type": "string"
+                  },
+                  "escola_id": {
+                    "type": "string"
+                  },
+                  "ano_letivo": {
+                    "type": "string"
+                  },
+                  "classe": {
+                    "type": "number"
+                  },
+                  "turno": {
+                    "type": "string",
+                    "enum": [
+                      "MANHA",
+                      "TARDE",
+                      "NOITE",
+                      "INTEGRAL"
+                    ]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "ATIVA",
+                      "CONCLUIDA",
+                      "CANCELADA",
+                      "SUSPENSA"
+                    ]
+                  },
+                  "pessoa_id": {
+                    "type": "string"
+                  },
+                  "nome_completo": {
+                    "type": "string"
+                  },
+                  "bi": {
+                    "type": "string"
+                  },
+                  "dt_nascimento": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "sexo": {
+                    "type": "string"
+                  },
+                  "telefone": {
+                    "type": "string"
+                  },
+                  "nacionalidade": {
+                    "type": "string"
+                  },
+                  "morada": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "data_criacao": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "data_atualizacao": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "id",
+                  "aluno_id",
+                  "turma_id",
+                  "escola_id",
+                  "ano_letivo",
+                  "classe",
+                  "turno",
+                  "status",
+                  "pessoa_id",
+                  "nome_completo",
+                  "bi",
+                  "dt_nascimento",
+                  "sexo",
+                  "telefone",
+                  "nacionalidade",
+                  "morada",
+                  "email",
+                  "data_criacao",
+                  "data_atualizacao"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Matrícula criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "aluno_id": {
+                      "type": "string"
+                    },
+                    "turma_id": {
+                      "type": "string"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "ano_letivo": {
+                      "type": "string"
+                    },
+                    "classe": {
+                      "type": "number"
+                    },
+                    "turno": {
+                      "type": "string",
+                      "enum": [
+                        "MANHA",
+                        "TARDE",
+                        "NOITE",
+                        "INTEGRAL"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "ATIVA",
+                        "CONCLUIDA",
+                        "CANCELADA",
+                        "SUSPENSA"
+                      ]
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string"
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "aluno_id",
+                    "turma_id",
+                    "escola_id",
+                    "ano_letivo",
+                    "classe",
+                    "turno",
+                    "status",
+                    "pessoa_id",
+                    "nome_completo",
+                    "bi",
+                    "dt_nascimento",
+                    "sexo",
+                    "telefone",
+                    "nacionalidade",
+                    "morada",
+                    "email",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/matriculas/each/{matricula_id}": {
+      "get": {
+        "tags": [
+          "Matricula"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "matricula_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matrículas listadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "aluno_id": {
+                        "type": "string"
+                      },
+                      "turma_id": {
+                        "type": "string"
+                      },
+                      "escola_id": {
+                        "type": "string"
+                      },
+                      "ano_letivo": {
+                        "type": "string"
+                      },
+                      "classe": {
+                        "type": "number"
+                      },
+                      "turno": {
+                        "type": "string",
+                        "enum": [
+                          "MANHA",
+                          "TARDE",
+                          "NOITE",
+                          "INTEGRAL"
+                        ]
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "ATIVA",
+                          "CONCLUIDA",
+                          "CANCELADA",
+                          "SUSPENSA"
+                        ]
+                      },
+                      "pessoa_id": {
+                        "type": "string"
+                      },
+                      "nome_completo": {
+                        "type": "string"
+                      },
+                      "bi": {
+                        "type": "string"
+                      },
+                      "dt_nascimento": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "sexo": {
+                        "type": "string"
+                      },
+                      "telefone": {
+                        "type": "string"
+                      },
+                      "nacionalidade": {
+                        "type": "string"
+                      },
+                      "morada": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "data_atualizacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "aluno_id",
+                      "turma_id",
+                      "escola_id",
+                      "ano_letivo",
+                      "classe",
+                      "turno",
+                      "status",
+                      "pessoa_id",
+                      "nome_completo",
+                      "bi",
+                      "dt_nascimento",
+                      "sexo",
+                      "telefone",
+                      "nacionalidade",
+                      "morada",
+                      "email",
+                      "data_criacao",
+                      "data_atualizacao"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID do aluno ou ano letivo inválido"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/matriculas/escola/{escola_id}/{ano_letivo}": {
+      "get": {
+        "tags": [
+          "Matricula"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 9
+            },
+            "required": true,
+            "name": "ano_letivo",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matrículas listadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "aluno_id": {
+                        "type": "string"
+                      },
+                      "turma_id": {
+                        "type": "string"
+                      },
+                      "escola_id": {
+                        "type": "string"
+                      },
+                      "ano_letivo": {
+                        "type": "string"
+                      },
+                      "classe": {
+                        "type": "number"
+                      },
+                      "turno": {
+                        "type": "string",
+                        "enum": [
+                          "MANHA",
+                          "TARDE",
+                          "NOITE",
+                          "INTEGRAL"
+                        ]
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "ATIVA",
+                          "CONCLUIDA",
+                          "CANCELADA",
+                          "SUSPENSA"
+                        ]
+                      },
+                      "pessoa_id": {
+                        "type": "string"
+                      },
+                      "nome_completo": {
+                        "type": "string"
+                      },
+                      "bi": {
+                        "type": "string"
+                      },
+                      "dt_nascimento": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "sexo": {
+                        "type": "string"
+                      },
+                      "telefone": {
+                        "type": "string"
+                      },
+                      "nacionalidade": {
+                        "type": "string"
+                      },
+                      "morada": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "data_atualizacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "aluno_id",
+                      "turma_id",
+                      "escola_id",
+                      "ano_letivo",
+                      "classe",
+                      "turno",
+                      "status",
+                      "pessoa_id",
+                      "nome_completo",
+                      "bi",
+                      "dt_nascimento",
+                      "sexo",
+                      "telefone",
+                      "nacionalidade",
+                      "morada",
+                      "email",
+                      "data_criacao",
+                      "data_atualizacao"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID da escola ou ano letivo inválido"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/course/create": {
+      "post": {
+        "tags": [
+          "Curso"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "nome": {
+                    "type": "string"
+                  },
+                  "descricao": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "abreviacao": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "escola_id": {
+                    "type": "string"
+                  },
+                  "data_criacao": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "data_atualizacao": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "id",
+                  "nome",
+                  "descricao",
+                  "abreviacao",
+                  "escola_id",
+                  "data_criacao",
+                  "data_atualizacao"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Curso criado com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Bearer Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "descricao": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "abreviacao": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "descricao",
+                    "abreviacao",
+                    "escola_id",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/course/all/{escola_id}": {
+      "get": {
+        "tags": [
+          "Curso"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cursos listados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "nome": {
+                        "type": "string"
+                      },
+                      "descricao": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "abreviacao": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "escola_id": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "data_atualizacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "nome",
+                      "descricao",
+                      "abreviacao",
+                      "escola_id",
+                      "data_criacao",
+                      "data_atualizacao"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID da escola inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Escola não encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/course/each/{curso_id}": {
+      "get": {
+        "tags": [
+          "Curso"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "curso_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Curso retornado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "descricao": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "abreviacao": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "descricao",
+                    "abreviacao",
+                    "escola_id",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Curso não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/course/update/{curso_id}": {
+      "put": {
+        "tags": [
+          "Curso"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "curso_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "nome": {
+                    "type": "string"
+                  },
+                  "descricao": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "abreviacao": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "escola_id": {
+                    "type": "string"
+                  },
+                  "data_criacao": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "data_atualizacao": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "id",
+                  "nome",
+                  "descricao",
+                  "abreviacao",
+                  "escola_id",
+                  "data_criacao",
+                  "data_atualizacao"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Curso actualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "descricao": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "abreviacao": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "descricao",
+                    "abreviacao",
+                    "escola_id",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Curso não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/course/delete/{curso_id}": {
+      "delete": {
+        "tags": [
+          "Curso"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "curso_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Curso eliminado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Curso não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/class/create": {
+      "post": {
+        "tags": [
+          "Turma"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "escola_id": {
+                    "type": "string"
+                  },
+                  "curso_id": {
+                    "type": "string"
+                  },
+                  "ano_letivo": {
+                    "type": "string"
+                  },
+                  "ano_letivo_id": {
+                    "type": "string"
+                  },
+                  "turno": {
+                    "type": "string",
+                    "enum": [
+                      "MANHA",
+                      "TARDE",
+                      "NOITE",
+                      "INTEGRAL"
+                    ]
+                  },
+                  "classe": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": true
+                  },
+                  "capacidade": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": true
+                  }
+                },
+                "required": [
+                  "nome",
+                  "escola_id",
+                  "curso_id",
+                  "ano_letivo",
+                  "ano_letivo_id",
+                  "turno",
+                  "classe",
+                  "capacidade"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Turma criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "curso_id": {
+                      "type": "string"
+                    },
+                    "ano_letivo": {
+                      "type": "string"
+                    },
+                    "ano_letivo_id": {
+                      "type": "string"
+                    },
+                    "turno": {
+                      "type": "string",
+                      "enum": [
+                        "MANHA",
+                        "TARDE",
+                        "NOITE",
+                        "INTEGRAL"
+                      ]
+                    },
+                    "classe": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    },
+                    "capacidade": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    },
+                    "data_criacao": {
+                      "type": "string"
+                    },
+                    "data_atualizacao": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "escola_id",
+                    "curso_id",
+                    "ano_letivo",
+                    "ano_letivo_id",
+                    "turno",
+                    "classe",
+                    "capacidade",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/class/all/{escola_id}": {
+      "get": {
+        "tags": [
+          "Turma"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Turmas listadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "nome": {
+                        "type": "string"
+                      },
+                      "escola_id": {
+                        "type": "string"
+                      },
+                      "curso_id": {
+                        "type": "string"
+                      },
+                      "ano_letivo": {
+                        "type": "string"
+                      },
+                      "ano_letivo_id": {
+                        "type": "string"
+                      },
+                      "turno": {
+                        "type": "string",
+                        "enum": [
+                          "MANHA",
+                          "TARDE",
+                          "NOITE",
+                          "INTEGRAL"
+                        ]
+                      },
+                      "classe": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "exclusiveMinimum": true
+                      },
+                      "capacidade": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "exclusiveMinimum": true
+                      },
+                      "data_criacao": {
+                        "type": "string"
+                      },
+                      "data_atualizacao": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "nome",
+                      "escola_id",
+                      "curso_id",
+                      "ano_letivo",
+                      "ano_letivo_id",
+                      "turno",
+                      "classe",
+                      "capacidade",
+                      "data_criacao",
+                      "data_atualizacao"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID da escola inválido"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/class/each/:turma_id": {
+      "get": {
+        "tags": [
+          "Turma"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "turma_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Turma listada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "curso_id": {
+                      "type": "string"
+                    },
+                    "ano_letivo": {
+                      "type": "string"
+                    },
+                    "ano_letivo_id": {
+                      "type": "string"
+                    },
+                    "turno": {
+                      "type": "string",
+                      "enum": [
+                        "MANHA",
+                        "TARDE",
+                        "NOITE",
+                        "INTEGRAL"
+                      ]
+                    },
+                    "classe": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    },
+                    "capacidade": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    },
+                    "data_criacao": {
+                      "type": "string"
+                    },
+                    "data_atualizacao": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "escola_id",
+                    "curso_id",
+                    "ano_letivo",
+                    "ano_letivo_id",
+                    "turno",
+                    "classe",
+                    "capacidade",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID da turma inválido"
+          },
+          "404": {
+            "description": "Turma não encontrada"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/class/update/{turma_id}": {
+      "put": {
+        "tags": [
+          "Turma"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "turma_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "escola_id": {
+                    "type": "string"
+                  },
+                  "curso_id": {
+                    "type": "string"
+                  },
+                  "ano_letivo": {
+                    "type": "string"
+                  },
+                  "ano_letivo_id": {
+                    "type": "string"
+                  },
+                  "turno": {
+                    "type": "string",
+                    "enum": [
+                      "MANHA",
+                      "TARDE",
+                      "NOITE",
+                      "INTEGRAL"
+                    ]
+                  },
+                  "classe": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": true
+                  },
+                  "capacidade": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": true
+                  }
+                },
+                "required": [
+                  "curso_id",
+                  "ano_letivo"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Turma atualizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "curso_id": {
+                      "type": "string"
+                    },
+                    "ano_letivo": {
+                      "type": "string"
+                    },
+                    "ano_letivo_id": {
+                      "type": "string"
+                    },
+                    "turno": {
+                      "type": "string",
+                      "enum": [
+                        "MANHA",
+                        "TARDE",
+                        "NOITE",
+                        "INTEGRAL"
+                      ]
+                    },
+                    "classe": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    },
+                    "capacidade": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "exclusiveMinimum": true
+                    },
+                    "data_criacao": {
+                      "type": "string"
+                    },
+                    "data_atualizacao": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "escola_id",
+                    "curso_id",
+                    "ano_letivo",
+                    "ano_letivo_id",
+                    "turno",
+                    "classe",
+                    "capacidade",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID da turma inválido ou dados de atualização inválidos"
+          },
+          "404": {
+            "description": "Turma não encontrada"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/create": {
+      "post": {
+        "tags": [
+          "Professor"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome_completo": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "bi": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "dt_nascimento": {
+                    "type": "string"
+                  },
+                  "sexo": {
+                    "type": "string",
+                    "enum": [
+                      "M",
+                      "F",
+                      "O"
+                    ]
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "nacionalidade": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 50
+                  },
+                  "morada": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 300
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "especialidade": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "categoria": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "habilitacoes": {
+                    "type": "string",
+                    "maxLength": 255
+                  },
+                  "carga_horaria_sem": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": true
+                  },
+                  "senha_hash": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255
+                  },
+                  "escola_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "nome_completo",
+                  "bi",
+                  "dt_nascimento",
+                  "sexo",
+                  "senha_hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Professor criado com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Bearer Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "especialidade": {
+                      "type": "string"
+                    },
+                    "categoria": {
+                      "type": "string"
+                    },
+                    "habilitacoes": {
+                      "type": "string"
+                    },
+                    "carga_horaria_sem": {
+                      "type": "number"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "data_criacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/all/{escola_id}": {
+      "get": {
+        "tags": [
+          "Professor"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Professores listados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "pessoa_id": {
+                        "type": "string"
+                      },
+                      "nome_completo": {
+                        "type": "string"
+                      },
+                      "bi": {
+                        "type": "string"
+                      },
+                      "dt_nascimento": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "sexo": {
+                        "type": "string",
+                        "enum": [
+                          "M",
+                          "F",
+                          "O"
+                        ]
+                      },
+                      "telefone": {
+                        "type": "string"
+                      },
+                      "nacionalidade": {
+                        "type": "string"
+                      },
+                      "morada": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "especialidade": {
+                        "type": "string"
+                      },
+                      "categoria": {
+                        "type": "string"
+                      },
+                      "habilitacoes": {
+                        "type": "string"
+                      },
+                      "carga_horaria_sem": {
+                        "type": "number"
+                      },
+                      "escola_id": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "tipo_usuario": {
+                        "type": "string"
+                      },
+                      "estado": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "pessoa_id",
+                      "nome_completo",
+                      "data_criacao",
+                      "username",
+                      "tipo_usuario",
+                      "estado"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID da escola inválido"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/get/{professor_id}": {
+      "get": {
+        "tags": [
+          "Professor"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "professor_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Professor listado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "especialidade": {
+                      "type": "string"
+                    },
+                    "categoria": {
+                      "type": "string"
+                    },
+                    "habilitacoes": {
+                      "type": "string"
+                    },
+                    "carga_horaria_sem": {
+                      "type": "number"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "data_criacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID do professor inválido"
+          },
+          "404": {
+            "description": "Professor não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/update/{professor_id}": {
+      "put": {
+        "tags": [
+          "Professor"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "professor_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome_completo": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "bi": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "dt_nascimento": {
+                    "type": "string"
+                  },
+                  "sexo": {
+                    "type": "string",
+                    "enum": [
+                      "M",
+                      "F",
+                      "O"
+                    ]
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "nacionalidade": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 50
+                  },
+                  "morada": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 300
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "especialidade": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "categoria": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "habilitacoes": {
+                    "type": "string",
+                    "maxLength": 255
+                  },
+                  "carga_horaria_sem": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": true
+                  },
+                  "senha_hash": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255
+                  },
+                  "escola_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Professor actualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "especialidade": {
+                      "type": "string"
+                    },
+                    "categoria": {
+                      "type": "string"
+                    },
+                    "habilitacoes": {
+                      "type": "string"
+                    },
+                    "carga_horaria_sem": {
+                      "type": "number"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "data_criacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Professor não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/guardian/create": {
+      "post": {
+        "tags": [
+          "Encarregado"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome_completo": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "bi": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "dt_nascimento": {
+                    "type": "string"
+                  },
+                  "sexo": {
+                    "type": "string",
+                    "enum": [
+                      "M",
+                      "F",
+                      "O"
+                    ]
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "minLength": 9,
+                    "maxLength": 20
+                  },
+                  "nacionalidade": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 50
+                  },
+                  "morada": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 300
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "profissao": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "escolaridade": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "senha_hash": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 255
+                  }
+                },
+                "required": [
+                  "nome_completo",
+                  "bi",
+                  "dt_nascimento",
+                  "sexo",
+                  "senha_hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Encarregado criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "profissao": {
+                      "type": "string"
+                    },
+                    "escolaridade": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "data_criacao",
+                    "data_atualizacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/guardian/all/{escola_id}": {
+      "get": {
+        "tags": [
+          "Encarregado"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Encarregados listados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "pessoa_id": {
+                        "type": "string"
+                      },
+                      "nome_completo": {
+                        "type": "string"
+                      },
+                      "bi": {
+                        "type": "string"
+                      },
+                      "dt_nascimento": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "sexo": {
+                        "type": "string",
+                        "enum": [
+                          "M",
+                          "F",
+                          "O"
+                        ]
+                      },
+                      "telefone": {
+                        "type": "string"
+                      },
+                      "nacionalidade": {
+                        "type": "string"
+                      },
+                      "morada": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "profissao": {
+                        "type": "string"
+                      },
+                      "escolaridade": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "data_atualizacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "tipo_usuario": {
+                        "type": "string"
+                      },
+                      "estado": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "pessoa_id",
+                      "nome_completo",
+                      "data_criacao",
+                      "data_atualizacao",
+                      "username",
+                      "tipo_usuario",
+                      "estado"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID da escola inválido"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/guardian/each/{encarregado_id}": {
+      "get": {
+        "tags": [
+          "Encarregado"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "encarregado_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Encarregado encontrado com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Bearer Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "profissao": {
+                      "type": "string"
+                    },
+                    "escolaridade": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "data_criacao",
+                    "data_atualizacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID do encarregado inválido"
+          },
+          "404": {
+            "description": "Encarregado não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/guardian/me": {
+      "get": {
+        "tags": [
+          "Encarregado"
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do encarregado retornados com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Bearer Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "profissao": {
+                      "type": "string"
+                    },
+                    "escolaridade": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "data_criacao",
+                    "data_atualizacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Encarregado não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/year/all/{escola_id}": {
+      "get": {
+        "tags": [
+          "Ano Letivo"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "search",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de anos letivos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "nome": {
+                        "type": "string"
+                      },
+                      "data_inicio": {
+                        "type": "string"
+                      },
+                      "data_fim": {
+                        "type": "string"
+                      },
+                      "escola_id": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string"
+                      },
+                      "data_atualizacao": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "nome",
+                      "data_inicio",
+                      "data_fim",
+                      "escola_id",
+                      "data_criacao",
+                      "data_atualizacao"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/year/add": {
+      "post": {
+        "tags": [
+          "Ano Letivo"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "data_de_inicio": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "data_de_fim": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "escola_id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "nome",
+                  "data_de_inicio",
+                  "data_de_fim",
+                  "escola_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ano letivo criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "data_inicio": {
+                      "type": "string"
+                    },
+                    "data_fim": {
+                      "type": "string"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string"
+                    },
+                    "data_atualizacao": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "data_inicio",
+                    "data_fim",
+                    "escola_id",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos"
+          }
+        }
+      }
+    },
+    "/api/v1/year/each/{ano_id}": {
+      "get": {
+        "tags": [
+          "Ano Letivo"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "ano_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ano letivo encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "data_inicio": {
+                      "type": "string"
+                    },
+                    "data_fim": {
+                      "type": "string"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string"
+                    },
+                    "data_atualizacao": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "data_inicio",
+                    "data_fim",
+                    "escola_id",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ano letivo não encontrado"
+          }
+        }
+      }
+    },
+    "/api/v1/year/edit/{ano_id}": {
+      "put": {
+        "tags": [
+          "Ano Letivo"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "ano_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "data_de_inicio": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "data_de_fim": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "escola_id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ano letivo atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "data_inicio": {
+                      "type": "string"
+                    },
+                    "data_fim": {
+                      "type": "string"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string"
+                    },
+                    "data_atualizacao": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "data_inicio",
+                    "data_fim",
+                    "escola_id",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "404": {
+            "description": "Ano letivo não encontrado"
           }
         }
       }
