@@ -4,7 +4,6 @@ import { validate } from "../middleware/zod_validate";
 import { CreateFeedbackSchema } from "../dtos/feedback.schema";
 import * as Authotization from "../middleware/authorized";
 
-
 const router = express.Router();
 
 router.post("/add", validate(CreateFeedbackSchema), feedbackController.createFeedback);

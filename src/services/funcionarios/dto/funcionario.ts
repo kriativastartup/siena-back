@@ -47,6 +47,56 @@ export const CreateFuncionarioSchema = z.object({
 
 export type CreateFuncionarioDTO = z.infer<typeof CreateFuncionarioSchema>;
 
+export const UpdateFuncionarioSchema = z.object({
+    nome_completo: z.string("O nome completo é obrigatório")
+        .min(3, "O nome deve ter pelo menos 3 caracteres")
+        .max(100)
+        .optional(),
+        
+    bi: z.string("O BI é obrigatório")
+        .min(9, "O BI deve ter pelo menos 9 caracteres")
+        .max(20)
+        .optional(),
+
+    dt_nascimento: z.string("A data de nascimento é obrigatória")
+        .refine((date) => !isNaN(Date.parse(date)), "Data de nascimento inválida")
+        .optional(),
+
+    sexo: z.enum(sexo_enum, "O sexo é obrigatório e deve ser válido").optional(),
+
+    telefone: z.string()
+        .min(9, "O telefone deve ter pelo menos 9 caracteres")
+        .max(20)
+        .optional(),
+
+    nacionalidade: z.string()
+        .min(2, "A nacionalidade deve ter pelo menos 2 caracteres")
+        .max(50)
+        .optional(),
+
+    morada: z.string()
+        .min(5, "A morada deve ter pelo menos 5 caracteres")
+        .max(300)
+        .optional(),
+
+    email: z.string()
+        .email("Formato de email inválido")
+        .optional(),
+
+    cargo: z.enum(cargo_funcionario_enum, "O cargo é obrigatório e deve ser válido").optional(),
+    departamento: z.string().max(100).optional(),
+    tipo_usuario: z.enum(tipo_usuario_enum, "O tipo de usuário é obrigatório e deve ser válido").optional(),
+
+    senha_hash: z.string("A senha é obrigatória")
+        .min(6, "A senha deve ter pelo menos 6 caracteres")
+        .max(255)
+        .optional(),
+    escola_id : z.string().refine((id => validate(id)), "ID de escola inválido").optional()
+});
+
+export type UpdateFuncionarioDTO = z.infer<typeof UpdateFuncionarioSchema>;
+
+
 export const ResponseFuncionarioSchema = z.object({
     id: z.string(),
     pessoa_id: z.string(),

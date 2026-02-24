@@ -1,6 +1,9 @@
 import {z} from "zod";
 import { turno } from "@prisma/client";
 import { validate } from "uuid";
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+
+extendZodWithOpenApi(z);
 
 export const createTurmaSchema = z.object({
     nome: z.string().min(1, "O nome da turma é obrigatório"),

@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { sexo_enum, status_aluno } from "@prisma/client";
-import { stat } from "fs";
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+
+
+extendZodWithOpenApi(z);
 
 export const CreateAlunoSchema = z.object({
     nome_completo: z.string("O nome completo do aluno é obrigatório").min(3, "O nome deve ter pelo menos 3 caracteres").max(100),

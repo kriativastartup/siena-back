@@ -4,8 +4,8 @@ import { deleteMatricula, getAllMatriculas, getMatriculaById, MatricularALuno } 
 const router = express.Router();
 
 router.post('/create', MatricularALuno);
-router.get('/all', getAllMatriculas);
-router.get('/each/:matriculaId', getMatriculaById);
-router.delete('/delete/:matriculaId', deleteMatricula);
+router.get('/all/:escola_id/:ano_letivo', getAllMatriculas);
+router.get('/each/:matricula_id', getMatriculaById);
+router.delete('/delete/:matricula_id', deleteMatricula);
 
 export default router;

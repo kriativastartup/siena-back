@@ -1,6 +1,11 @@
 import {z} from 'zod';
-import { status_matricula_enum, turno } from '@prisma/client';
+import { status_matricula_enum, turno, modalidade_matricula_enum } from '@prisma/client';
 import {validate} from "uuid";
+
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+
+
+extendZodWithOpenApi(z);
 
 
 export const createMatriculaDTO = z.object({
@@ -13,6 +18,7 @@ export const createMatriculaDTO = z.object({
     escola_id : z.string().refine((val) => validate(val), {
         message: "escola_id deve ser um UUID válido",
     }),
+    modalidade : z.enum(modalidade_matricula_enum, "modalidade deve ser de uma modalidade válida"),
     ano_letivo : z.string(),
     classe: z.number(),
     turno: z.enum(turno, "turno deve ser de um turno válido"),

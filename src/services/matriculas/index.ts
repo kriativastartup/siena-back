@@ -107,11 +107,12 @@ export const getMatriculaById = async (id: string): Promise<dto.ResponseMatricul
     }
 };
 
-export const getAlunosMatriculados = async (escola_id: string, limit?: number, offset?: number, search?: string): Promise<dto.ResponseMatriculaDTO[] | PropsResponseBad> => {
+export const getAlunosMatriculados = async (escola_id: string, ano_letivo: string, limit?: number, offset?: number, search?: string): Promise<dto.ResponseMatriculaDTO[] | PropsResponseBad> => {
     try {
         const matriculas = await prisma.matricula.findMany({
             where: { 
                 escola_id,
+                ano_letivo,
                 aluno: {
                     pessoa: {
                         nome_completo: search ? { contains: search, mode: 'insensitive' } : undefined

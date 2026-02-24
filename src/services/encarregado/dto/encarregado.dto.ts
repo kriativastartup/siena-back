@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { sexo_enum } from "@prisma/client";
 
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
+
+extendZodWithOpenApi(z);
+
 export const CreateEncarregadoSchema = z.object({
     nome_completo: z.string("O nome completo é obrigatório")
         .min(3, "O nome deve ter pelo menos 3 caracteres")

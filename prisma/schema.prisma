@@ -187,6 +187,7 @@ model matricula {
   ano_letivo String
   classe     Int
   turma_id   String               @db.Uuid
+  modalidade modalidade_matricula_enum @default(PRESENCIAL)
   turno      turno
   status     status_matricula_enum @default(ATIVA)
 
@@ -837,6 +838,12 @@ enum tipo_movimento_enum {
 }
 
 enum modalidade_prova_enum {
+  PRESENCIAL
+  ONLINE
+  HIBRIDA
+}
+
+enum modalidade_matricula_enum {
   PRESENCIAL
   ONLINE
   HIBRIDA

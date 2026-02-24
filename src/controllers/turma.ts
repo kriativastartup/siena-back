@@ -30,14 +30,16 @@ export const getTurmas = async (req: Request, res: Response) => {
 }
 
 export const createTurma = async (req: Request | any, res: Response) => {
-    const { nome, escola_id, ano_letivo, turno, classe, capacidade } = req.body;
-    const turmaData: dto.CreateTurmaDTO = {
-        nome,
-        escola_id,
-        ano_letivo,
-        turno,
-        classe,
-        capacidade
+    const { nome, escola_id, ano_letivo, turno, classe, capacidade, curso_id, ano_letivo_id } = req.body;
+    const turmaData : dto.CreateTurmaDTO = {
+       nome,
+       escola_id,
+       curso_id,
+       ano_letivo,
+       ano_letivo_id,
+       turno,
+       classe,
+       capacidade
     };
 
     try {
@@ -77,7 +79,7 @@ export const getTurmaById = async (req: Request | any, res: Response) => {
 
 export const updateTurmaId = async (req: Request | any, res: Response) => {
     const { turma_id } = req.params;
-    const { nome, escola_id, ano_letivo, turno, classe, capacidade } = req.body;
+    const { nome, escola_id, ano_letivo, turno, classe, capacidade, curso_id } = req.body;
 
     if (!turma_id || !validate(turma_id)) {
         return res.status(400).json({ message: "ID de turma inválido" });
@@ -86,6 +88,7 @@ export const updateTurmaId = async (req: Request | any, res: Response) => {
     const turmaData: dto.UpdateTurmaDTO = {
         nome,
         escola_id,
+        curso_id,
         ano_letivo,
         turno,
         classe,

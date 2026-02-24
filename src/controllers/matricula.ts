@@ -6,13 +6,14 @@ import * as matriculaService from "../services/matriculas/index";
 const prisma = new PrismaClient();
 
 export const MatricularALuno = async (req: Request, res: Response) => {
-    const { aluno_id, turma_id, escola_id, ano_letivo, classe, turno, status } = req.body;
+    const { aluno_id, turma_id, escola_id, ano_letivo, classe, turno, status, modalidade } = req.body;
 
     const createMatriculaData: dto.CreateMatriculaDTO = {
         aluno_id,
         turma_id,
         escola_id,
         ano_letivo,
+        modalidade,
         classe,
         turno,
         status
@@ -53,7 +54,7 @@ export const getMatriculaById = async (req: Request, res: Response) => {
 }
 
 export const getAllMatriculas = async (req: Request, res: Response) => {
-  const { escola_id } = req.params;
+  const { escola_id, ano_letivo } = req.params;
   const limit = parseInt(req.query.limit as string) || 10;
   const page = parseInt(req.query.page as string) || 1;
   const offset = (page - 1) * limit;
@@ -64,7 +65,7 @@ export const getAllMatriculas = async (req: Request, res: Response) => {
   }
 
   try {
-    const matriculas = await matriculaService.getAlunosMatriculados(escola_id, limit, offset, search);
+    const matriculas = await matriculaService.getAlunosMatriculados(escola_id, ano_letivo,limit, offset, search);
 
     if ("status" in matriculas) {
       return res.status(matriculas.status).json({ message: matriculas.message });

@@ -1,0 +1,294 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Minha API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Aluno": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pessoa_id": {
+            "type": "string"
+          },
+          "nome_completo": {
+            "type": "string"
+          },
+          "bi": {
+            "type": "string"
+          },
+          "dt_nascimento": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sexo": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F",
+              "O"
+            ]
+          },
+          "escola_id": {
+            "type": "string"
+          },
+          "telefone": {
+            "type": "string"
+          },
+          "nacionalidade": {
+            "type": "string"
+          },
+          "morada": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "n_processo": {
+            "type": "string"
+          },
+          "necessidades_especiais": {
+            "type": "object",
+            "properties": {
+              "descricao": {
+                "type": "string"
+              },
+              "tipo": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "descricao",
+              "tipo"
+            ]
+          },
+          "foto": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "data_criacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_atualizacao": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "username": {
+            "type": "string"
+          },
+          "tipo_usuario": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "pessoa_id",
+          "nome_completo",
+          "bi",
+          "dt_nascimento",
+          "sexo",
+          "escola_id",
+          "telefone",
+          "email",
+          "n_processo",
+          "status",
+          "data_criacao",
+          "data_atualizacao",
+          "username",
+          "tipo_usuario",
+          "estado"
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/api/v1/student/{turma_id}": {
+      "get": {
+        "tags": [
+          "Aluno"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "turma_id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "search",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de alunos da turma",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "pessoa_id": {
+                        "type": "string"
+                      },
+                      "nome_completo": {
+                        "type": "string"
+                      },
+                      "bi": {
+                        "type": "string"
+                      },
+                      "dt_nascimento": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "sexo": {
+                        "type": "string",
+                        "enum": [
+                          "M",
+                          "F",
+                          "O"
+                        ]
+                      },
+                      "escola_id": {
+                        "type": "string"
+                      },
+                      "telefone": {
+                        "type": "string"
+                      },
+                      "nacionalidade": {
+                        "type": "string"
+                      },
+                      "morada": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "n_processo": {
+                        "type": "string"
+                      },
+                      "necessidades_especiais": {
+                        "type": "object",
+                        "properties": {
+                          "descricao": {
+                            "type": "string"
+                          },
+                          "tipo": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "descricao",
+                          "tipo"
+                        ]
+                      },
+                      "foto": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "data_atualizacao": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "tipo_usuario": {
+                        "type": "string"
+                      },
+                      "estado": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "pessoa_id",
+                      "nome_completo",
+                      "bi",
+                      "dt_nascimento",
+                      "sexo",
+                      "escola_id",
+                      "telefone",
+                      "email",
+                      "n_processo",
+                      "status",
+                      "data_criacao",
+                      "data_atualizacao",
+                      "username",
+                      "tipo_usuario",
+                      "estado"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Turma não encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

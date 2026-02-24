@@ -13,6 +13,12 @@ import encarregadoRouter from './routers/encarregado';
 import adminRouter from './routers/admin';
 import regiaoRouter from './routers/regiao';
 import feedbackRouter from './routers/feedback';
+import  funcionario  from './routers/funcionario';
+import curso from './routers/curso';
+
+import swaggerUi from "swagger-ui-express";
+import { openApiDocument } from "./openapi/document";
+
 
 dotenv.config();
 
@@ -37,12 +43,16 @@ app.use('/api/v1/teacher', professoresRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/student', studentRouter);
 app.use('/api/v1/registration', matriculaRouter);
-//app.use('/api/v1/class', turmaRouter);
+app.use('/api/v1/course', curso);
+app.use('/api/v1/class', turmaRouter);
 //app.use('/api/v1/year', anoLetivoRouter);
 app.use('/api/v1/guardian', encarregadoRouter);
 //app.use('/api/v1/admin', adminRouter);
 //app.use('/api/v1/region', regiaoRouter);
 app.use('/api/v1/feedback', feedbackRouter);
+app.use('/api/v1/employee', funcionario);
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 // Start server
 app.listen(PORT, () => {

@@ -9,7 +9,7 @@ import { verifyAuthentication, verifyAuthenticationAdmin, verifyAuthenticationAd
 router.get('/all/:escola_id', verifyAuthentication, controller.createProfessor);
 router.get('/each/:usuarioId', verifyAuthentication, controller.getProfessorById);
 router.post('/create', verifyAuthenticationAdminSchool, controller.createProfessor);
-router.put('/update/:usuarioId', verifyAuthenticationAdminSchool, controller.updateProfessor);
+router.put('/update/:professor_id', verifyAuthenticationAdminSchool, controller.updateProfessor);
 //router.delete('/delete/:usuarioId', verifyAuthenticationAdminSchool, controller.deleteProfessor);
 
 // Rotas para gerenciar a associação de professores às turmas
