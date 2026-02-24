@@ -2,7 +2,6 @@ import { registry } from "../../../openapi/registry";
 import { z } from "zod";
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 
-
 extendZodWithOpenApi(z);
 
 export const LoginDTO = z.object({
@@ -11,6 +10,7 @@ export const LoginDTO = z.object({
 });
 
 export type LoginDTOType = z.infer<typeof LoginDTO>;
+
 
 registry.register("LoginDTO", LoginDTO);
 
