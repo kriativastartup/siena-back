@@ -11,12 +11,12 @@ export const LoginDTO = z.object({
 
 export type LoginDTOType = z.infer<typeof LoginDTO>;
 
-
 registry.register("LoginDTO", LoginDTO);
 
 registry.registerPath({
     method: "post",
     path: "/api/v1/auth/login",
+    tags: ["Auth"],
     request: {
         body: {
             content: {
@@ -26,6 +26,7 @@ registry.registerPath({
             },
         }
     },
+
     responses: {
         200: {
             description: "Login bem-sucedido",

@@ -706,6 +706,9 @@
   "paths": {
     "/api/v1/auth/login": {
       "post": {
+        "tags": [
+          "Auth"
+        ],
         "requestBody": {
           "content": {
             "application/json": {

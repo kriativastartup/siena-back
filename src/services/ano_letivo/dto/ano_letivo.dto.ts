@@ -1,5 +1,4 @@
 import {z} from 'zod';
-import { da } from 'zod/v4/locales';
 
 export const CreateAnoLectivoDTO = z.object({
     nome: z.string().min(1, 'O campo "ano" é obrigatório'),
