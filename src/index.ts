@@ -45,7 +45,7 @@ app.use('/api/v1/student', studentRouter);
 app.use('/api/v1/registration', matriculaRouter);
 app.use('/api/v1/course', curso);
 app.use('/api/v1/class', turmaRouter);
-//app.use('/api/v1/year', anoLetivoRouter);
+app.use('/api/v1/year', anoLetivoRouter);
 app.use('/api/v1/guardian', encarregadoRouter);
 //app.use('/api/v1/admin', adminRouter);
 //app.use('/api/v1/region', regiaoRouter);

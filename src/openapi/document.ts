@@ -9,6 +9,7 @@ import "../services/cursos/dto/curso.openapi"
 import "../services/turmas/dto/turma.openapi"
 import "../services/professores/dto/professor.openapi"
 import "../services/encarregado/dto/encarregado.openapi"
+import "../services/ano_letivo/dto/ano_letivo.openapi"
 
 
 const generator = new OpenApiGeneratorV3(registry.definitions);
@@ -20,4 +21,4 @@ export const openApiDocument = generator.generateDocument({
     version: "1.0.0",
   },
   servers: [{ url: process.env.ENVIRONMENT === "prod" ? "https://siena.enor.tech" : "http://localhost:3000" }],
-}); 
+});
