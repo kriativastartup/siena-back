@@ -7,7 +7,7 @@ registry.register("Funcionario", Schema.ResponseFuncionarioSchema);
 // Criar um funcionário
 registry.registerPath({
     method: "post",
-    path: "/funcionarios/add",
+    path: "/api/v1/employee/add",
     tags: ["Funcionario"],
 
     request: {
@@ -40,7 +40,7 @@ registry.registerPath({
 // Listar funcionários por escola
 registry.registerPath({
     method: "get",
-    path: "/funcionarios/all/{escola_id}",  
+    path: "/api/v1/employee/all",  
     tags: ["Funcionario"],
     request: {
         params: z.object({
@@ -71,7 +71,7 @@ registry.registerPath({
 // Pegar um funcionário por ID
 registry.registerPath({
     method: "get",
-    path: "/funcionarios/each/{funcionario_id}",
+    path: "/api/v1/employee/each/{funcionario_id}",
     tags: ["Funcionario"],
     request: {
         params: z.object({
@@ -99,10 +99,40 @@ registry.registerPath({
     }
 });
 
+registry.registerPath({
+    method: "get",
+    path: "/api/v1/employee/me",
+    tags: ["Funcionario"],
+    request: {
+        params: z.object({
+            user_id: z.string("O ID do usuário é obrigatório").min(3, "O ID do usuário deve ter pelo menos 3 caracteres").max(50)
+        })
+    },
+    responses: {
+        200: {
+            description: "Funcionário encontrado com sucesso",
+            content: {
+                "application/json": {
+                    schema: Schema.ResponseFuncionarioSchema
+                }
+            }
+        },
+        400: {
+            description: "ID do usuário inválido",
+        },
+        404: {
+            description: "Funcionário não encontrado",
+        },
+        500: {
+            description: "Erro interno do servidor",
+        }
+    }
+});
+
 // Eliminar um funcionário
 registry.registerPath({
     method: "delete",
-    path: "/funcionarios/delete/{funcionario_id}",
+    path: "/api/v1/employee/delete/{funcionario_id}",
     tags: ["Funcionario"],
     request: {
         params: z.object({
@@ -138,7 +168,7 @@ registry.registerPath({
 // Atualizar um funcionário
 registry.registerPath({
     method: "put",
-    path: "/funcionarios/update/{funcionario_id}",
+    path: "/api/v1/employee/update",
     tags: ["Funcionario"],
     
     request: {

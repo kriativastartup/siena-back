@@ -308,6 +308,7 @@
           "id",
           "pessoa_id",
           "nome_completo",
+          "email",
           "escola_id",
           "username",
           "estado",
@@ -758,12 +759,12 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
+                    "message": {
                       "type": "string"
                     }
                   },
                   "required": [
-                    "error"
+                    "message"
                   ]
                 }
               }
@@ -776,12 +777,12 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": {
+                    "message": {
                       "type": "string"
                     }
                   },
                   "required": [
-                    "error"
+                    "message"
                   ]
                 }
               }
@@ -2588,7 +2589,7 @@
         }
       }
     },
-    "/funcionarios/add": {
+    "/api/v1/employee/add": {
       "post": {
         "tags": [
           "Funcionario"
@@ -2652,31 +2653,6 @@
                     "type": "string",
                     "maxLength": 100
                   },
-                  "tipo_usuario": {
-                    "type": "string",
-                    "enum": [
-                      "SUPER_ADMIN",
-                      "ALUNO",
-                      "PROFESSOR",
-                      "ENCARREGADO",
-                      "SECRETARIA",
-                      "COORDENADOR",
-                      "DIRETOR",
-                      "ADMIN_ESCOLA",
-                      "ANEP",
-                      "MED",
-                      "GEPE",
-                      "INADE",
-                      "INE",
-                      "ADMINISTRACAO",
-                      "PARCEIROS"
-                    ]
-                  },
-                  "senha_hash": {
-                    "type": "string",
-                    "minLength": 6,
-                    "maxLength": 255
-                  },
                   "escola_id": {
                     "type": "string"
                   }
@@ -2686,9 +2662,8 @@
                   "bi",
                   "dt_nascimento",
                   "sexo",
+                  "email",
                   "cargo",
-                  "tipo_usuario",
-                  "senha_hash",
                   "escola_id"
                 ]
               }
@@ -2787,6 +2762,7 @@
                     "id",
                     "pessoa_id",
                     "nome_completo",
+                    "email",
                     "escola_id",
                     "username",
                     "estado",
@@ -2806,7 +2782,7 @@
         }
       }
     },
-    "/funcionarios/all/{escola_id}": {
+    "/api/v1/employee/all/{escola_id}": {
       "get": {
         "tags": [
           "Funcionario"
@@ -2917,6 +2893,7 @@
                       "id",
                       "pessoa_id",
                       "nome_completo",
+                      "email",
                       "escola_id",
                       "username",
                       "estado",
@@ -2940,7 +2917,7 @@
         }
       }
     },
-    "/funcionarios/each/{funcionario_id}": {
+    "/api/v1/employee/each/{funcionario_id}": {
       "get": {
         "tags": [
           "Funcionario"
@@ -3049,6 +3026,7 @@
                     "id",
                     "pessoa_id",
                     "nome_completo",
+                    "email",
                     "escola_id",
                     "username",
                     "estado",
@@ -3071,7 +3049,7 @@
         }
       }
     },
-    "/funcionarios/delete/{funcionario_id}": {
+    "/api/v1/employee/delete/{funcionario_id}": {
       "delete": {
         "tags": [
           "Funcionario"
@@ -3116,7 +3094,7 @@
         }
       }
     },
-    "/funcionarios/update/{funcionario_id}": {
+    "/api/v1/employee/update/{funcionario_id}": {
       "put": {
         "tags": [
           "Funcionario"
@@ -3317,6 +3295,7 @@
                     "id",
                     "pessoa_id",
                     "nome_completo",
+                    "email",
                     "escola_id",
                     "username",
                     "estado",

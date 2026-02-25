@@ -22,8 +22,7 @@ export const CreateProfessorSchema = z.object({
 
     telefone: z.string()
         .min(9, "O telefone deve ter pelo menos 9 caracteres")
-        .max(20)
-        .optional(),
+        .max(20),
 
     nacionalidade: z.string()
         .min(2, "A nacionalidade deve ter pelo menos 2 caracteres")
@@ -36,17 +35,12 @@ export const CreateProfessorSchema = z.object({
         .optional(),
 
     email: z.string()
-        .email("Formato de email inválido")
-        .optional(),
+        .email("Formato de email inválido"),
 
     especialidade: z.string().max(100).optional(),
     categoria: z.string().max(100).optional(),
     habilitacoes: z.string().max(255).optional(),
     carga_horaria_sem: z.number().int().positive().optional(),
-
-    senha_hash: z.string("A senha é obrigatória")
-        .min(6, "A senha deve ter pelo menos 6 caracteres")
-        .max(255),
 
     escola_id: z.string().optional()
 });

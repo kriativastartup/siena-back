@@ -1,5 +1,5 @@
-import {registry} from "../../../openapi/registry";
-import {z} from "zod";
+import { registry } from "../../../openapi/registry";
+import { z } from "zod";
 import * as Schema from "./professor.dto";
 
 const BASE = "/api/v1/teacher";
@@ -99,14 +99,41 @@ registry.registerPath({
         },
         500: {
             description: "Erro interno do servidor",
-        } 
+        }
+    }
+});
+
+registry.registerPath({
+    method: "get",
+    path: `${BASE}/me`,
+    tags: ["Professor"],
+    responses: {
+        200: {
+            description: "Professor listado com sucesso",
+            headers: {
+                "Authorization": {
+                    description: "Bearer Token de autenticação JWT",
+                }
+            },
+            content: {
+                "application/json": {
+                    schema: Schema.ResponseProfessorSchema
+                }
+            }
+        },
+        404: {
+            description: "Professor não encontrado",
+        },
+        500: {
+            description: "Erro interno do servidor",
+        }
     }
 });
 
 // Atualizar um professor
 registry.registerPath({
     method: "put",
-    path: `${BASE}/update/{professor_id}`,
+    path: `${BASE}/update`,
     tags: ["Professor"],
 
     request: {

@@ -12,7 +12,21 @@ export const CreateFuncionarioSchema = z.object({
         .max(20),
 
     dt_nascimento: z.string("A data de nascimento é obrigatória")
-        .refine((date) => !isNaN(Date.parse(date)), "Data de nascimento inválida"),
+        .refine((date) => {
+            const parsedDate = Date.parse(date);
+            if(isNaN(parsedDate)){
+                return false;
+            }
+            // verificar se é menor de idade mínima (18 anos)
+            const today = new Date();
+            const birthDate = new Date(parsedDate);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age >= 18;
+        }, "Data de nascimento inválida ou funcionário menor de idade"),
 
     sexo: z.enum(sexo_enum, "O sexo é obrigatório e deve ser válido"),
 
@@ -32,16 +46,10 @@ export const CreateFuncionarioSchema = z.object({
         .optional(),
 
     email: z.string()
-        .email("Formato de email inválido")
-        .optional(),
+        .email("Formato de email inválido"),
 
     cargo: z.enum(cargo_funcionario_enum, "O cargo é obrigatório e deve ser válido"),
     departamento: z.string().max(100).optional(),
-    tipo_usuario: z.enum(tipo_usuario_enum, "O tipo de usuário é obrigatório e deve ser válido"),
-
-    senha_hash: z.string("A senha é obrigatória")
-        .min(6, "A senha deve ter pelo menos 6 caracteres")
-        .max(255),
     escola_id : z.string().refine((id => validate(id)), "ID de escola inválido")
 });
 
@@ -91,7 +99,6 @@ export const UpdateFuncionarioSchema = z.object({
         .min(6, "A senha deve ter pelo menos 6 caracteres")
         .max(255)
         .optional(),
-    escola_id : z.string().refine((id => validate(id)), "ID de escola inválido").optional()
 });
 
 export type UpdateFuncionarioDTO = z.infer<typeof UpdateFuncionarioSchema>;
@@ -109,7 +116,7 @@ export const ResponseFuncionarioSchema = z.object({
     telefone: z.string().optional(),
     nacionalidade: z.string().optional(),
     morada: z.string().optional(),
-    email: z.string().optional(),
+    email: z.string(),
 
     cargo: z.string().optional(),
     departamento: z.string().optional(),

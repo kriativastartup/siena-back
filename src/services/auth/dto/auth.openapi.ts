@@ -43,7 +43,7 @@ registry.registerPath({
             content: {
                 "application/json": {
                     schema: z.object({
-                        error: z.string(),
+                        message: z.string(),
                     }),
                 },
             },
@@ -53,7 +53,7 @@ registry.registerPath({
             content: {
                 "application/json": {
                     schema: z.object({
-                        error: z.string(),
+                        message: z.string(),
                     }),
                 },
             },

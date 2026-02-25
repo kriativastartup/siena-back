@@ -3,6 +3,9 @@ import * as ProfessorDTO from "./dto/professor.dto";
 import { hash_password } from "../../helper/encryption";
 import { generateUsername } from "../../helper/username";
 import { validate } from "uuid";
+import { generateRandomPassword } from "../../helper/password_random";
+import { sendEmail } from "../mail.service";
+import { emailRandomPassTemplate } from "../../template/email_random_pass";
 
 const prisma = new PrismaClient();
 
@@ -23,12 +26,33 @@ export const createProfessorService = async (
         categoria,
         habilitacoes,
         carga_horaria_sem,
-        senha_hash,
         escola_id
     } = data;
 
     try {
-        const hashedPassword = await hash_password(senha_hash);
+
+        const existEscola = await prisma.escola.findFirst({
+            where: { id: escola_id }
+        });
+
+        if (!existEscola) {
+            return { status: 404, message: "Escola não encontrada" };
+        }
+
+        const randomPassword = generateRandomPassword(8);
+        try {
+            await sendEmail(
+                email,
+                `Bem-vindo à escola ${existEscola.nome}, Prof ${nome_completo}!`,
+                emailRandomPassTemplate(email, randomPassword)
+            )
+        } catch (error) {
+            return {
+                status: 400,
+                message: `Erro ao enviar email, verifique o email e tente novamente`
+            };
+        }
+        const hashedPassword = await hash_password(randomPassword);
 
         const newPessoa = await prisma.pessoa.create({
             data: {
@@ -96,7 +120,6 @@ export const getAllProfessoresByEscolaService = async (
     offset: number,
     search?: string
 ): Promise<ProfessorDTO.ResponseProfessorDTO[] | ProfessorDTO.PropsResponseBad> => {
-
     if (!validate(escola_id)) {
         return { status: 400, message: "ID de escola inválido" };
     }

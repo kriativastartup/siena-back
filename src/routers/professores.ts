@@ -3,13 +3,16 @@ import express from 'express';
 const router = express.Router();
 
 import * as controller from '../controllers/professores';
-import { verifyAuthentication, verifyAuthenticationAdmin, verifyAuthenticationAdminSchool } from '../middleware/authorized';
+import * as Authorization from '../middleware/authorized';
+import { validate } from '../middleware/zod_validate';
+import * as Schema from '../services/professores/dto/professor.dto';
 
 
-router.get('/all/:escola_id', verifyAuthentication, controller.createProfessor);
-router.get('/each/:usuarioId', verifyAuthentication, controller.getProfessorById);
-router.post('/create', verifyAuthenticationAdminSchool, controller.createProfessor);
-router.put('/update/:professor_id', verifyAuthenticationAdminSchool, controller.updateProfessor);
+router.get('/all/:escola_id', Authorization.verifyAuthenticationAdminSchool, controller.getProfessoresByEscola);
+router.get('/each/:professor_id', Authorization.verifyAuthentication, controller.getProfessorById);
+router.get('/me', Authorization.verifyAuthentication, controller.getMeProfessor);
+router.post('/create', Authorization.verifyAuthenticationAdminSchool, validate(Schema.CreateProfessorSchema), controller.createProfessor);
+router.put('/update', Authorization.verifyAuthenticationAdminSchool, validate(Schema.UpdateProfessorSchema), controller.updateProfessor);
 //router.delete('/delete/:usuarioId', verifyAuthenticationAdminSchool, controller.deleteProfessor);
 
 // Rotas para gerenciar a associação de professores às turmas

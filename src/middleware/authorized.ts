@@ -34,7 +34,7 @@ export const verifyAuthentication = (req: Request | any, res: Response, next: Ne
             }
 
             req.userId = user.id;
-            if (user.estado === "ATIVO") {
+            if (user.estado === "BLOQUEADO") {
                 res.status(400).json({
                     message: "Conta inativa. Por favor, ative sua conta."
                 });
@@ -171,7 +171,10 @@ export const verifyAuthenticationAdminSchool = (req: Request | any, res: Respons
             if (user.tipo_usuario !== "ADMIN_ESCOLA"
                 && user.tipo_usuario !== "SECRETARIA"
                 && user.tipo_usuario !== "COORDENADOR"
-                && user.tipo_usuario !== "DIRETOR") {
+                && user.tipo_usuario !== "DIRETOR"
+                && user.tipo_usuario !== "PROFESSOR"
+                
+            ) {
                 res.status(403).json({
                     message: "Acesso negado. Você não tem permissão para acessar este recurso."
                 });

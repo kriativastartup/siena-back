@@ -1,6 +1,6 @@
 export const emailRandomPassTemplate = (email: string, senha: string): string => (
    `<p>Olá,</p>
-          <p>Bem-vindo à Siena! Sua conta de escola foi criada com sucesso.</p>
+          <p>Bem-vindo ao Siena! Sua conta foi criada com sucesso.</p>
           <p>Aqui estão suas credenciais de acesso:</p>
           <ul>
             <li><strong>Email:</strong> ${email}</li>
