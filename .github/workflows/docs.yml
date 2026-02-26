@@ -1,0 +1,33 @@
+name: Generate API Docs
+
+on:
+  push:
+    branches:
+      - feat/refactory
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Generate OpenAPI
+        run: yarn generate:openapi
+
+      - name: Commit OpenAPI file
+        run: |
+          git config --global user.name "Justino Soares"
+          git config --global user.email "justinocsoares123@gmail.com"
+          git add openapi.json
+          git commit -m "docs: update openapi" || echo "No changes"
+          git push
