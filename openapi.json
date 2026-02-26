@@ -207,6 +207,62 @@
           "data_atualizacao": {
             "type": "string",
             "format": "date-time"
+          },
+          "infra_escola": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "escola_id": {
+                "type": "string"
+              },
+              "salas": {
+                "type": "number"
+              },
+              "salas_improvisadas": {
+                "type": "number"
+              },
+              "estado_conservacao": {
+                "type": "string"
+              },
+              "laboratorios": {
+                "type": "number"
+              },
+              "bibliotecas": {
+                "type": "number"
+              },
+              "quadras_esportivas": {
+                "type": "number"
+              },
+              "refeitorios": {
+                "type": "number"
+              },
+              "auditorios": {
+                "type": "number"
+              },
+              "data_criacao": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "data_atualizacao": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "escola_id",
+              "salas",
+              "salas_improvisadas",
+              "laboratorios",
+              "bibliotecas",
+              "quadras_esportivas",
+              "refeitorios",
+              "auditorios",
+              "data_criacao",
+              "data_atualizacao"
+            ]
           }
         },
         "required": [
@@ -218,7 +274,8 @@
           "localizacao",
           "contacto",
           "data_criacao",
-          "data_atualizacao"
+          "data_atualizacao",
+          "infra_escola"
         ]
       },
       "Funcionario": {
@@ -580,6 +637,42 @@
           },
           "estado": {
             "type": "string"
+          },
+          "disciplinas": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "nome_disciplina": {
+                  "type": "string"
+                },
+                "disciplina_id": {
+                  "type": "string"
+                },
+                "professor_id": {
+                  "type": "string"
+                },
+                "escola_id": {
+                  "type": "string"
+                },
+                "data_criacao": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "data_atualizacao": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "nome_disciplina",
+                "disciplina_id",
+                "professor_id",
+                "escola_id",
+                "data_criacao",
+                "data_atualizacao"
+              ]
+            }
           }
         },
         "required": [
@@ -589,7 +682,8 @@
           "data_criacao",
           "username",
           "tipo_usuario",
-          "estado"
+          "estado",
+          "disciplinas"
         ]
       },
       "Encarregado": {
@@ -696,6 +790,37 @@
           "nome",
           "data_inicio",
           "data_fim",
+          "escola_id",
+          "data_criacao",
+          "data_atualizacao"
+        ]
+      },
+      "Disciplina": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "carga_horaria_sem": {
+            "type": "number"
+          },
+          "escola_id": {
+            "type": "string"
+          },
+          "data_criacao": {
+            "type": "string"
+          },
+          "data_atualizacao": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome",
+          "carga_horaria_sem",
           "escola_id",
           "data_criacao",
           "data_atualizacao"
@@ -1055,11 +1180,6 @@
                     "minLength": 5,
                     "maxLength": 255
                   },
-                  "senha_hash": {
-                    "type": "string",
-                    "minLength": 6,
-                    "maxLength": 255
-                  },
                   "escola_id": {
                     "type": "string",
                     "minLength": 3,
@@ -1074,7 +1194,6 @@
                   "telefone",
                   "email",
                   "n_processo",
-                  "senha_hash",
                   "escola_id"
                 ]
               }
@@ -1960,6 +2079,62 @@
                     "data_atualizacao": {
                       "type": "string",
                       "format": "date-time"
+                    },
+                    "infra_escola": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "escola_id": {
+                          "type": "string"
+                        },
+                        "salas": {
+                          "type": "number"
+                        },
+                        "salas_improvisadas": {
+                          "type": "number"
+                        },
+                        "estado_conservacao": {
+                          "type": "string"
+                        },
+                        "laboratorios": {
+                          "type": "number"
+                        },
+                        "bibliotecas": {
+                          "type": "number"
+                        },
+                        "quadras_esportivas": {
+                          "type": "number"
+                        },
+                        "refeitorios": {
+                          "type": "number"
+                        },
+                        "auditorios": {
+                          "type": "number"
+                        },
+                        "data_criacao": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "data_atualizacao": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "escola_id",
+                        "salas",
+                        "salas_improvisadas",
+                        "laboratorios",
+                        "bibliotecas",
+                        "quadras_esportivas",
+                        "refeitorios",
+                        "auditorios",
+                        "data_criacao",
+                        "data_atualizacao"
+                      ]
                     }
                   },
                   "required": [
@@ -1971,7 +2146,8 @@
                     "localizacao",
                     "contacto",
                     "data_criacao",
-                    "data_atualizacao"
+                    "data_atualizacao",
+                    "infra_escola"
                   ]
                 }
               }
@@ -2113,6 +2289,62 @@
                       "data_atualizacao": {
                         "type": "string",
                         "format": "date-time"
+                      },
+                      "infra_escola": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "escola_id": {
+                            "type": "string"
+                          },
+                          "salas": {
+                            "type": "number"
+                          },
+                          "salas_improvisadas": {
+                            "type": "number"
+                          },
+                          "estado_conservacao": {
+                            "type": "string"
+                          },
+                          "laboratorios": {
+                            "type": "number"
+                          },
+                          "bibliotecas": {
+                            "type": "number"
+                          },
+                          "quadras_esportivas": {
+                            "type": "number"
+                          },
+                          "refeitorios": {
+                            "type": "number"
+                          },
+                          "auditorios": {
+                            "type": "number"
+                          },
+                          "data_criacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "data_atualizacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "escola_id",
+                          "salas",
+                          "salas_improvisadas",
+                          "laboratorios",
+                          "bibliotecas",
+                          "quadras_esportivas",
+                          "refeitorios",
+                          "auditorios",
+                          "data_criacao",
+                          "data_atualizacao"
+                        ]
                       }
                     },
                     "required": [
@@ -2124,7 +2356,8 @@
                       "localizacao",
                       "contacto",
                       "data_criacao",
-                      "data_atualizacao"
+                      "data_atualizacao",
+                      "infra_escola"
                     ]
                   }
                 }
@@ -2273,6 +2506,62 @@
                     "data_atualizacao": {
                       "type": "string",
                       "format": "date-time"
+                    },
+                    "infra_escola": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "escola_id": {
+                          "type": "string"
+                        },
+                        "salas": {
+                          "type": "number"
+                        },
+                        "salas_improvisadas": {
+                          "type": "number"
+                        },
+                        "estado_conservacao": {
+                          "type": "string"
+                        },
+                        "laboratorios": {
+                          "type": "number"
+                        },
+                        "bibliotecas": {
+                          "type": "number"
+                        },
+                        "quadras_esportivas": {
+                          "type": "number"
+                        },
+                        "refeitorios": {
+                          "type": "number"
+                        },
+                        "auditorios": {
+                          "type": "number"
+                        },
+                        "data_criacao": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "data_atualizacao": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "escola_id",
+                        "salas",
+                        "salas_improvisadas",
+                        "laboratorios",
+                        "bibliotecas",
+                        "quadras_esportivas",
+                        "refeitorios",
+                        "auditorios",
+                        "data_criacao",
+                        "data_atualizacao"
+                      ]
                     }
                   },
                   "required": [
@@ -2284,7 +2573,8 @@
                     "localizacao",
                     "contacto",
                     "data_criacao",
-                    "data_atualizacao"
+                    "data_atualizacao",
+                    "infra_escola"
                   ]
                 }
               }
@@ -2490,6 +2780,62 @@
                     "data_atualizacao": {
                       "type": "string",
                       "format": "date-time"
+                    },
+                    "infra_escola": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "escola_id": {
+                          "type": "string"
+                        },
+                        "salas": {
+                          "type": "number"
+                        },
+                        "salas_improvisadas": {
+                          "type": "number"
+                        },
+                        "estado_conservacao": {
+                          "type": "string"
+                        },
+                        "laboratorios": {
+                          "type": "number"
+                        },
+                        "bibliotecas": {
+                          "type": "number"
+                        },
+                        "quadras_esportivas": {
+                          "type": "number"
+                        },
+                        "refeitorios": {
+                          "type": "number"
+                        },
+                        "auditorios": {
+                          "type": "number"
+                        },
+                        "data_criacao": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "data_atualizacao": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "escola_id",
+                        "salas",
+                        "salas_improvisadas",
+                        "laboratorios",
+                        "bibliotecas",
+                        "quadras_esportivas",
+                        "refeitorios",
+                        "auditorios",
+                        "data_criacao",
+                        "data_atualizacao"
+                      ]
                     }
                   },
                   "required": [
@@ -2501,7 +2847,8 @@
                     "localizacao",
                     "contacto",
                     "data_criacao",
-                    "data_atualizacao"
+                    "data_atualizacao",
+                    "infra_escola"
                   ]
                 }
               }
@@ -2585,6 +2932,234 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v1/school/update/infra/{escola_id}": {
+      "put": {
+        "tags": [
+          "Escola"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "escola_id": {
+                    "type": "string"
+                  },
+                  "salas": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "salas_improvisadas": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "estado_conservacao": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "laboratorios": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "bibliotecas": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "quadras_esportivas": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "refeitorios": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "auditorios": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "escola_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Infraestrutura da escola actualizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "natureza": {
+                      "type": "string",
+                      "enum": [
+                        "PUBLICA",
+                        "PRIVADA",
+                        "PUBLICA_PRIVADA"
+                      ]
+                    },
+                    "codigo_mec": {
+                      "type": "string"
+                    },
+                    "nif": {
+                      "type": "string"
+                    },
+                    "localizacao": {
+                      "type": "object",
+                      "properties": {
+                        "endereco": {
+                          "type": "string"
+                        },
+                        "cidade": {
+                          "type": "string"
+                        },
+                        "provincia": {
+                          "type": "string"
+                        },
+                        "pais": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "endereco",
+                        "provincia",
+                        "pais"
+                      ]
+                    },
+                    "contacto": {
+                      "type": "object",
+                      "properties": {
+                        "telefone": {
+                          "type": "string"
+                        },
+                        "outro_telefone": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "outro_email": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "telefone",
+                        "email"
+                      ]
+                    },
+                    "logo_url": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "infra_escola": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "escola_id": {
+                          "type": "string"
+                        },
+                        "salas": {
+                          "type": "number"
+                        },
+                        "salas_improvisadas": {
+                          "type": "number"
+                        },
+                        "estado_conservacao": {
+                          "type": "string"
+                        },
+                        "laboratorios": {
+                          "type": "number"
+                        },
+                        "bibliotecas": {
+                          "type": "number"
+                        },
+                        "quadras_esportivas": {
+                          "type": "number"
+                        },
+                        "refeitorios": {
+                          "type": "number"
+                        },
+                        "auditorios": {
+                          "type": "number"
+                        },
+                        "data_criacao": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "data_atualizacao": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "escola_id",
+                        "salas",
+                        "salas_improvisadas",
+                        "laboratorios",
+                        "bibliotecas",
+                        "quadras_esportivas",
+                        "refeitorios",
+                        "auditorios",
+                        "data_criacao",
+                        "data_atualizacao"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "natureza",
+                    "codigo_mec",
+                    "nif",
+                    "localizacao",
+                    "contacto",
+                    "data_criacao",
+                    "data_atualizacao",
+                    "infra_escola"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "404": {
+            "description": "Escola não encontrada"
           }
         }
       }
@@ -2782,7 +3357,7 @@
         }
       }
     },
-    "/api/v1/employee/all/{escola_id}": {
+    "/api/v1/employee/all": {
       "get": {
         "tags": [
           "Funcionario"
@@ -3049,6 +3624,138 @@
         }
       }
     },
+    "/api/v1/employee/me": {
+      "get": {
+        "tags": [
+          "Funcionario"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "user_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Funcionário encontrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "cargo": {
+                      "type": "string"
+                    },
+                    "departamento": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string",
+                      "enum": [
+                        "SUPER_ADMIN",
+                        "ALUNO",
+                        "PROFESSOR",
+                        "ENCARREGADO",
+                        "SECRETARIA",
+                        "COORDENADOR",
+                        "DIRETOR",
+                        "ADMIN_ESCOLA",
+                        "ANEP",
+                        "MED",
+                        "GEPE",
+                        "INADE",
+                        "INE",
+                        "ADMINISTRACAO",
+                        "PARCEIROS"
+                      ]
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "data_atualizacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "email",
+                    "escola_id",
+                    "username",
+                    "estado",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID do usuário inválido"
+          },
+          "404": {
+            "description": "Funcionário não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
     "/api/v1/employee/delete/{funcionario_id}": {
       "delete": {
         "tags": [
@@ -3094,7 +3801,7 @@
         }
       }
     },
-    "/api/v1/employee/update/{funcionario_id}": {
+    "/api/v1/employee/update": {
       "put": {
         "tags": [
           "Funcionario"
@@ -3194,9 +3901,6 @@
                     "type": "string",
                     "minLength": 6,
                     "maxLength": 255
-                  },
-                  "escola_id": {
-                    "type": "string"
                   }
                 }
               }
@@ -3354,7 +4058,7 @@
         }
       }
     },
-    "/matriculas": {
+    "/api/v1/registration/create": {
       "post": {
         "tags": [
           "Matricula"
@@ -3578,7 +4282,7 @@
         }
       }
     },
-    "/matriculas/each/{matricula_id}": {
+    "/api/v1/registration/each/{matricula_id}": {
       "get": {
         "tags": [
           "Matricula"
@@ -3713,7 +4417,7 @@
         }
       }
     },
-    "/matriculas/escola/{escola_id}/{ano_letivo}": {
+    "/api/v1/registration/all/{escola_id}/{ano_letivo}": {
       "get": {
         "tags": [
           "Matricula"
@@ -4961,11 +5665,6 @@
                     "minimum": 0,
                     "exclusiveMinimum": true
                   },
-                  "senha_hash": {
-                    "type": "string",
-                    "minLength": 6,
-                    "maxLength": 255
-                  },
                   "escola_id": {
                     "type": "string"
                   }
@@ -4975,7 +5674,8 @@
                   "bi",
                   "dt_nascimento",
                   "sexo",
-                  "senha_hash"
+                  "telefone",
+                  "email"
                 ]
               }
             }
@@ -5057,6 +5757,42 @@
                     },
                     "estado": {
                       "type": "string"
+                    },
+                    "disciplinas": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "nome_disciplina": {
+                            "type": "string"
+                          },
+                          "disciplina_id": {
+                            "type": "string"
+                          },
+                          "professor_id": {
+                            "type": "string"
+                          },
+                          "escola_id": {
+                            "type": "string"
+                          },
+                          "data_criacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "data_atualizacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "nome_disciplina",
+                          "disciplina_id",
+                          "professor_id",
+                          "escola_id",
+                          "data_criacao",
+                          "data_atualizacao"
+                        ]
+                      }
                     }
                   },
                   "required": [
@@ -5066,7 +5802,8 @@
                     "data_criacao",
                     "username",
                     "tipo_usuario",
-                    "estado"
+                    "estado",
+                    "disciplinas"
                   ]
                 }
               }
@@ -5171,6 +5908,42 @@
                       },
                       "estado": {
                         "type": "string"
+                      },
+                      "disciplinas": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "nome_disciplina": {
+                              "type": "string"
+                            },
+                            "disciplina_id": {
+                              "type": "string"
+                            },
+                            "professor_id": {
+                              "type": "string"
+                            },
+                            "escola_id": {
+                              "type": "string"
+                            },
+                            "data_criacao": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "data_atualizacao": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "nome_disciplina",
+                            "disciplina_id",
+                            "professor_id",
+                            "escola_id",
+                            "data_criacao",
+                            "data_atualizacao"
+                          ]
+                        }
                       }
                     },
                     "required": [
@@ -5180,7 +5953,8 @@
                       "data_criacao",
                       "username",
                       "tipo_usuario",
-                      "estado"
+                      "estado",
+                      "disciplinas"
                     ]
                   }
                 }
@@ -5284,6 +6058,42 @@
                     },
                     "estado": {
                       "type": "string"
+                    },
+                    "disciplinas": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "nome_disciplina": {
+                            "type": "string"
+                          },
+                          "disciplina_id": {
+                            "type": "string"
+                          },
+                          "professor_id": {
+                            "type": "string"
+                          },
+                          "escola_id": {
+                            "type": "string"
+                          },
+                          "data_criacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "data_atualizacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "nome_disciplina",
+                          "disciplina_id",
+                          "professor_id",
+                          "escola_id",
+                          "data_criacao",
+                          "data_atualizacao"
+                        ]
+                      }
                     }
                   },
                   "required": [
@@ -5293,7 +6103,8 @@
                     "data_criacao",
                     "username",
                     "tipo_usuario",
-                    "estado"
+                    "estado",
+                    "disciplinas"
                   ]
                 }
               }
@@ -5311,7 +6122,149 @@
         }
       }
     },
-    "/api/v1/teacher/update/{professor_id}": {
+    "/api/v1/teacher/me": {
+      "get": {
+        "tags": [
+          "Professor"
+        ],
+        "responses": {
+          "200": {
+            "description": "Professor listado com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Bearer Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "pessoa_id": {
+                      "type": "string"
+                    },
+                    "nome_completo": {
+                      "type": "string"
+                    },
+                    "bi": {
+                      "type": "string"
+                    },
+                    "dt_nascimento": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "sexo": {
+                      "type": "string",
+                      "enum": [
+                        "M",
+                        "F",
+                        "O"
+                      ]
+                    },
+                    "telefone": {
+                      "type": "string"
+                    },
+                    "nacionalidade": {
+                      "type": "string"
+                    },
+                    "morada": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "especialidade": {
+                      "type": "string"
+                    },
+                    "categoria": {
+                      "type": "string"
+                    },
+                    "habilitacoes": {
+                      "type": "string"
+                    },
+                    "carga_horaria_sem": {
+                      "type": "number"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "tipo_usuario": {
+                      "type": "string"
+                    },
+                    "estado": {
+                      "type": "string"
+                    },
+                    "disciplinas": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "nome_disciplina": {
+                            "type": "string"
+                          },
+                          "disciplina_id": {
+                            "type": "string"
+                          },
+                          "professor_id": {
+                            "type": "string"
+                          },
+                          "escola_id": {
+                            "type": "string"
+                          },
+                          "data_criacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "data_atualizacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "nome_disciplina",
+                          "disciplina_id",
+                          "professor_id",
+                          "escola_id",
+                          "data_criacao",
+                          "data_atualizacao"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "pessoa_id",
+                    "nome_completo",
+                    "data_criacao",
+                    "username",
+                    "tipo_usuario",
+                    "estado",
+                    "disciplinas"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Professor não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/update": {
       "put": {
         "tags": [
           "Professor"
@@ -5474,6 +6427,42 @@
                     },
                     "estado": {
                       "type": "string"
+                    },
+                    "disciplinas": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "nome_disciplina": {
+                            "type": "string"
+                          },
+                          "disciplina_id": {
+                            "type": "string"
+                          },
+                          "professor_id": {
+                            "type": "string"
+                          },
+                          "escola_id": {
+                            "type": "string"
+                          },
+                          "data_criacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "data_atualizacao": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        },
+                        "required": [
+                          "nome_disciplina",
+                          "disciplina_id",
+                          "professor_id",
+                          "escola_id",
+                          "data_criacao",
+                          "data_atualizacao"
+                        ]
+                      }
                     }
                   },
                   "required": [
@@ -5483,7 +6472,8 @@
                     "data_criacao",
                     "username",
                     "tipo_usuario",
-                    "estado"
+                    "estado",
+                    "disciplinas"
                   ]
                 }
               }
@@ -5515,6 +6505,155 @@
                       "type": "string"
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/discipline/add": {
+      "post": {
+        "tags": [
+          "Professor"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "disciplina_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  },
+                  "professor_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  },
+                  "escola_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  }
+                },
+                "required": [
+                  "disciplina_id",
+                  "professor_id",
+                  "escola_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Disciplina adicionada ao professor com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "403": {
+            "description": "Permissão negada para adicionar disciplina a este professor"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/teacher/discipline/remove": {
+      "post": {
+        "tags": [
+          "Professor"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "disciplina_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  },
+                  "professor_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  },
+                  "escola_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  }
+                },
+                "required": [
+                  "disciplina_id",
+                  "professor_id",
+                  "escola_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Disciplina removida do professor com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "403": {
+            "description": "Permissão negada para remover disciplina deste professor"
+          },
+          "500": {
+            "description": "Erro interno do servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
                 }
               }
             }
@@ -5580,11 +6719,6 @@
                   "escolaridade": {
                     "type": "string",
                     "maxLength": 100
-                  },
-                  "senha_hash": {
-                    "type": "string",
-                    "minLength": 6,
-                    "maxLength": 255
                   }
                 },
                 "required": [
@@ -5592,7 +6726,8 @@
                   "bi",
                   "dt_nascimento",
                   "sexo",
-                  "senha_hash"
+                  "telefone",
+                  "email"
                 ]
               }
             }
@@ -6379,6 +7514,334 @@
           },
           "404": {
             "description": "Ano letivo não encontrado"
+          }
+        }
+      }
+    },
+    "/api/v1/discipline/add": {
+      "post": {
+        "tags": [
+          "Disciplina"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "carga_horaria_sem": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 40
+                  },
+                  "escola_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  }
+                },
+                "required": [
+                  "nome",
+                  "carga_horaria_sem",
+                  "escola_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Disciplina criada com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Bearer Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "carga_horaria_sem": {
+                      "type": "number"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string"
+                    },
+                    "data_atualizacao": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "carga_horaria_sem",
+                    "escola_id",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/discipline/all/{escola_id}": {
+      "get": {
+        "tags": [
+          "Disciplina"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "escola_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Disciplinas listadas com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Bearer Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "nome": {
+                        "type": "string"
+                      },
+                      "carga_horaria_sem": {
+                        "type": "number"
+                      },
+                      "escola_id": {
+                        "type": "string"
+                      },
+                      "data_criacao": {
+                        "type": "string"
+                      },
+                      "data_atualizacao": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "nome",
+                      "carga_horaria_sem",
+                      "escola_id",
+                      "data_criacao",
+                      "data_atualizacao"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/discipline/each/{disciplina_id}": {
+      "get": {
+        "tags": [
+          "Disciplina"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "disciplina_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Disciplina listada com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Bearer Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "carga_horaria_sem": {
+                      "type": "number"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string"
+                    },
+                    "data_atualizacao": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "carga_horaria_sem",
+                    "escola_id",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/api/v1/discipline/update/{disciplina_id}": {
+      "put": {
+        "tags": [
+          "Disciplina"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 50
+            },
+            "required": true,
+            "name": "disciplina_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "carga_horaria_sem": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 40
+                  },
+                  "escola_id": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 50
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Disciplina atualizada com sucesso",
+            "headers": {
+              "Authorization": {
+                "description": "Bearer Token de autenticação JWT"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "nome": {
+                      "type": "string"
+                    },
+                    "carga_horaria_sem": {
+                      "type": "number"
+                    },
+                    "escola_id": {
+                      "type": "string"
+                    },
+                    "data_criacao": {
+                      "type": "string"
+                    },
+                    "data_atualizacao": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "nome",
+                    "carga_horaria_sem",
+                    "escola_id",
+                    "data_criacao",
+                    "data_atualizacao"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos fornecidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
           }
         }
       }

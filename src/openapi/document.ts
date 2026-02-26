@@ -23,5 +23,5 @@ export const openApiDocument = generator.generateDocument({
     title: "Minha API",
     version: "1.0.0",
   },
-  servers: [{ url: process.env.ENVIRONMENT === "prod" ? "https://siena.enor.tech" : "http://localhost:3000" }],
+  servers: [{ url: process.env.ENVIRONMENT === "dev" ? "http://localhost:3000" : "https://siena.enor.tech" }],
 });
