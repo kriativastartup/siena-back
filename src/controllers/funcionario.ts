@@ -3,11 +3,9 @@ import * as dto from "../services/funcionarios/dto/funcionario";
 import { PrismaClient } from "@prisma/client";
 import { validate } from "uuid";
 import { Request, Response } from "express";
-import { ResponseFuncionarioDTO } from "../services/funcionarios/dto/funcionario";
 const prisma = new PrismaClient();
 
 export const createFuncionario = async (req: Request, res: Response) => {
-
     try {
         const createDTO: dto.CreateFuncionarioDTO = req.body;
 
@@ -25,7 +23,6 @@ export const createFuncionario = async (req: Request, res: Response) => {
         }
 
         return res.status(201).json(result);
-
     } catch (error: any) {
         return res.status(500).json({
             message: "Erro ao criar funcionário",
@@ -98,7 +95,6 @@ export const getFuncionariosByEscola = async (req: Request | any, res: Response)
     });
 
     if (exitFuncionario.escola_id !== escola_id 
-        && existUsuario.tipo_usuario !== "ADMIN_ESCOLA" 
         && existUsuario.tipo_usuario !== "SUPER_ADMIN"
         && existProfessor?.escola_id !== escola_id
     ) {

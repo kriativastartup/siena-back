@@ -127,3 +127,40 @@ export const deleteEscola = async (req: Request, res: Response) => {
   }
 };
 
+export const updateInfra = async (req: Request, res: Response) => {
+    const { escola_id } = req.params;
+    if (!validate(escola_id)) {
+        return res.status(400).json({ message: "ID da escola inválido" });
+    }
+    const {
+        salas,
+        salas_improvisadas,
+        estado_conservacao,
+        laboratorios,
+        bibliotecas,
+        quadras_esportivas,
+        refeitorios,
+        auditorios,
+    }: dto.CreateInfraEscolaDTO = req.body;
+
+    try {
+        const result = await services.updateInfraEscolaService(escola_id, {
+            salas,
+            salas_improvisadas,
+            estado_conservacao,
+            laboratorios,
+            bibliotecas,
+            quadras_esportivas,
+            refeitorios,
+            auditorios,
+        });
+        if (result && (typeof result === "object" && (result as PropsResponseBad).status)) {
+          return res.status((result as PropsResponseBad).status).json({ message: (result as PropsResponseBad).message });
+        }
+        return res.status(200).json(result);
+    } catch (error: any) {
+        return res
+          .status(500)
+          .json({ message: "Erro ao atualizar infraestrutura da escola", error: error.message });
+    }
+};

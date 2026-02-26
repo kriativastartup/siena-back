@@ -49,6 +49,20 @@ export const UpdateEscolaSchema = z.object({
 
 export type UpdateEscolaDTO = z.infer<typeof UpdateEscolaSchema>;
 
+export const CreateInfraEscolaSchema = z.object({
+    escola_id: z.string("O ID da escola é obrigatório"),
+    salas: z.number("O número de salas é obrigatório").min(0).optional(),
+    salas_improvisadas: z.number("O número de salas improvisadas é obrigatório").min(0).optional(),
+    estado_conservacao: z.string("O estado de conservação é obrigatório").max(100).optional(),
+    laboratorios: z.number("O número de laboratórios é obrigatório").min(0).optional(),
+    bibliotecas: z.number("O número de bibliotecas é obrigatório").min(0).optional(),
+    quadras_esportivas: z.number("O número de quadras esportivas é obrigatório").min(0).optional(),
+    refeitorios: z.number("O número de refeitorios é obrigatório").min(0).optional(),
+    auditorios: z.number("O número de auditórios é obrigatório").min(0).optional(),
+});
+
+export type CreateInfraEscolaDTO = z.infer<typeof CreateInfraEscolaSchema>;
+
 export const ResponseEscolaSchema = z.object({
     id: z.string(),
     nome: z.string(),
@@ -70,6 +84,20 @@ export const ResponseEscolaSchema = z.object({
     logo_url: z.string().optional(),
     data_criacao: z.date(),
     data_atualizacao: z.date(),
+    infra_escola: z.object({
+        id: z.string(),
+        escola_id: z.string(),
+        salas: z.number(),
+        salas_improvisadas: z.number(),
+        estado_conservacao: z.string().optional(),
+        laboratorios: z.number(),
+        bibliotecas: z.number(),
+        quadras_esportivas: z.number(),
+        refeitorios: z.number(),
+        auditorios: z.number(),
+        data_criacao: z.date(),
+        data_atualizacao: z.date(),
+    }),
 });
 
 export type ResponseEscolaDTO = z.infer<typeof ResponseEscolaSchema>;

@@ -12,6 +12,7 @@ import "../services/turmas/dto/turma.openapi"
 import "../services/professores/dto/professor.openapi"
 import "../services/encarregado/dto/encarregado.openapi"
 import "../services/ano_letivo/dto/ano_letivo.openapi"
+import "../services/disciplinas/dto/disciplina.openapi"
 
 
 const generator = new OpenApiGeneratorV3(registry.definitions);

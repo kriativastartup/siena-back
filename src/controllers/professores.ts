@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { validate } from "uuid";
 import * as ProfessorDTO from "../services/professores/dto/professor.dto";
 import * as services from "../services/professores";
+import * as permissionService from '../services/permission/permission_school';
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -176,4 +177,74 @@ export const getProfessoresByEscola = async (req: Request | any, res: Response) 
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao buscar professores", error: error.message });
     }
+};
+
+export const addDisciplinaToProfessor = async (req: Request | any, res: Response) => {
+   const {disciplina_id, escola_id, professor_id} = req.body;
+   const userId = req.userId;
+
+    if (!userId || !validate(userId)) {
+        return res.status(400).json({ message: "ID de usuário inválido, faça login" });
+    }
+
+    if (!disciplina_id || !validate(disciplina_id) || !escola_id || !validate(escola_id) || !professor_id || !validate(professor_id)) {
+        return res.status(400).json({ message: "Dados inseridos são inválidos" });
+    }
+
+   const existEscola = await prisma.escola.findFirst({
+        where: { id: escola_id }
+    });
+
+    if (!existEscola) {
+        return res.status(404).json({ message: "Escola não encontrada" });
+    }
+
+    const existDisciplina = await prisma.disciplina.findFirst({
+        where: { id: disciplina_id }
+    });
+
+    if (!existDisciplina) {
+        return res.status(404).json({ message: "Disciplina não encontrada" });
+    }
+
+    const existProfessor = await prisma.professor.findFirst({
+        where: { id: professor_id }
+    });
+
+    if (!existProfessor) {
+        return res.status(404).json({ message: "Professor não encontrado" });
+    }
+    const permission = await permissionService.checkSchoolPermission(userId, escola_id);
+    if (!permission) {
+        return res.status(403).json({ message: "Você não tem permissão para adicionar disciplina a este professor" });
+    }
+    const result = await services.addDisciplinaToProfessorService({disciplina_id, professor_id, escola_id, });
+
+    if ("status" in result && "message" in result) {
+        return res.status(result.status).json({ message: result.message });
+    }
+    return res.status(200).json(result);
+};
+
+export const removeDisciplinaFromProfessor = async (req: Request | any, res: Response) => {
+    const {disciplina_id, escola_id, professor_id} = req.body;
+    const userId = req.userId;
+
+    if (!userId || !validate(userId)) {
+        return res.status(400).json({ message: "ID de usuário inválido, faça login" });
+    }
+
+    if (!disciplina_id || !validate(disciplina_id) || !escola_id || !validate(escola_id) || !professor_id || !validate(professor_id)) {
+        return res.status(400).json({ message: "Dados inseridos são inválidos" });
+    }
+    const permission = await permissionService.checkSchoolPermission(userId, escola_id);
+    if (!permission) {
+        return res.status(403).json({ message: "Você não tem permissão para remover disciplina deste professor" });
+    }
+    const result = await services.removeDisciplinaFromProfessorService({disciplina_id, professor_id, escola_id, });
+
+    if ("status" in result && "message" in result) {
+        return res.status(result.status).json({ message: result.message });
+    }
+    return res.status(200).json(result);
 };

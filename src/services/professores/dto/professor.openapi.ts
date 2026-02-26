@@ -185,3 +185,86 @@ registry.registerPath({
         }
     }
 });
+
+// Adicionar disciplina a um professor
+registry.registerPath({
+    method: "post",
+    path: `${BASE}/discipline/add`,
+    tags: ["Professor"],
+
+    request: {
+        body: {
+            content: {
+                "application/json": {
+                    schema: Schema.CreateDisciplinaProfessorSchema
+                }
+            }
+        }
+    },
+    responses: {
+        200: {
+            description: "Disciplina adicionada ao professor com sucesso",
+            content: {
+                "application/json": {
+                    schema: z.object({
+                        message: z.string()
+                    })
+                }
+            }
+        },
+        400: {
+            description: "Dados inválidos fornecidos",
+        },
+        403: {
+            description: "Permissão negada para adicionar disciplina a este professor",
+        },
+        500: {
+            description: "Erro interno do servidor",
+        }
+    }
+});
+
+// remover disciplina de um professor
+registry.registerPath({
+    method: "post",
+    path: `${BASE}/discipline/remove`,
+    tags: ["Professor"],
+
+    request: {
+        body: {
+            content: {
+                "application/json": {
+                    schema: Schema.CreateDisciplinaProfessorSchema
+                }
+            }
+        }
+    },
+    responses: {
+        200: {
+            description: "Disciplina removida do professor com sucesso",
+            content: {
+                "application/json": {
+                    schema: z.object({
+                        message: z.string()
+                    })
+                }
+            }
+        },
+        400: {
+            description: "Dados inválidos fornecidos",
+        },
+        403: {
+            description: "Permissão negada para remover disciplina deste professor",
+        },
+        500: {
+            description: "Erro interno do servidor",
+                content: {
+                    "application/json": {
+                        schema: z.object({
+                            message: z.string()
+                        })
+                    }
+                }
+        }
+    }
+});

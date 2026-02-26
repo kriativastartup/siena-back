@@ -5,24 +5,37 @@ import { PrismaClient, sexo_enum, status_aluno } from "@prisma/client";
 import * as AlunoDTO from "./dto/alunos.dto";
 import { validate } from "uuid";
 import { generateUsername } from "../../helper/username";
+import { sendEmail } from "../mail.service";
+import { emailRandomPassTemplate } from "../../template/email_random_pass";
 
 const prisma = new PrismaClient();
 
 export const createAlunoService = async (data: AlunoDTO.CreateAlunoDTO) => {
-    const { 
-        nome_completo, 
+    const {
+        nome_completo,
         bi,
         dt_nascimento,
-        sexo, 
+        sexo,
         telefone,
-        nacionalidade, 
+        nacionalidade,
         morada,
         email,
         escola_id,
-        n_processo, necessidades_especiais : { descricao, tipo } = { descricao: "", tipo: "" }
-        , foto, senha_hash } = data;
+        n_processo, necessidades_especiais: { descricao, tipo } = { descricao: "", tipo: "" }
+        , foto } = data;
     try {
-        const hashedPassword = await hash_password(senha_hash);
+        const generateSenha = await hash_password(generateRandomNumber(8).toString());
+        try {
+            await sendEmail(
+                email,
+                "Bem-vindo ao Sistema de Gestão Escolar",
+                emailRandomPassTemplate(email, generateSenha)
+            );
+        } catch (emailError: any) {
+            return { status: 500, message: `Erro ao enviar email: ${emailError.message}` };
+        }
+        const hashedPassword = await hash_password(generateSenha);
+
         const newPessoa = await prisma.pessoa.create({
             data: {
                 nome_completo,
@@ -32,7 +45,7 @@ export const createAlunoService = async (data: AlunoDTO.CreateAlunoDTO) => {
                 sexo,
                 telefone,
                 nacionalidade,
-                morada  
+                morada
             },
         });
 
@@ -78,14 +91,15 @@ export const createAlunoService = async (data: AlunoDTO.CreateAlunoDTO) => {
             data_atualizacao: newAluno.data_atualizacao,
             username: generateUsername(nome_completo),
             tipo_usuario: "ALUNO",
-            estado : newUsuario.estado
+            estado: newUsuario.estado
         };
     } catch (error: any) {
         return { status: 500, message: `Erro ao criar aluno: ${error.message}` };
     }
+
 };
 
-export const getAlunosTurmaService = async (turma_id: string, limit?: number, offset?: number, search?: string) : Promise<AlunoDTO.ResponseAlunoDTO[] | AlunoDTO.PropsResponseBad> => {
+export const getAlunosTurmaService = async (turma_id: string, limit?: number, offset?: number, search?: string): Promise<AlunoDTO.ResponseAlunoDTO[] | AlunoDTO.PropsResponseBad> => {
     try {
         const existTurma = await prisma.turma.findFirst({
             where: { id: turma_id },
@@ -104,7 +118,7 @@ export const getAlunosTurmaService = async (turma_id: string, limit?: number, of
             },
         });
 
-        const alunosWithUserData = await Promise.all(alunos.map(async (aluno : any) => {
+        const alunosWithUserData = await Promise.all(alunos.map(async (aluno: any) => {
             const user = await prisma.usuario.findFirst({
                 where: { pessoa_id: aluno.pessoa_id },
             });
@@ -124,14 +138,14 @@ export const getAlunosTurmaService = async (turma_id: string, limit?: number, of
                 morada: pessoa?.morada || "",
                 email: pessoa?.email || "",
                 n_processo: aluno.n_processo,
-                necessidades_especiais: aluno.necessidades_especiais ? aluno.necessidades_especiais :  undefined,
+                necessidades_especiais: aluno.necessidades_especiais ? aluno.necessidades_especiais : undefined,
                 foto: aluno.foto,
                 status: aluno.status,
                 data_criacao: aluno.data_criacao,
                 data_atualizacao: aluno.data_atualizacao,
                 username: user?.username || "",
                 tipo_usuario: user?.tipo_usuario || "",
-                estado : user?.estado || ""
+                estado: user?.estado || ""
             };
         }));
 
@@ -141,7 +155,7 @@ export const getAlunosTurmaService = async (turma_id: string, limit?: number, of
     }
 };
 
-export const getAlunosEscolaService = async (escola_id: string, limit?: number, offset?: number, search?: string) : Promise<AlunoDTO.ResponseAlunoDTO[] | AlunoDTO.PropsResponseBad> => {
+export const getAlunosEscolaService = async (escola_id: string, limit?: number, offset?: number, search?: string): Promise<AlunoDTO.ResponseAlunoDTO[] | AlunoDTO.PropsResponseBad> => {
     try {
         const existEscola = await prisma.escola.findFirst({
             where: { id: escola_id },
@@ -176,25 +190,25 @@ export const getAlunosEscolaService = async (escola_id: string, limit?: number, 
                 morada: pessoa?.morada || "",
                 email: pessoa?.email || "",
                 n_processo: aluno.n_processo,
-                necessidades_especiais: aluno.necessidades_especiais ? aluno.necessidades_especiais :  undefined,
+                necessidades_especiais: aluno.necessidades_especiais ? aluno.necessidades_especiais : undefined,
                 foto: aluno.foto,
                 status: aluno.status,
                 data_criacao: aluno.data_criacao,
                 data_atualizacao: aluno.data_atualizacao,
                 username: user?.username || "",
                 tipo_usuario: user?.tipo_usuario || "",
-                estado : user?.estado || ""
+                estado: user?.estado || ""
             };
         }));
 
         return alunosWithUserData as AlunoDTO.ResponseAlunoDTO[];
-       
+
     } catch (error: any) {
         return { status: 500, message: `Erro ao buscar alunos da escola: ${error.message}` };
     }
 };
 
-export const getAlunoByIdService = async (aluno_id: string) : Promise<AlunoDTO.ResponseAlunoDTO | AlunoDTO.PropsResponseBad> => {
+export const getAlunoByIdService = async (aluno_id: string): Promise<AlunoDTO.ResponseAlunoDTO | AlunoDTO.PropsResponseBad> => {
     if (!validate(aluno_id)) {
         return { status: 400, message: "ID de aluno inválido" };
     }
@@ -234,16 +248,16 @@ export const getAlunoByIdService = async (aluno_id: string) : Promise<AlunoDTO.R
             data_atualizacao: aluno.data_atualizacao,
             username: user?.username || "",
             tipo_usuario: user?.tipo_usuario || "",
-            estado : user?.estado || ""
+            estado: user?.estado || ""
         };
 
-       
+
     } catch (error: any) {
         return { status: 500, message: `Erro ao buscar aluno: ${error.message}` };
     }
 };
 
-export const updateAlunoService = async (aluno_id: string, data: Partial<AlunoDTO.CreateAlunoDTO>) : Promise<AlunoDTO.ResponseAlunoDTO | AlunoDTO.PropsResponseBad> => {
+export const updateAlunoService = async (aluno_id: string, data: Partial<AlunoDTO.CreateAlunoDTO>): Promise<AlunoDTO.ResponseAlunoDTO | AlunoDTO.PropsResponseBad> => {
     if (!validate(aluno_id)) {
         return { status: 400, message: "ID de aluno inválido" };
     }
@@ -271,7 +285,7 @@ export const updateAlunoService = async (aluno_id: string, data: Partial<AlunoDT
                 sexo: data.sexo || pessoa?.sexo,
                 telefone: data.telefone || pessoa?.telefone,
                 nacionalidade: data.nacionalidade || pessoa?.nacionalidade,
-                morada: data.morada || pessoa?.morada  
+                morada: data.morada || pessoa?.morada
             },
         });
 
@@ -280,12 +294,12 @@ export const updateAlunoService = async (aluno_id: string, data: Partial<AlunoDT
             data: {
                 escola_id: data.escola_id || aluno.escola_id,
                 n_processo: data.n_processo || aluno.n_processo,
-                necessidades_especiais: data.necessidades_especiais, 
+                necessidades_especiais: data.necessidades_especiais,
                 foto: data.foto || aluno.foto,
                 status: data.status as status_aluno || aluno.status
             },
         });
-        
+
         return {
             ...updatedAluno,
             ...updatedPessoa

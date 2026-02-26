@@ -7,9 +7,9 @@ import * as Authotization from "../middleware/authorized";
 const router = express.Router();
 
 router.post("/add", validate(Schema.CreateFuncionarioSchema), Controller.createFuncionario);
-router.get("/all/:escola_id", Authotization.verifyAuthenticationAdminSchool, Controller.getFuncionariosByEscola);
-router.get("/each/:funcionario_id", Authotization.verifyAuthenticationAdminSchool, Controller.getFuncionarioById);
+router.get("/all/:escola_id", Authotization.verifyAuthenticationSchool, Controller.getFuncionariosByEscola);
+router.get("/each/:funcionario_id", Authotization.verifyAuthenticationMasterSchool, Controller.getFuncionarioById);
 router.get("/me", Authotization.verifyAuthentication, Controller.getMeFuncionario);
-router.put("/update", Authotization.verifyAuthenticationAdminSchool, Controller.updateFuncionario);
+router.put("/update", Authotization.verifyAuthenticationMasterSchool, Controller.updateFuncionario);
 
 export default router;

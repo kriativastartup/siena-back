@@ -21,8 +21,7 @@ export const CreateEncarregadoSchema = z.object({
 
     telefone: z.string()
         .min(9, "O telefone deve ter pelo menos 9 caracteres")
-        .max(20)
-        .optional(),
+        .max(20),
 
     nacionalidade: z.string()
         .min(2, "A nacionalidade deve ter pelo menos 2 caracteres")
@@ -35,15 +34,10 @@ export const CreateEncarregadoSchema = z.object({
         .optional(),
 
     email: z.string()
-        .email("Formato de email inválido")
-        .optional(),
+        .email("Formato de email inválido"),
 
     profissao: z.string().max(100).optional(),
     escolaridade: z.string().max(100).optional(),
-
-    senha_hash: z.string("A senha é obrigatória")
-        .min(6, "A senha deve ter pelo menos 6 caracteres")
-        .max(255)
 });
 
 export type CreateEncarregadoDTO = z.infer<typeof CreateEncarregadoSchema>;

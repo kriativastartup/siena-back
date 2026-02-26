@@ -22,7 +22,6 @@ export const createAluno = async (req: Request | any, res: Response) => {
             n_processo,
             necessidades_especiais,
             foto,
-            senha_hash,
             escola_id
         };
 

@@ -15,6 +15,7 @@ import regiaoRouter from './routers/regiao';
 import feedbackRouter from './routers/feedback';
 import  funcionario  from './routers/funcionario';
 import curso from './routers/curso';
+import discipline from './routers/disciplina';
 
 import swaggerUi from "swagger-ui-express";
 import { openApiDocument } from "./openapi/document";
@@ -51,6 +52,7 @@ app.use('/api/v1/guardian', encarregadoRouter);
 //app.use('/api/v1/region', regiaoRouter);
 app.use('/api/v1/feedback', feedbackRouter);
 app.use('/api/v1/employee', funcionario);
+app.use('/api/v1/discipline', discipline);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
 

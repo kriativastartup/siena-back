@@ -99,6 +99,33 @@ export const UpdateProfessorSchema = z.object({
 
 export type UpdateProfessorDTO = z.infer<typeof UpdateProfessorSchema>;
 
+
+
+export type PropsResponseBad = {
+    status: number;
+    message: string;
+};
+
+
+export const CreateDisciplinaProfessorSchema = z.object({
+    disciplina_id: z.string("O ID da disciplina é obrigatório").min(3, "O ID da disciplina deve ter pelo menos 3 caracteres").max(50),
+    professor_id: z.string("O ID do professor é obrigatório").min(3, "O ID do professor deve ter pelo menos 3 caracteres").max(50),
+    escola_id: z.string("O ID da escola é obrigatório").min(3, "O ID da escola deve ter pelo menos 3 caracteres").max(50)
+});
+
+export type CreateDisciplinaProfessorDTO = z.infer<typeof CreateDisciplinaProfessorSchema>;
+
+export const ResponseDisciplinaProfessorSchema = z.object({
+    nome_disciplina: z.string(),
+    disciplina_id: z.string(),
+    professor_id: z.string(),
+    escola_id: z.string(),
+    data_criacao: z.date(),
+    data_atualizacao: z.date()
+}).optional();
+
+export type ResponseDisciplinaProfessorDTO = z.infer<typeof ResponseDisciplinaProfessorSchema>;
+
 export const ResponseProfessorSchema = z.object({
     id: z.string(),
     pessoa_id: z.string(),
@@ -124,12 +151,8 @@ export const ResponseProfessorSchema = z.object({
 
     username: z.string(),
     tipo_usuario: z.string(),
-    estado: z.string()
+    estado: z.string(),
+    disciplinas: ResponseDisciplinaProfessorSchema.array()
 });
 
 export type ResponseProfessorDTO = z.infer<typeof ResponseProfessorSchema>;
-
-export type PropsResponseBad = {
-    status: number;
-    message: string;
-};

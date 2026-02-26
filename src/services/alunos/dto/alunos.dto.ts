@@ -23,7 +23,6 @@ export const CreateAlunoSchema = z.object({
     }).optional(),
     status: z.enum(status_aluno, "O status do aluno é obrigatório e deve ser um tipo válido").default("ACTIVO").optional(),
     foto : z.string("A URL da foto é obrigatória").min(5, "A URL da foto deve ter pelo menos 5 caracteres").max(255).optional(),
-    senha_hash: z.string("A senha é obrigatória").min(6, "A senha deve ter pelo menos 6 caracteres").max(255),
     escola_id : z.string("O ID da escola é obrigatório").min(3, "O ID da escola deve ter pelo menos 3 caracteres").max(50)
 });
 

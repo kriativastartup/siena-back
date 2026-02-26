@@ -216,3 +216,38 @@ registry.registerPath({
         }
     }
 });
+
+registry.registerPath({
+    method: "put",
+    path: "/api/v1/school/update/infra/{escola_id}",
+    tags: ["Escola"],
+
+    request: {
+        params: z.object({
+            escola_id: z.string()
+        }),
+        body: {
+            content: {
+                "application/json": {
+                    schema: Schema.CreateInfraEscolaSchema
+                }
+            }
+        }
+    },
+    responses: {
+        200: {
+            description: "Infraestrutura da escola actualizada com sucesso",
+            content: {
+                "application/json": {
+                    schema: Schema.ResponseEscolaSchema
+                }
+            }
+        },
+        400: {
+            description: "Dados inválidos"
+        },
+        404: {
+            description: "Escola não encontrada",
+        }
+    }
+});

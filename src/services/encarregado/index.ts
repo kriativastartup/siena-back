@@ -3,6 +3,8 @@ import * as EncarregadoDTO from "../encarregado/dto/encarregado.dto";
 import { hash_password } from "../../helper/encryption";
 import { generateRandomNumber, generateUsername } from "../../helper/username";
 import { validate } from "uuid";
+import { sendEmail } from "../mail.service";
+import { emailRandomPassTemplate } from "../../template/email_random_pass";
 
 const prisma = new PrismaClient();
 
@@ -20,12 +22,21 @@ export const createEncarregadoService = async (
         morada,
         email,
         profissao,
-        escolaridade,
-        senha_hash
+        escolaridade
     } = data;
 
     try {
-        const hashedPassword = await hash_password(senha_hash);
+        const generatePassword = generateRandomNumber(8).toString();
+        const hashedPassword = await hash_password(generatePassword);
+        try {
+            await sendEmail(
+                email,
+                "Bem-vindo ao Sistema de Gestão Escolar",
+                emailRandomPassTemplate(email, generatePassword)
+            );
+        } catch (error: any) {
+            return { status: 500, message: `Erro ao enviar email: ${error.message}` };
+        }
 
         const newPessoa = await prisma.pessoa.create({
             data: {

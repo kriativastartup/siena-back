@@ -87,6 +87,23 @@ export const createProfessorService = async (
             }
         });
 
+        const disciplinaProfessores = await prisma.disciplina_professor.findMany({
+            where: { professor_id: newProfessor.id }
+        });
+        const disciplinas = await Promise.all(disciplinaProfessores.map(async (dp) => {
+            const disciplina = await prisma.disciplina.findFirst({
+                where: { id: dp.disciplina_id }
+            });
+            return {
+                disciplina_id: dp.disciplina_id,
+                professor_id: newProfessor.id,
+                escola_id: existEscola.id,
+                nome_disciplina: disciplina?.nome || "",
+                data_criacao: new Date(dp.data_criacao),
+                data_atualizacao: new Date(dp.data_atualizacao)
+            };
+        }));
+
         return {
             id: newProfessor.id,
             pessoa_id: newPessoa.id,
@@ -106,7 +123,8 @@ export const createProfessorService = async (
             data_criacao: newProfessor.data_criacao,
             username: newUsuario.username,
             tipo_usuario: "PROFESSOR",
-            estado: newUsuario.estado
+            estado: newUsuario.estado,
+            disciplinas: disciplinas
         };
 
     } catch (error: any) {
@@ -160,7 +178,36 @@ export const getAllProfessoresByEscolaService = async (
             };
         }));
 
-        return professores.map(professor => ({
+        const dp = await prisma.disciplina_professor.findMany({
+            where: {
+                professor_id: {
+                    in: professores.map(p => p.id)
+                }
+            }
+        });
+
+        async function isDisciplinaProfessor(prof_id: string) {
+            const disciplinas = await Promise.all(dp.map(async (item) => {
+                const disciplina = await prisma.disciplina.findFirst({
+                    where: { id: item.disciplina_id }
+                });
+                const prof = await prisma.professor.findFirst({
+                    where: { id: item.professor_id }
+                });
+
+                return {
+                    disciplina_id: item.disciplina_id,
+                    professor_id: item.professor_id,
+                    escola_id: prof?.escola_id || "",
+                    nome_disciplina: disciplina?.nome || "",
+                    data_criacao: new Date(item.data_criacao),
+                    data_atualizacao: new Date(item.data_atualizacao)
+                };
+            }));
+            return disciplinas.filter(d => d.professor_id === prof_id);
+        }
+
+        const response = professores.map(async professor => ({
             id: professor.id,
             pessoa_id: professor.pessoa_id,
             nome_completo: professor.pessoa.nome_completo || "",
@@ -179,8 +226,10 @@ export const getAllProfessoresByEscolaService = async (
             data_criacao: professor.data_criacao,
             username: professor.usuario?.username || "",
             tipo_usuario: professor.usuario?.tipo_usuario || "",
-            estado: professor.usuario?.estado || ""
+            estado: professor.usuario?.estado || "",
+            disciplinas: await isDisciplinaProfessor(professor.id) // Você pode adicionar a lógica para buscar as disciplinas associadas a cada professor aqui, se necessário
         }));
+        return Promise.all(response);
     } catch (error: any) {
         return { status: 500, message: `Erro ao buscar professores: ${error.message}` };
     }
@@ -211,6 +260,24 @@ export const getProfessorByIdService = async (
             where: { pessoa_id: professor.pessoa_id }
         });
 
+        const disciplinaProfessores = await prisma.disciplina_professor.findMany({
+            where: { professor_id }
+        });
+
+        const disciplinas = await Promise.all(disciplinaProfessores.map(async (dp) => {
+            const disciplina = await prisma.disciplina.findFirst({
+                where: { id: dp.disciplina_id }
+            });
+            return {
+                disciplina_id: dp.disciplina_id,
+                professor_id,
+                escola_id: professor.escola_id || "",
+                nome_disciplina: disciplina?.nome || "",
+                data_criacao: new Date(dp.data_criacao),
+                data_atualizacao: new Date(dp.data_atualizacao)
+            };
+        }));
+
         return {
             id: professor.id,
             pessoa_id: professor.pessoa_id,
@@ -230,7 +297,8 @@ export const getProfessorByIdService = async (
             data_criacao: professor.data_criacao,
             username: user?.username || "",
             tipo_usuario: user?.tipo_usuario || "",
-            estado: user?.estado || ""
+            estado: user?.estado || "",
+            disciplinas
         };
 
     } catch (error: any) {
@@ -290,16 +358,119 @@ export const updateProfessorService = async (
         const user = await prisma.usuario.findFirst({
             where: { pessoa_id: professor.pessoa_id }
         });
+        const disciplina_professor = await prisma.disciplina_professor.findMany({
+            where: { professor_id }
+        });
+
+        const disciplinas = await Promise.all(disciplina_professor.map(async (dp) => {
+            const disciplina = await prisma.disciplina.findFirst({
+                where: { id: dp.disciplina_id }
+            });
+            return {
+                disciplina_id: dp.disciplina_id,
+                professor_id,
+                escola_id: updatedProfessor.escola_id || "",
+                nome_disciplina: disciplina?.nome || "",
+                data_criacao: new Date(dp.data_criacao),
+                data_atualizacao: new Date(dp.data_atualizacao)
+            };
+        }));
 
         return {
             ...updatedProfessor,
             ...updatedPessoa,
             username: user?.username || "",
             tipo_usuario: user?.tipo_usuario || "",
-            estado: user?.estado || ""
+            estado: user?.estado || "",
+            disciplinas
         } as ProfessorDTO.ResponseProfessorDTO;
 
     } catch (error: any) {
         return { status: 500, message: `Erro ao atualizar professor: ${error.message}` };
     }
 };
+
+export const addDisciplinaToProfessorService = async (
+    data: ProfessorDTO.CreateDisciplinaProfessorDTO
+) => {
+    const { disciplina_id, professor_id, escola_id } = data;
+
+    const existProfessor = await prisma.professor.findFirst({
+        where: { id: professor_id }
+    });
+
+    if (!existProfessor) {
+        return { status: 404, message: "Professor não encontrado" };
+    }
+
+    const existDisciplina = await prisma.disciplina.findFirst({
+        where: { id: disciplina_id }
+    });
+
+    if (!existDisciplina) {
+        return { status: 404, message: "Disciplina não encontrada" };
+    }
+
+    const existEscola = await prisma.escola.findFirst({
+        where: { id: escola_id }
+    });
+
+    if (!existEscola) {
+        return { status: 404, message: "Escola não encontrada" };
+    }
+
+    if (existDisciplina.escola_id !== existProfessor.escola_id || existDisciplina.escola_id !== escola_id || existProfessor.escola_id !== escola_id) {
+        return { status: 400, message: "Professor, disciplina e escola devem estar associados à mesma escola" };
+    }
+
+    const existingRelation = await prisma.disciplina_professor.findFirst({
+        where: {
+            disciplina_id,
+            professor_id,
+            escola_id
+        }
+    });
+
+    if (existingRelation) {
+        return { status: 400, message: "Este Professor já está associado a esta disciplina e escola" };
+    }
+
+    const add = await prisma.disciplina_professor.create({
+        data: {
+            disciplina_id,
+            professor_id,
+            escola_id
+        }
+    });
+    return {
+        status: 200,
+        message: "Disciplina associada ao professor com sucesso",
+    };
+}
+
+export const removeDisciplinaFromProfessorService = async (
+    data: ProfessorDTO.CreateDisciplinaProfessorDTO
+) => {
+    const { disciplina_id, professor_id, escola_id } = data;
+
+    const existRelation = await prisma.disciplina_professor.findFirst({
+        where: {
+            disciplina_id,
+            professor_id,
+            escola_id
+        }
+    });
+
+    if (!existRelation) {
+        return { status: 404, message: "Associação entre professor, disciplina e escola não encontrada" };
+    }
+
+    await prisma.disciplina_professor.delete({
+        where: { id: existRelation.id }
+    });
+
+    return {
+        status: 200,
+        message: "Disciplina desassociada do professor com sucesso",
+    };
+} 

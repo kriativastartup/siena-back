@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-
 }
 
 datasource db {
@@ -89,19 +88,35 @@ model aluno_encarregado {
 }
 
 model disciplina {
-  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome             String             @db.VarChar(100)
-  carga_horaria    Int?
-  data_criacao     DateTime           @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime           @default(now()) @updatedAt @db.Timestamp(6)
-  turma_disciplina turma_disciplina[]
-  professor_turma  professor_turma[]
-  nota             nota[]
-  escola           escola?            @relation(fields: [escola_id], references: [id])
-  escola_id        String?            @db.Uuid
-  avaliacaos       avaliacao[]
-  horarioAulas     horario_aula[]
-  diarioClasses    diario_classe[]
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome                 String                 @db.VarChar(100)
+  carga_horaria_sem    Int?
+  data_criacao         DateTime               @default(now()) @db.Timestamp(6)
+  data_atualizacao     DateTime               @default(now()) @updatedAt @db.Timestamp(6)
+  turma_disciplina     turma_disciplina[]
+  professor_turma      professor_turma[]
+  nota                 nota[]
+  escola               escola?                @relation(fields: [escola_id], references: [id])
+  escola_id            String?                @db.Uuid
+  avaliacaos           avaliacao[]
+  horarioAulas         horario_aula[]
+  diarioClasses        diario_classe[]
+  disciplina_professor disciplina_professor[]
+}
+
+model disciplina_professor {
+  id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  disciplina_id    String     @db.Uuid
+  professor_id     String     @db.Uuid
+  escola_id        String     @db.Uuid
+  disciplina       disciplina @relation(fields: [disciplina_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_disciplina_professor_disciplina")
+  professor        professor  @relation(fields: [professor_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_disciplina_professor_professor")
+  escola           escola     @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_disciplina_professor_escola")
+  data_criacao     DateTime   @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+
+  @@index([professor_id], map: "idx_disciplina_professor_professor")
+  @@index([disciplina_id], map: "idx_disciplina_professor_disciplina")
 }
 
 model encarregado {
@@ -132,35 +147,39 @@ model escola {
   data_criacao     DateTime  @default(now()) @db.Timestamp(6)
   data_atualizacao DateTime  @default(now()) @updatedAt @db.Timestamp(6)
 
-  ano_letivo        ano_letivo[]
-  disciplina        disciplina[]
-  professor         professor[]
-  turma             turma[]
-  encarregado       encarregado[]
-  matricula         matricula[]
-  aluno             aluno[]
-  curso             curso[]
-  escolaRegioes     escola_regiao[]
-  usuarioPapels     usuario_papel[]
-  usuarios          usuario[]
-  infraEscolas      infra_escola[]
-  pessoaNaoDocentes pessoa_nao_docente[]
-  curriculos        curriculo[]
-  regraMedias       regra_media[]
-  planoCobrancas    plano_cobranca[]
-  planoCardapios    plano_cardapio[]
-  registroRefeicaos registro_refeicao[]
-  funcionarios      funcionario[]
+  ano_letivo           ano_letivo[]
+  disciplina           disciplina[]
+  professor            professor[]
+  turma                turma[]
+  encarregado          encarregado[]
+  matricula            matricula[]
+  aluno                aluno[]
+  curso                curso[]
+  escolaRegioes        escola_regiao[]
+  usuarioPapels        usuario_papel[]
+  usuarios             usuario[]
+  infraEscolas         infra_escola[]
+  pessoaNaoDocentes    pessoa_nao_docente[]
+  curriculos           curriculo[]
+  regraMedias          regra_media[]
+  planoCobrancas       plano_cobranca[]
+  planoCardapios       plano_cardapio[]
+  registroRefeicaos    registro_refeicao[]
+  funcionarios         funcionario[]
+  disciplinaProfessors disciplina_professor[]
 }
 
 model infra_escola {
   id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   escola_id          String   @db.Uuid
-  salas              Int
-  salas_improvisadas Int
+  salas              Int      @default(0)
+  salas_improvisadas Int      @default(0)
   estado_conservacao String?  @db.VarChar(255)
-  laboratorios       Int
-  bibliotecas        Int
+  laboratorios       Int      @default(0)
+  bibliotecas        Int      @default(0)
+  quadras_esportivas Int      @default(0)
+  refeitorios        Int      @default(0)
+  auditorios         Int      @default(0)
   data_criacao       DateTime @default(now()) @db.Timestamp(6)
   data_atualizacao   DateTime @default(now()) @updatedAt @db.Timestamp(6)
   escola             escola   @relation(fields: [escola_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_infra_escola_escola")
@@ -181,15 +200,15 @@ model pessoa_nao_docente {
 }
 
 model matricula {
-  id         String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  aluno_id   String                @db.Uuid
-  escola_id  String                @db.Uuid
+  id         String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id   String                    @db.Uuid
+  escola_id  String                    @db.Uuid
   ano_letivo String
   classe     Int
-  turma_id   String               @db.Uuid
+  turma_id   String                    @db.Uuid
   modalidade modalidade_matricula_enum @default(PRESENCIAL)
   turno      turno
-  status     status_matricula_enum @default(ATIVA)
+  status     status_matricula_enum     @default(ATIVA)
 
   aluno  aluno  @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
   escola escola @relation(fields: [escola_id], references: [id], onDelete: Cascade)
@@ -324,6 +343,8 @@ model professor {
   data_criacao      DateTime           @default(now()) @db.Timestamp(6)
   escola            escola?            @relation(fields: [escola_id], references: [id])
   escola_id         String?            @db.Uuid
+
+  disciplina_professor disciplina_professor[]
 
   @@index([pessoa_id], map: "idx_professor_pessoa")
 }

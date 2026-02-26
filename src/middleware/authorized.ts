@@ -50,7 +50,7 @@ export const verifyAuthentication = (req: Request | any, res: Response, next: Ne
     }
 };
 
-export const verifyAuthenticationAdmin = (req: Request | any, res: Response, next: NextFunction) => {
+export const verifyAuthenticationMasterSchool = (req: Request | any, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         res.status(401).json({
@@ -74,7 +74,9 @@ export const verifyAuthenticationAdmin = (req: Request | any, res: Response, nex
                 return;
             }
 
-            if (user.tipo_usuario !== "SUPER_ADMIN") {
+            if (user.tipo_usuario !== "ADMIN_ESCOLA"
+                && user.tipo_usuario !== "DIRETOR"
+            ) {
                 res.status(403).json({
                     message: "Acesso negado. Você não tem permissão para acessar este recurso."
                 });
@@ -96,6 +98,8 @@ export const verifyAuthenticationAdmin = (req: Request | any, res: Response, nex
         return;
     }
 };
+
+
 
 export const verifyAuthenticationSuperAdmin = (req: Request | any, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -144,7 +148,7 @@ export const verifyAuthenticationSuperAdmin = (req: Request | any, res: Response
     }
 };
 
-export const verifyAuthenticationAdminSchool = (req: Request | any, res: Response, next: NextFunction) => {
+export const verifyAuthenticationSchool = (req: Request | any, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         res.status(401).json({

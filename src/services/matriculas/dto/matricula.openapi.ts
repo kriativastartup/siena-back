@@ -7,7 +7,7 @@ registry.register("Matricula", Schema.responseMatriculaSchema);
 // Criar uma matrícula
 registry.registerPath({
     method: "post",
-    path: "/matriculas",
+    path: "/api/v1/registration/create",
     tags: ["Matricula"],
 
     request: {
@@ -40,7 +40,7 @@ registry.registerPath({
 // Listar matrículas id
 registry.registerPath({
     method: "get",
-    path: "/matriculas/each/{matricula_id}",
+    path: "/api/v1/registration/each/{matricula_id}",
     tags: ["Matricula"],
     request: {
         params: z.object({
@@ -68,7 +68,7 @@ registry.registerPath({
 // Listar matrículas por escola
 registry.registerPath({
     method: "get",
-    path: "/matriculas/escola/{escola_id}/{ano_letivo}",
+    path: "/api/v1/registration/all/{escola_id}/{ano_letivo}",
     tags: ["Matricula"],
     request: {
         params: z.object({
