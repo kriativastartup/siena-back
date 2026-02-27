@@ -1,17 +1,14 @@
 import {z} from 'zod';
 
 export const CreateAnoLectivoDTO = z.object({
-    nome: z.string().min(1, 'O campo "ano" é obrigatório'),
     data_de_inicio: z.date().min(new Date(), 'A data de início deve ser no futuro'),
     data_de_fim: z.date().min(new Date(), 'A data de fim deve ser no futuro'),
     escola_id: z.string().min(1, 'O campo "escola_id" é obrigatório'),
 });
 
 export const UpdateAnoLectivoDTO = z.object({
-    nome: z.string().min(1, 'O campo "ano" é obrigatório').optional(),
     data_de_inicio: z.date().min(new Date(), 'A data de início deve ser no futuro').optional(),
     data_de_fim: z.date().min(new Date(), 'A data de fim deve ser no futuro').optional(),
-    escola_id: z.string().min(1, 'O campo "escola_id" é obrigatório').optional(),
 });
 
 export type CreateAnoLectivoDTOType = z.infer<typeof CreateAnoLectivoDTO>;

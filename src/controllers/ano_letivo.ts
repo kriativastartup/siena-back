@@ -18,15 +18,30 @@ export const getAnoLetivoById = async (req: Request, res: Response) => {
 };
 
 export const createAnoLetivo = async (req: Request, res: Response) => {
-    const { nome, data_de_inicio, data_de_fim, escola_id } = req.body;
+    const { data_de_inicio, data_de_fim, escola_id } = req.body;
 
-   try {
+    try {
         const newAnoLetivo = await AnoLetivoService.createAnoLetivo({
-            nome,
             data_de_inicio,
             data_de_fim,
             escola_id
         });
+        if ("status" in newAnoLetivo && newAnoLetivo.status === 400) {
+            return res.status(400).json({
+                message: newAnoLetivo.message
+            });
+        }
+        if ("nome" in newAnoLetivo) {
+            const existAnoLetivo = await prisma.ano_letivo.findFirst({
+                where: {
+                    escola_id,
+                    nome: newAnoLetivo.nome
+                }
+            });
+            if (existAnoLetivo) {
+                return res.status(400).json({ message: "Já existe um ano letivo com o mesmo nome para esta escola" });
+            }
+        }
         return res.status(201).json(newAnoLetivo);
     } catch (error: any) {
         return res.status(500).json({ message: "Erro ao criar Ano Letivo", error: error.message });
@@ -35,7 +50,7 @@ export const createAnoLetivo = async (req: Request, res: Response) => {
 
 export const getAnosLetivos = async (req: Request, res: Response) => {
     const escola_id = req.params.escola_id as string;
-    try {   
+    try {
         const anosLetivos = await AnoLetivoService.getAnosLetivos(escola_id, 10, 1, '');
         return res.status(200).json(anosLetivos);
     } catch (error: any) {
@@ -45,7 +60,7 @@ export const getAnosLetivos = async (req: Request, res: Response) => {
 
 export const updateAnoLetivo = async (req: Request, res: Response) => {
     const { ano_id } = req.params;
-    const { nome, data_de_inicio, data_de_fim, escola_id } = req.body;
+    const { data_de_inicio, data_de_fim } = req.body;
 
     if (!validate(ano_id)) {
         return res.status(400).json({ message: "ID do ano letivo inválido" });
@@ -63,10 +78,8 @@ export const updateAnoLetivo = async (req: Request, res: Response) => {
         const updatedAnoLetivo = await prisma.ano_letivo.update({
             where: { id: ano_id },
             data: {
-                nome,
-                data_de_inicio,
-                data_de_fim,
-                escola_id
+                data_de_inicio: new Date(data_de_inicio),
+                data_de_fim: new Date(data_de_fim),
             },
         });
 

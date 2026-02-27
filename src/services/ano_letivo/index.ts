@@ -4,14 +4,22 @@ import { hash_password } from "../../helper/encryption";
 import { PrismaClient, sexo_enum, status_aluno } from "@prisma/client";
 import * as AnoLetivoDTO from "./dto/ano_letivo.dto";
 import { validate } from "uuid";
+import { gerarAnoLetivo } from "../../helper/gerar_ano_letivo";
 
 const prisma = new PrismaClient();
 
 export const createAnoLetivo = async (data: AnoLetivoDTO.CreateAnoLectivoDTOType) => {
-    const { nome, escola_id, data_de_inicio, data_de_fim } = data;
+    const {  escola_id, data_de_inicio, data_de_fim } = data;
+    const generateName =  gerarAnoLetivo(data_de_inicio, data_de_fim);
+    if (!generateName.valido) {
+        return {
+            status: 400,
+            message: generateName.erro
+        }
+    }
     const newAnoLetivo = await prisma.ano_letivo.create({
         data: {
-            nome,
+            nome : generateName.nome,
             escola_id,
             data_de_inicio: new Date(data_de_inicio),
             data_de_fim: new Date(data_de_fim)
@@ -78,7 +86,6 @@ export const updateAnoLetivo = async (ano_id: string, data: AnoLetivoDTO.UpdateA
             id: ano_id
         },
         data: {
-            ...data,
             data_de_inicio: data.data_de_inicio ? new Date(data.data_de_inicio) : undefined,
             data_de_fim: data.data_de_fim ? new Date(data.data_de_fim) : undefined
         }
