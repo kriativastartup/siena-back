@@ -24,15 +24,28 @@ export const createAlunoService = async (data: AlunoDTO.CreateAlunoDTO) => {
         n_processo, necessidades_especiais: { descricao, tipo } = { descricao: "", tipo: "" }
         , foto } = data;
     try {
-        const generateSenha = await hash_password(generateRandomNumber(8).toString());
+        const existPessoa = await prisma.pessoa.findFirst({
+            where: { OR: [{ email }, { bi }, { telefone }] },
+        });
+
+        if (existPessoa) {
+            return { status: 400, message: "Já existe uma pessoa com este email, BI ou telefone" };
+        }
+
+        const random_pass = generateRandomNumber(8).toString();
+        const generateSenha = await hash_password(random_pass);
         try {
             await sendEmail(
                 email,
                 "Bem-vindo ao Sistema de Gestão Escolar",
-                emailRandomPassTemplate(email, generateSenha)
+                emailRandomPassTemplate(email, random_pass)
             );
         } catch (emailError: any) {
-            return { status: 500, message: `Erro ao enviar email: ${emailError.message}` };
+            return {
+                status: 400,
+                message: "Não foi possível criar este aluno, porfavor verifique o email fornecido e tente novamente",
+                error: `Erro ao enviar email: ${emailError.message}`
+            };
         }
         const hashedPassword = await hash_password(generateSenha);
 
@@ -53,7 +66,7 @@ export const createAlunoService = async (data: AlunoDTO.CreateAlunoDTO) => {
             data: {
                 tipo_usuario: "ALUNO",
                 pessoa_id: newPessoa.id,
-                username: `aluno${generateRandomNumber(4)}`,
+                username: await generateUsername(nome_completo),
                 senha_hash: hashedPassword
             },
         });
@@ -68,6 +81,7 @@ export const createAlunoService = async (data: AlunoDTO.CreateAlunoDTO) => {
                         tipo
                     }
                 } : undefined,
+
                 foto,
             },
         });
@@ -89,8 +103,8 @@ export const createAlunoService = async (data: AlunoDTO.CreateAlunoDTO) => {
             status: newAluno.status,
             data_criacao: newAluno.data_criacao,
             data_atualizacao: newAluno.data_atualizacao,
-            username: generateUsername(nome_completo),
-            tipo_usuario: "ALUNO",
+            username: newUsuario.username,
+            tipo_usuario: newUsuario.tipo_usuario,
             estado: newUsuario.estado
         };
     } catch (error: any) {
@@ -257,7 +271,7 @@ export const getAlunoByIdService = async (aluno_id: string): Promise<AlunoDTO.Re
     }
 };
 
-export const updateAlunoService = async (aluno_id: string, data: Partial<AlunoDTO.CreateAlunoDTO>): Promise<AlunoDTO.ResponseAlunoDTO | AlunoDTO.PropsResponseBad> => {
+export const updateAlunoService = async (aluno_id: string, data: AlunoDTO.UpdateAlunoDTO): Promise<AlunoDTO.ResponseAlunoDTO | AlunoDTO.PropsResponseBad> => {
     if (!validate(aluno_id)) {
         return { status: 400, message: "ID de aluno inválido" };
     }

@@ -473,4 +473,133 @@ export const removeDisciplinaFromProfessorService = async (
         status: 200,
         message: "Disciplina desassociada do professor com sucesso",
     };
-} 
+}
+
+//{{PADDING}}
+
+export const createAvaluation = async (data: ProfessorDTO.CreateAvaluationDTO) => {
+    const { disciplina_id, turma_id,  tipo_avaliacao, trimestre, descricao} = data;
+
+    const existTurma = await prisma.turma.findFirst({
+        where: { id: turma_id }
+    });
+
+    if (!existTurma) {
+        return { status: 404, message: "Turma não encontrada" };
+    }
+
+    const existDisciplina = await prisma.disciplina.findFirst({
+        where: { id: disciplina_id }
+    });
+
+    if (!existDisciplina) {
+        return { status: 404, message: "Disciplina não encontrada" };
+    }
+
+    const create = await prisma.avaliacao.create({
+        data: {
+            disciplina_id,
+            turma_id,
+            tipo_avaliacao,
+            trimestre: Number(trimestre),
+            data_avaliacao: new Date(data.data_avaliacao),
+            descricao
+        }
+    });
+    return create;
+}
+
+export const getAvaliacoes = async (disciplina_id?: string, professor_id?: string, estado?: string) => {
+    const where: any = {};
+
+    if (disciplina_id) {
+        where.disciplina_id = disciplina_id;
+    }
+
+    if (professor_id) {
+        const dp = await prisma.disciplina_professor.findMany({
+            where: { professor_id }
+        });
+        const disciplinaIds = dp.map(d => d.disciplina_id);
+        where.disciplina_id = { in: disciplinaIds };
+    }
+
+    if (estado) {
+        where.estado = estado;
+    }
+
+    const avaliacoes = await prisma.avaliacao.findMany({
+        where,
+        orderBy: { data_avaliacao: "desc" }
+    });
+
+    return avaliacoes;
+};
+
+export const getAvaliacaoById = async (avaliacao_id: string) => {
+    const avaliacao = await prisma.avaliacao.findFirst({
+        where: { id: avaliacao_id }
+    });
+
+    if (!avaliacao) {
+        return { status: 404, message: "Avaliação não encontrada" };
+    }
+
+    return avaliacao;
+};
+
+
+export const setNotaAvaluation = async (data: ProfessorDTO.CreateNotaDTO) => {
+    const { aluno_id, avaliacao_id, nota_obtida, disciplina_id } = data;
+
+    const existAluno = await prisma.aluno.findFirst({
+        where: { id: aluno_id }
+    });
+
+    if (!existAluno) {
+        return { status: 404, message: "Aluno não encontrado" };
+    }
+
+    const existAvaliacao = await prisma.avaliacao.findFirst({
+        where: { id: avaliacao_id }
+    });
+
+    if (!existAvaliacao) {
+        return { status: 404, message: "Avaliação não encontrada" };
+    }
+
+    const existDisciplina = await prisma.disciplina.findFirst({
+        where: { id: disciplina_id }
+    });
+
+    if (!existDisciplina) {
+        return { status: 404, message: "Disciplina não encontrada" };
+    }
+
+
+    if (existAvaliacao.disciplina_id !== disciplina_id) {
+        return { status: 400, message: "Aluno, avaliação e disciplina devem estar associados à mesma escola" };
+    }
+
+    const existingNota = await prisma.nota.findFirst({
+        where: {
+            aluno_id,
+            avaliacao_id
+        }
+    });
+
+    if (existingNota) {
+        return { status: 400, message: "Este aluno já tem uma nota para esta avaliação" };
+    }
+
+    const create = await prisma.nota.create({
+        data: {
+            aluno_id,
+            avaliacao_id,
+            nota_obtida,
+            disciplina_id
+        }
+    });
+    
+    return create;
+}

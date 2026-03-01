@@ -14,7 +14,7 @@ registry.registerPath({
         body: {
             content: {
                 "application/json": {
-                    schema: Schema.responseMatriculaSchema
+                    schema: Schema.createMatriculaSchema
                 }
             }
         }
@@ -88,6 +88,51 @@ registry.registerPath({
         400: {
             description: "ID da escola ou ano letivo inválido",
         },
+        500: {
+            description: "Erro interno do servidor",
+        }
+    }
+});
+
+
+// update de matrícula
+registry.registerPath({
+    method: "put",
+    path: "/api/v1/registration/update/{matricula_id}",
+    tags: ["Matricula"],
+    request: {
+        params: z.object({
+            matricula_id: z.string("O ID da matrícula é obrigatório").min(3, "O ID da matrícula deve ter pelo menos 3 caracteres").max(50)
+        }),
+        body: {
+            content: {
+                "application/json": {
+                    schema: Schema.updateMatriculaSchema
+                }
+            }
+        }
+    },
+    responses: {
+        200: {
+            description: "Matrícula atualizada com sucesso",
+            content: {
+                "application/json": {
+                    schema: Schema.responseMatriculaSchema
+                }
+            }
+        },
+        400: {
+            description: "Dados inválidos fornecidos",
+        },
+         404: {
+            description: "Matrícula não encontrada",
+        },
+         409: {
+            description: "Conflito de dados, como turma cheia ou aluno já matriculado",
+        },
+         422: {
+            description: "Dados de atualização inválidos, como status ou turma inexistente",
+         },
         500: {
             description: "Erro interno do servidor",
         }

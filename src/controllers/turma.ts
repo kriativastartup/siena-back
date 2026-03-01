@@ -30,16 +30,17 @@ export const getTurmas = async (req: Request, res: Response) => {
 }
 
 export const createTurma = async (req: Request | any, res: Response) => {
-    const { nome, escola_id, ano_letivo, turno, classe, capacidade, curso_id, ano_letivo_id } = req.body;
+    const { nome, escola_id, ano_letivo, turno, classe, capacidade, curso_id, professor_id, horario_aula } = req.body;
     const turmaData : dto.CreateTurmaDTO = {
        nome,
        escola_id,
        curso_id,
+       professor_id,
        ano_letivo,
-       ano_letivo_id,
        turno,
        classe,
-       capacidade
+       capacidade,
+       horario_aula
     };
 
     try {

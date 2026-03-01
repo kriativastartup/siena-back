@@ -27,16 +27,17 @@ model pessoa {
 }
 
 model ano_letivo {
-  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  nome             String?   @db.VarChar(100)
-  data_de_inicio   DateTime? @db.Date
-  data_de_fim      DateTime? @db.Date
-  status           Boolean?  @default(true)
-  escola_id        String?   @db.Uuid
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome             String?       @db.VarChar(100)
+  data_de_inicio   DateTime?     @db.Date
+  data_de_fim      DateTime?     @db.Date
+  status           Boolean?      @default(true)
+  escola_id        String?       @db.Uuid
   turma            turma[]
-  data_criacao     DateTime  @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime  @default(now()) @updatedAt @db.Timestamp(6)
-  escola           escola?   @relation(fields: [escola_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ano_letivo_escola")
+  data_criacao     DateTime      @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime      @default(now()) @updatedAt @db.Timestamp(6)
+  escola           escola?       @relation(fields: [escola_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ano_letivo_escola")
+  alunoTurmas      aluno_turma[]
 }
 
 model aluno {
@@ -208,7 +209,7 @@ model matricula {
   turma_id   String                    @db.Uuid
   modalidade modalidade_matricula_enum @default(PRESENCIAL)
   turno      turno
-  status     status_matricula_enum     @default(ATIVA)
+  status     status_aluno              @default(ACTIVO)
 
   aluno  aluno  @relation(fields: [aluno_id], references: [id], onDelete: Cascade)
   escola escola @relation(fields: [escola_id], references: [id], onDelete: Cascade)
@@ -318,6 +319,7 @@ model avaliacao {
   disciplina_id  String              @db.Uuid
   trimestre      Int
   tipo_avaliacao tipo_avaliacao_enum
+  estado         estado_avaliacao   @default(PENDENTE)
   descricao      String?             @db.VarChar(255)
   data_avaliacao DateTime            @db.Date
 
@@ -345,24 +347,29 @@ model professor {
   escola_id         String?            @db.Uuid
 
   disciplina_professor disciplina_professor[]
+  turmas               turma[]
 
   @@index([pessoa_id], map: "idx_professor_pessoa")
 }
 
 model turma {
-  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  escola_id     String @db.Uuid
-  nome          String @db.VarChar(100)
-  ano_letivo    String @db.VarChar(9)
-  ano_letivo_id String @db.Uuid
-  classe        Int
-  turno         turno  @default(MANHA)
-  capacidade    Int    @default(30)
-  curso_id      String @db.Uuid
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  escola_id      String  @db.Uuid
+  nome           String  @db.VarChar(100)
+  ano_letivo     String  @db.VarChar(9)
+  ano_letivo_id  String  @db.Uuid
+  classe         Int
+  turno          turno   @default(MANHA)
+  capacidade     Int     @default(30)
+  curso_id       String  @db.Uuid
+  horario_aula   Json?   @default("[]")
+  professor_nome String?
+  professor_id   String? @db.Uuid
 
   escola           escola             @relation(fields: [escola_id], references: [id])
   ano              ano_letivo         @relation(fields: [ano_letivo_id], references: [id])
   curso            curso              @relation(fields: [curso_id], references: [id])
+  professor        professor?         @relation(fields: [professor_id], references: [id])
   matricula        matricula[]
   aluno_turma      aluno_turma[]
   turma_disciplina turma_disciplina[]
@@ -393,14 +400,16 @@ model curso {
 }
 
 model aluno_turma {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  aluno_id String @db.Uuid
-  turma_id String @db.Uuid
-  aluno    aluno  @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_turma_aluno")
-  turma    turma  @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_turma_turma")
-
-  data_criacao     DateTime @default(now()) @db.Timestamp(6)
-  data_atualizacao DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aluno_id         String     @db.Uuid
+  turma_id         String     @db.Uuid
+  ano_letivo       String     @db.VarChar(9)
+  ano_letivo_id    String     @db.Uuid
+  aluno            aluno      @relation(fields: [aluno_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_turma_aluno")
+  turma            turma      @relation(fields: [turma_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_turma_turma")
+  ano_letivo_rel   ano_letivo @relation(fields: [ano_letivo_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_aluno_turma_ano_letivo")
+  data_criacao     DateTime   @default(now()) @db.Timestamp(6)
+  data_atualizacao DateTime   @default(now()) @updatedAt @db.Timestamp(6)
 
   @@unique([aluno_id, turma_id], map: "uk_aluno_turma")
 }
@@ -822,6 +831,13 @@ enum tipo_refeicao_enum {
   REFEITORIO
 }
 
+enum estado_avaliacao {
+  PENDENTE
+  CONCLUIDA
+  CANCELADA
+}
+
+
 enum status_refeicao_enum {
   SERVIDA
   AUSENTE
@@ -957,13 +973,6 @@ enum status_aluno {
   DESISTENTE
   CONCLUENTE
   SUSPENDIDO
-}
-
-enum status_matricula_enum {
-  ATIVA
-  CONCLUIDA
-  CANCELADA
-  SUSPENSA
 }
 
 enum turno {

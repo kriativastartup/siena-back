@@ -13,11 +13,17 @@ export const createCurso = async (data: dto.CreateCursoDTO) : Promise<dto.Respon
     }
 
     const existCurso = await prisma.curso.findFirst({
-        where: { nome: data.nome, escola_id: data.escola_id },
+        where: {
+            nome: {
+                mode: "insensitive",
+                equals: data.nome
+            },
+            escola_id: data.escola_id 
+        },
     });
 
     if (existCurso) {
-        throw new Error("Curso já existe para esta escola");
+        return { status: 400, message: "Já existe um curso com este nome para esta escola" };
     }
 
     const curso = await prisma.curso.create({
@@ -40,16 +46,16 @@ export const getCursoById = async (id: string) => {
     return curso;
 }
 
-export const getAllCursos = async (escola_id: string, limit: number, offset: number, search?: string) : Promise<dto.ResponseCursoDTO[] | dto.PropsResponseBad> => {
+export const getAllCursos = async (escola_id: string, limit: number, page: number, search?: string) : Promise<dto.ResponseCursoDTO[] | dto.PropsResponseBad> => {
     const where: any = { escola_id };
 
-    if (search) {
+    if (search && search !== "undefined") {
         where.nome = { contains: search, mode: "insensitive" };
     }
 
     const cursos = await prisma.curso.findMany({
         where,
-        skip: offset,
+        skip: (page - 1) * limit,
         take: limit,
         orderBy: { data_criacao: "desc" },
     });
@@ -72,7 +78,7 @@ export const updateCurso = async (id: string, data: dto.UpdateCursoDTO) : Promis
         });
 
         if (existCursoWithName) {
-            throw new Error("Já existe outro curso com este nome para esta escola");
+            return { status: 400, message: "Já existe um curso com este nome para esta escola" };
         }
     }
 
@@ -81,8 +87,7 @@ export const updateCurso = async (id: string, data: dto.UpdateCursoDTO) : Promis
         data: {
             nome: data.nome,
             descricao: data.descricao,
-            abreviacao: data.abreviacao,
-            escola_id: data.escola_id
+            abreviacao: data.abreviacao
         }
     });
 

@@ -20,7 +20,7 @@ export const generateUsername = async (nome_completo: string): Promise<string> =
    const firstName = nome_completo.split(" ")[0].toLowerCase();
    let lastName = nome_completo.split(" ").slice(-1)[0].toLowerCase();
     lastName = lastName ? lastName : generateRandomNumber(4);
-   let username = `${firstName}${lastName}`;
+   let username = `${firstName[0]}${lastName}`;
    let suffix = 0;
 
    while (await jaExisteUsername(username)) {

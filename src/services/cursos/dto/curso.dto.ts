@@ -14,8 +14,7 @@ export type CreateCursoDTO = z.infer<typeof createCursoSchema>;
 export const updateCursoSchema = z.object({
     nome: z.string().min(1, "O nome do curso é obrigatório").optional(),
     descricao: z.string().optional(),
-    abreviacao: z.string().optional(),
-    escola_id: z.string().refine((id) => validate(id), "ID de escola inválido").optional(),
+    abreviacao: z.string().optional()
 });
 
 export type UpdateCursoDTO = z.infer<typeof updateCursoSchema>;

@@ -17,7 +17,7 @@ registry.registerPath({
         body: {
             content: {
                 "application/json": {
-                    schema: Schema.responseCursoSchema
+                    schema: Schema.createCursoSchema
                 }
             }
         }

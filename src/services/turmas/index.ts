@@ -20,9 +20,8 @@ export const createTurma = async (data: dto.CreateTurmaDTO) => {
             nome: data.nome,
             escola_id: data.escola_id,
             ano_letivo: data.ano_letivo,
-            ano_letivo_id: data.ano_letivo_id,
             turno: data.turno,
-            classe: data.classe,
+            classe: data.classe
         },
     });
 
@@ -32,17 +31,69 @@ export const createTurma = async (data: dto.CreateTurmaDTO) => {
             message: "Já existe uma turma com essas características",
         } as dto.PropsResponseBad;
     }
-    
+
+    const existCurso = await prisma.curso.findFirst({
+        where: { id: data.curso_id, escola_id: data.escola_id }
+    });
+
+    if (!existCurso) {
+        return {
+            status: 404,
+            message: "Curso não encontrado para esta escola",
+        } as dto.PropsResponseBad;
+    }
+
+    const existAnoLetivo = await prisma.ano_letivo.findFirst({
+        where: { nome: data.ano_letivo, escola_id: data.escola_id }
+    });
+
+    if (!existAnoLetivo) {
+        return {
+            status: 404,
+            message: "Ano letivo não encontrado para esta escola",
+        } as dto.PropsResponseBad;
+    }
+
+    let profPessoa = null;
+
+    if (data.professor_id) {
+        const existProfessor = await prisma.professor.findFirst({
+            where: { id: data.professor_id, escola_id: data.escola_id }
+        });
+
+        if (!existProfessor) {
+            return {
+                status: 404,
+                message: "Professor não encontrado para esta escola",
+            } as dto.PropsResponseBad;
+        }
+
+        profPessoa = await prisma.pessoa.findFirst({
+            where: { id: existProfessor.pessoa_id }
+        });
+
+        if (!profPessoa) {
+            return {
+                status: 404,
+                message: "Pessoa do professor não encontrada",
+            } as dto.PropsResponseBad;
+        }
+    }
+
+
    const turma = await prisma.turma.create({
         data: {
             nome: data.nome,
             escola_id: data.escola_id,
             curso_id: data.curso_id,
             ano_letivo: data.ano_letivo,
-            ano_letivo_id: data.ano_letivo_id,
+            ano_letivo_id: existAnoLetivo.id,
+            professor_id: data.professor_id,
+            professor_nome: data.professor_id && profPessoa ? profPessoa.nome_completo : undefined,
             turno: data.turno,
             classe: data.classe,
             capacidade: data.capacidade,
+            horario_aula: data.horario_aula ? JSON.stringify(data.horario_aula) : [],
         },
     });
     return turma;
@@ -122,12 +173,13 @@ export const updateTurma = async (id: string, data: dto.UpdateTurmaDTO) => {
         const turma = await prisma.turma.update({
         where: { id },
         data: {
-            nome: data.nome,
-            escola_id: data.escola_id,
-            ano_letivo: data.ano_letivo,
-            turno: data.turno,
-            classe: data.classe,
-            capacidade: data.capacidade,
+            nome: data.nome || existTurma.nome,
+            escola_id: data.escola_id || existTurma.escola_id,
+            ano_letivo: data.ano_letivo || existTurma.ano_letivo,
+            turno: data.turno || existTurma.turno,
+            classe: data.classe || existTurma.classe,
+            horario_aula: data.horario_aula ? JSON.stringify(data.horario_aula) : JSON.stringify(existTurma.horario_aula),
+            capacidade: data.capacidade || existTurma.capacidade,
         },
         });
 

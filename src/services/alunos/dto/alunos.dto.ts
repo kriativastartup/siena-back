@@ -21,7 +21,6 @@ export const CreateAlunoSchema = z.object({
         descricao: z.string("A descrição das necessidades especiais é obrigatória").min(5, "A descrição deve ter pelo menos 5 caracteres").max(300).optional(),
         tipo: z.string("O tipo de necessidade especial é obrigatório").min(3, "O tipo deve ter pelo menos 3 caracteres").max(50).optional(),
     }).optional(),
-    status: z.enum(status_aluno, "O status do aluno é obrigatório e deve ser um tipo válido").default("ACTIVO").optional(),
     foto : z.string("A URL da foto é obrigatória").min(5, "A URL da foto deve ter pelo menos 5 caracteres").max(255).optional(),
     escola_id : z.string("O ID da escola é obrigatório").min(3, "O ID da escola deve ter pelo menos 3 caracteres").max(50)
 });

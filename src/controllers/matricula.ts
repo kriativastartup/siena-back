@@ -12,10 +12,7 @@ export const MatricularALuno = async (req: Request, res: Response) => {
         aluno_id,
         turma_id,
         escola_id,
-        ano_letivo,
         modalidade,
-        classe,
-        turno,
         status
     };
 
@@ -88,9 +85,6 @@ export const updateMatricula = async (req: Request, res: Response) => {
 
     const updateMatriculaData: dto.UpdateMatriculaDTO = {
         turma_id,
-        ano_letivo,
-        classe,
-        turno,
         status
     };
 

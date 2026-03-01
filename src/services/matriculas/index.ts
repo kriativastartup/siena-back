@@ -6,15 +6,63 @@ const prisma = new PrismaClient();
 
 export const createMatricula = async (data: dto.CreateMatriculaDTO): Promise<dto.ResponseMatriculaDTO | PropsResponseBad> => {
     try {
+
+        const exist_turma = await prisma.turma.findFirst({
+            where: { id: data.turma_id },
+        });
+
+        if (!exist_turma) {
+            return {
+                status: 404,
+                message: "Turma não encontrada"
+            };
+        }
+
+        const existAnoLetivo = await prisma.ano_letivo.findFirst({
+            where: { nome: exist_turma.ano_letivo, escola_id: data.escola_id }
+        });
+
+        if (!existAnoLetivo) {
+            return {
+                status: 404,
+                message: "Ano letivo não encontrado para esta escola"
+            };
+        }
+
+        const exist_aluno_turma = await prisma.matricula.findFirst({
+            where: {
+                aluno_id: data.aluno_id,
+                turma_id: data.turma_id,
+                ano_letivo: exist_turma.ano_letivo
+            }
+        });
+
+        if (exist_aluno_turma) {
+            return {
+                status: 400,
+                message: "O aluno já está matriculado nesta turma para este ano letivo"
+            };
+        }
+
         const matricula = await prisma.matricula.create({
             data: {
                 aluno_id: data.aluno_id,
                 turma_id: data.turma_id,
                 escola_id: data.escola_id,
-                ano_letivo: data.ano_letivo,
-                classe: data.classe,
-                turno: data.turno,
+                ano_letivo: exist_turma.ano_letivo,
+                classe: exist_turma.classe,
+                turno: exist_turma.turno,
                 status: data.status
+            }
+        });
+
+        // inserir um aluno a uma turma na tabela aluno_turma
+        await prisma.aluno_turma.create({
+            data: {
+                aluno_id: data.aluno_id,
+                turma_id: data.turma_id,
+                ano_letivo: existAnoLetivo.nome!,
+                ano_letivo_id: existAnoLetivo.id
             }
         });
 
@@ -110,7 +158,7 @@ export const getMatriculaById = async (id: string): Promise<dto.ResponseMatricul
 export const getAlunosMatriculados = async (escola_id: string, ano_letivo: string, limit?: number, offset?: number, search?: string): Promise<dto.ResponseMatriculaDTO[] | PropsResponseBad> => {
     try {
         const matriculas = await prisma.matricula.findMany({
-            where: { 
+            where: {
                 escola_id,
                 ano_letivo,
                 aluno: {
@@ -126,11 +174,11 @@ export const getAlunosMatriculados = async (escola_id: string, ano_letivo: strin
                     }
                 }
             },
-             take: limit,
+            take: limit,
             skip: offset,
         });
 
-        return matriculas.map((matricula : any) => ({
+        return matriculas.map((matricula: any) => ({
             id: matricula.id,
             aluno_id: matricula.aluno_id,
             turma_id: matricula.turma_id,
@@ -163,13 +211,45 @@ export const getAlunosMatriculados = async (escola_id: string, ano_letivo: strin
 
 export const updateMatricula = async (id: string, data: dto.UpdateMatriculaDTO): Promise<dto.ResponseMatriculaDTO | PropsResponseBad> => {
     try {
+         const existMatricula = await prisma.matricula.findUnique({
+            where: { id },
+        });
+
+        if (!existMatricula) {
+            return {
+                status: 404,
+                message: "Matrícula não encontrada",
+            } as PropsResponseBad;
+         }
+        const existTurma = await prisma.turma.findFirst({
+            where: { id: data.turma_id },
+        });
+
+        if (data.turma_id && !existTurma) {
+            return {
+                status: 404,
+                message: "Turma não encontrada",
+            } as PropsResponseBad;
+         }
+
+         const existAnoLetivo = await prisma.ano_letivo.findFirst({
+            where: { nome: existTurma?.ano_letivo || "", escola_id: existTurma?.escola_id || "" }
+        });
+        
+        if (data.turma_id && !existAnoLetivo) {
+            return {
+                status: 404,
+                message: "Ano letivo não encontrado para esta escola",
+            } as PropsResponseBad;
+         }
+
         const matricula = await prisma.matricula.update({
             where: { id },
             data: {
                 turma_id: data.turma_id,
-                ano_letivo: data.ano_letivo,
-                classe: data.classe,
-                turno: data.turno,
+                ano_letivo: existAnoLetivo?.nome || "",
+                classe: existTurma?.classe || 0,
+                turno: existTurma?.turno || "MANHA",
                 status: data.status
             },
             include: {
@@ -211,6 +291,7 @@ export const updateMatricula = async (id: string, data: dto.UpdateMatriculaDTO):
         };
     }
 };
+
 
 export const deleteMatricula = async (id: string): Promise<{ message: string } | PropsResponseBad> => {
     // Implementação futura para deletar uma matrícula

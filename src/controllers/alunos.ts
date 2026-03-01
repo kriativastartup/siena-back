@@ -25,6 +25,8 @@ export const createAluno = async (req: Request | any, res: Response) => {
             escola_id
         };
 
+    
+
         const newAluno = await services.createAlunoService(createAlunoDTO);
         if ("status" in newAluno && "message" in newAluno && typeof newAluno.status === "number") {
             return res.status(newAluno.status as number).json({ message: newAluno.message });
@@ -105,7 +107,7 @@ export const updateAluno = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Pessoa associada ao aluno não encontrada" });
         }
         
-        const updateAlunoDTO: Partial<AlunoDTO.CreateAlunoDTO> = {
+        const updateAlunoDTO: AlunoDTO.UpdateAlunoDTO = {
             nome_completo : nome_completo || existePessoa.nome_completo,
             bi : bi || existePessoa.bi,
             dt_nascimento : dt_nascimento || existePessoa.dt_nascimento,

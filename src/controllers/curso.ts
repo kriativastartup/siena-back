@@ -3,10 +3,9 @@ import { PrismaClient } from "@prisma/client";
 import { validate } from "uuid";
 import * as dto from "../services/cursos/dto/curso.dto";
 import * as service from "../services/cursos";
+import { checkSchoolPermission } from "../services/permission/permission_school"; 
 
 const prisma = new PrismaClient();
-
-
 
 export const getCursoById = async (req: Request, res: Response) => {
    const { curso_id } = req.params;
@@ -51,16 +50,23 @@ export const createCurso = async (req: Request, res: Response) => {
 };
 
 
-export const getCursosByEscola = async (req: Request, res: Response) => {
+export const getCursosByEscola = async (req: Request | any, res: Response) => {
     const { escola_id } = req.params;
-    const { limit = 10, offset = 0, search } = req.query;
+    const userId = req.userId ;
+    const { limit = 10, page = 1, search } = req.query;
 
     if (!escola_id || !validate(escola_id)) {
         return res.status(400).json({ message: "ID de escola inválido" });
     }
 
+    const hasPermission = checkSchoolPermission(req.userId, escola_id);
+
+    if (!hasPermission) {
+        return res.status(403).json({ message: "Você não tem permissão para acessar esta escola" });
+    }
+
     try {
-        const cursos = await service.getAllCursos(escola_id, Number(limit), Number(offset), String(search));
+        const cursos = await service.getAllCursos(escola_id, Number(limit), Number(page), String(search));
 
         if (cursos && "status" in cursos && "message" in cursos && typeof cursos.status === "number") {
             return res.status(cursos.status).json({ message: cursos.message });
@@ -74,14 +80,14 @@ export const getCursosByEscola = async (req: Request, res: Response) => {
 
 export const updateCurso = async (req: Request, res: Response) => {
     const { curso_id } = req.params;
-    const { nome, descricao, abreviacao, escola_id } = req.body;
+    const { nome, descricao, abreviacao } = req.body;
 
     if (!curso_id || !validate(curso_id)) {
         return res.status(400).json({ message: "ID de curso inválido" });
     }
 
     try {
-        const updateCursoDTO: dto.UpdateCursoDTO = { nome, descricao, abreviacao, escola_id };
+        const updateCursoDTO: dto.UpdateCursoDTO = { nome, descricao, abreviacao };
         const updatedCurso = await service.updateCurso(curso_id, updateCursoDTO);
 
         if (updatedCurso && "status" in updatedCurso && "message" in updatedCurso && typeof updatedCurso.status === "number") {
